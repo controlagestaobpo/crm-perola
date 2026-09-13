@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { Search } from "lucide-react";
+import { forwardRef, useMemo, useRef, useState } from "react";
+import { Search, Copy } from "lucide-react";
 import { corCategoria, corBadgeCategoria } from "@/lib/categoriaCores";
 import type { Produto, ResultadoAtendimento } from "@/types/database";
 
@@ -45,15 +45,10 @@ function ProdutoCheckbox({
   );
 }
 
-function GradeProdutos({
-  produtos,
-  name,
-  selecionados,
-}: {
-  produtos: Produto[];
-  name: string;
-  selecionados?: string[];
-}) {
+const GradeProdutos = forwardRef<
+  HTMLDivElement,
+  { produtos: Produto[]; name: string; selecionados?: string[] }
+>(function GradeProdutos({ produtos, name, selecionados }, ref) {
   const [busca, setBusca] = useState("");
 
   const produtosFiltrados = useMemo(() => {
@@ -65,7 +60,7 @@ function GradeProdutos({
   const categorias = Array.from(new Set(produtosFiltrados.map((p) => p.categoria)));
 
   return (
-    <div className="space-y-4">
+    <div ref={ref} className="space-y-4">
       <div className="relative max-w-sm">
         <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
         <input
@@ -106,7 +101,7 @@ function GradeProdutos({
       )}
     </div>
   );
-}
+});
 
 interface AtendimentoFormFieldsProps {
   produtos: Produto[];
@@ -122,11 +117,24 @@ interface AtendimentoFormFieldsProps {
 
 export default function AtendimentoFormFields({ produtos, valoresIniciais }: AtendimentoFormFieldsProps) {
   const [resultado, setResultado] = useState(valoresIniciais?.resultado ?? "");
+  const oferecidosRef = useRef<HTMLDivElement>(null);
+  const vendidosRef = useRef<HTMLDivElement>(null);
 
   const mostrarValorCompra = resultado === "compra";
   const mostrarValorNegociacao = resultado === "negociacao";
   const mostrarMotivo = ["sem_interesse", "nao_atendeu", "indisponivel"].includes(resultado);
   const mostrarVendidos = resultado === "compra";
+
+  function copiarOferecidosParaVendidos() {
+    const oferecidosMarcados = new Set(
+      Array.from(oferecidosRef.current?.querySelectorAll<HTMLInputElement>("input[type=checkbox]:checked") ?? []).map(
+        (input) => input.value
+      )
+    );
+    vendidosRef.current?.querySelectorAll<HTMLInputElement>("input[type=checkbox]").forEach((input) => {
+      input.checked = oferecidosMarcados.has(input.value);
+    });
+  }
 
   return (
     <>
@@ -217,6 +225,7 @@ export default function AtendimentoFormFields({ produtos, valoresIniciais }: Ate
       <div className="mt-4">
         <label className="mb-2 block text-sm font-medium text-slate-700">Produtos oferecidos</label>
         <GradeProdutos
+          ref={oferecidosRef}
           produtos={produtos}
           name="produtos_oferecidos"
           selecionados={valoresIniciais?.produtosOferecidos}
@@ -225,8 +234,19 @@ export default function AtendimentoFormFields({ produtos, valoresIniciais }: Ate
 
       {mostrarVendidos && (
         <div className="mt-4">
-          <label className="mb-2 block text-sm font-medium text-slate-700">Produtos vendidos</label>
+          <div className="mb-2 flex items-center justify-between">
+            <label className="block text-sm font-medium text-slate-700">Produtos vendidos</label>
+            <button
+              type="button"
+              onClick={copiarOferecidosParaVendidos}
+              className="flex items-center gap-1.5 rounded-lg bg-violet-50 px-3 py-1 text-xs font-medium text-violet-700 hover:bg-violet-100"
+            >
+              <Copy className="h-3.5 w-3.5" />
+              Usar os mesmos produtos oferecidos
+            </button>
+          </div>
           <GradeProdutos
+            ref={vendidosRef}
             produtos={produtos}
             name="produtos_vendidos"
             selecionados={valoresIniciais?.produtosVendidos}
