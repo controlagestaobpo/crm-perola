@@ -7,20 +7,40 @@ import AtendimentoForm from "@/components/AtendimentoForm";
 import AtendimentoRowActions from "@/components/AtendimentoRowActions";
 import ClienteForm from "@/components/ClienteForm";
 import KanbanAtendimentos from "@/components/KanbanAtendimentos";
-import type { Atendimento, Cliente, Perfil, Produto } from "@/types/database";
+import type { Atendimento, Cliente, Perfil, Produto, ResultadoAtendimento } from "@/types/database";
 
 export const dynamic = "force-dynamic";
+
+const OPCOES_RESULTADO: { valor: ResultadoAtendimento | ""; label: string }[] = [
+  { valor: "", label: "Todos os estágios" },
+  { valor: "compra", label: "✓ Compra realizada" },
+  { valor: "negociacao", label: "⭐ Negociação em andamento" },
+  { valor: "interessado", label: "⊕ Interessado - retornar" },
+  { valor: "sem_interesse", label: "⏳ Sem interesse" },
+  { valor: "nao_atendeu", label: "☎️ Não atendeu" },
+  { valor: "indisponivel", label: "❌ Indisponível" },
+];
 
 export default async function AtendimentosPage({
   searchParams,
 }: {
-  searchParams: { view?: string; cliente?: string };
+  searchParams: { view?: string; cliente?: string; resultado?: string };
 }) {
   const view = searchParams.view === "kanban" ? "kanban" : "form";
   const clienteIdInicial = searchParams.cliente;
+  const filtroResultado = searchParams.resultado ?? "";
   const supabase = createClient();
   const perfil = await getPerfilAtual();
   if (!perfil) return null;
+
+  let consultaAtendimentos = supabase
+    .from("atendimentos")
+    .select("*, clientes(nome)")
+    .order("criado_em", { ascending: false });
+
+  consultaAtendimentos = filtroResultado
+    ? consultaAtendimentos.eq("resultado", filtroResultado).limit(100)
+    : consultaAtendimentos.limit(20);
 
   const [{ data: clientesData }, { data: produtosData }, { data: vendedoresData }, { data: atendimentosData }, clientesHistorico] =
     await Promise.all([
@@ -29,11 +49,7 @@ export default async function AtendimentosPage({
       perfil.papel === "master"
         ? supabase.from("perfis").select("*").order("nome")
         : Promise.resolve({ data: [perfil] }),
-      supabase
-        .from("atendimentos")
-        .select("*, clientes(nome)")
-        .order("criado_em", { ascending: false })
-        .limit(20),
+      consultaAtendimentos,
       getClientesComHistorico(supabase),
     ]);
 
@@ -96,7 +112,31 @@ export default async function AtendimentosPage({
           />
 
           <div>
-            <h2 className="mb-3 text-base font-semibold text-slate-900">Últimos atendimentos</h2>
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+              <h2 className="text-base font-semibold text-slate-900">
+                {filtroResultado ? "Atendimentos filtrados" : "Últimos atendimentos"}
+              </h2>
+              <form method="get" className="flex items-center gap-2">
+                <input type="hidden" name="view" value="form" />
+                <select
+                  name="resultado"
+                  defaultValue={filtroResultado}
+                  className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm"
+                >
+                  {OPCOES_RESULTADO.map((opcao) => (
+                    <option key={opcao.valor} value={opcao.valor}>
+                      {opcao.label}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="submit"
+                  className="rounded-lg bg-slate-200 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-300"
+                >
+                  Filtrar
+                </button>
+              </form>
+            </div>
             <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white">
               <table className="w-full text-left text-sm">
                 <thead className="border-b border-slate-200 bg-slate-50 text-slate-500">
@@ -113,7 +153,9 @@ export default async function AtendimentosPage({
                   {atendimentos.length === 0 ? (
                     <tr>
                       <td colSpan={6} className="px-4 py-6 text-center text-slate-400">
-                        Nenhum atendimento registrado ainda.
+                        {filtroResultado
+                          ? "Nenhum atendimento encontrado para esse estágio."
+                          : "Nenhum atendimento registrado ainda."}
                       </td>
                     </tr>
                   ) : (

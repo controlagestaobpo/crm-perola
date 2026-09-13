@@ -126,6 +126,10 @@ export async function criarAtendimento(_prevState: ActionState, formData: FormDa
   const produtosOferecidos = formData.getAll("produtos_oferecidos").map(String);
   const produtosVendidos = formData.getAll("produtos_vendidos").map(String);
 
+  if (resultado === "compra" && produtosVendidos.length === 0) {
+    return { error: "Marque pelo menos um produto vendido antes de salvar." };
+  }
+
   const { error } = await supabase.from("atendimentos").insert({
     organizacao_id: perfil.organizacao_id,
     vendedor_id: vendedorId,
@@ -182,6 +186,10 @@ export async function editarAtendimento(
   const data = String(formData.get("data") ?? "").trim();
   const produtosOferecidos = formData.getAll("produtos_oferecidos").map(String);
   const produtosVendidos = formData.getAll("produtos_vendidos").map(String);
+
+  if (resultado === "compra" && produtosVendidos.length === 0) {
+    return { error: "Marque pelo menos um produto vendido antes de salvar." };
+  }
 
   const { error } = await supabase
     .from("atendimentos")
