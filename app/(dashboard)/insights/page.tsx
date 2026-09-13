@@ -1,0 +1,143 @@
+import { createClient } from "@/lib/supabase/server";
+import { getClientesComHistorico } from "@/lib/clientes";
+import { contarProdutos, formatBRL } from "@/lib/metrics";
+import StatCard from "@/components/StatCard";
+import { Percent, Clock, AlertTriangle, Receipt } from "lucide-react";
+import type { Atendimento } from "@/types/database";
+
+export default async function InsightsPage() {
+  const supabase = createClient();
+  const hoje = new Date();
+  const inicioMes = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, "0")}-01`;
+
+  const [{ data: atendimentosData }, clientesHistorico] = await Promise.all([
+    supabase.from("atendimentos").select("*").gte("data", inicioMes),
+    getClientesComHistorico(supabase),
+  ]);
+
+  const atendimentos = (atendimentosData ?? []) as Atendimento[];
+  const totalAtendimentos = atendimentos.length;
+  const vendas = atendimentos.filter((a) => a.resultado === "compra");
+  const conversaoGeral = totalAtendimentos > 0 ? (vendas.length / totalAtendimentos) * 100 : 0;
+  const ticketMedio = vendas.length > 0
+    ? vendas.reduce((s, a) => s + Number(a.valor ?? 0), 0) / vendas.length
+    : 0;
+
+  const clientesSemComprar = clientesHistorico.filter(
+    (c) => c.diasSemComprar === null || c.diasSemComprar > 30
+  ).length;
+
+  const semInteresse = atendimentos.filter((a) => a.resultado === "sem_interesse" && a.motivo);
+  const motivos = new Map<string, number>();
+  for (const a of semInteresse) {
+    motivos.set(a.motivo as string, (motivos.get(a.motivo as string) ?? 0) + 1);
+  }
+  const razoesNaoVenda = Array.from(motivos.entries())
+    .map(([motivo, quantidade]) => ({
+      motivo,
+      quantidade,
+      percentual: semInteresse.length > 0 ? (quantidade / semInteresse.length) * 100 : 0,
+    }))
+    .sort((a, b) => b.quantidade - a.quantidade);
+
+  const oportunidades = clientesHistorico
+    .filter((c) => c.estagio === "negociacao" || c.estagio === "contatado")
+    .sort((a, b) => {
+      if (!a.proximo_contato) return 1;
+      if (!b.proximo_contato) return -1;
+      return a.proximo_contato.localeCompare(b.proximo_contato);
+    })
+    .slice(0, 6);
+
+  const oferecidos = contarProdutos(atendimentos, "produtos_oferecidos");
+  const vendidos = contarProdutos(atendimentos, "produtos_vendidos");
+  const potencialProdutos = oferecidos
+    .map((o) => {
+      const vendidoQtd = vendidos.find((v) => v.produto === o.produto)?.quantidade ?? 0;
+      return {
+        produto: o.produto,
+        oferecido: o.quantidade,
+        vendido: vendidoQtd,
+        conversao: o.quantidade > 0 ? (vendidoQtd / o.quantidade) * 100 : 0,
+      };
+    })
+    .sort((a, b) => b.oferecido - a.oferecido)
+    .slice(0, 6);
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-semibold text-slate-900">Inteligência comercial</h1>
+        <p className="text-sm text-slate-500">Insights do mês atual</p>
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <StatCard label="Taxa de conversão" value={`${conversaoGeral.toFixed(1)}%`} icon={Percent} />
+        <StatCard label="Ticket médio" value={formatBRL(ticketMedio)} icon={Receipt} />
+        <StatCard label="Clientes sem comprar (30d+)" value={String(clientesSemComprar)} icon={AlertTriangle} />
+        <StatCard label="Atendimentos no mês" value={String(totalAtendimentos)} icon={Clock} />
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <div className="rounded-xl border border-slate-200 bg-white p-5">
+          <p className="mb-4 text-sm font-medium text-slate-700">🚨 Razões de não-venda</p>
+          {razoesNaoVenda.length === 0 ? (
+            <p className="text-sm text-slate-400">Sem registros neste mês.</p>
+          ) : (
+            <ul className="space-y-3">
+              {razoesNaoVenda.map((r) => (
+                <li key={r.motivo} className="text-sm text-slate-700">
+                  <strong>{r.motivo}</strong> ({r.percentual.toFixed(0)}%) — {r.quantidade} atendimento(s)
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
+        <div className="rounded-xl border border-slate-200 bg-white p-5">
+          <p className="mb-4 text-sm font-medium text-slate-700">⭐ Oportunidades rápidas</p>
+          {oportunidades.length === 0 ? (
+            <p className="text-sm text-slate-400">Nenhuma negociação em aberto.</p>
+          ) : (
+            <ul className="space-y-3">
+              {oportunidades.map((c) => (
+                <li key={c.id} className="text-sm text-slate-700">
+                  <strong>{c.nome}</strong> — {c.estagio === "negociacao" ? "Em negociação" : "Contatado"}
+                  {c.proximo_contato && (
+                    <> · retorno em {new Date(c.proximo_contato + "T00:00:00").toLocaleDateString("pt-BR")}</>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+
+      <div className="rounded-xl border border-slate-200 bg-white p-5">
+        <p className="mb-4 text-sm font-medium text-slate-700">📈 Produtos com maior potencial</p>
+        {potencialProdutos.length === 0 ? (
+          <p className="text-sm text-slate-400">Sem dados neste mês ainda.</p>
+        ) : (
+          <div className="space-y-4">
+            {potencialProdutos.map((p) => (
+              <div key={p.produto}>
+                <div className="mb-1 flex items-center justify-between text-sm">
+                  <strong className="text-slate-900">{p.produto}</strong>
+                  <span className="text-emerald-600">
+                    Oferecido {p.oferecido}x | Vendido {p.vendido}x ({p.conversao.toFixed(0)}%)
+                  </span>
+                </div>
+                <div className="h-2 overflow-hidden rounded-full bg-slate-100">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-emerald-400"
+                    style={{ width: `${Math.min(p.conversao, 100)}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

@@ -2,15 +2,31 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Users, Handshake, Gem } from "lucide-react";
+import {
+  LayoutDashboard,
+  Users,
+  Handshake,
+  Target,
+  Lightbulb,
+  Package,
+  UserCog,
+  CalendarClock,
+  Gem,
+} from "lucide-react";
+import type { Papel } from "@/types/database";
 
 const links = [
-  { href: "/", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/clientes", label: "Clientes", icon: Users },
-  { href: "/negocios", label: "Negócios", icon: Handshake },
+  { href: "/", label: "Dashboard", icon: LayoutDashboard, papeis: ["master", "vendedor"] },
+  { href: "/agenda", label: "Agenda", icon: CalendarClock, papeis: ["master", "vendedor"] },
+  { href: "/atendimentos", label: "Atendimentos", icon: Handshake, papeis: ["master", "vendedor"] },
+  { href: "/clientes", label: "Clientes", icon: Users, papeis: ["master", "vendedor"] },
+  { href: "/metas", label: "Metas", icon: Target, papeis: ["master", "vendedor"] },
+  { href: "/insights", label: "Insights", icon: Lightbulb, papeis: ["master", "vendedor"] },
+  { href: "/produtos", label: "Produtos", icon: Package, papeis: ["master"] },
+  { href: "/usuarios", label: "Usuários", icon: UserCog, papeis: ["master"] },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ papel }: { papel: Papel }) {
   const pathname = usePathname();
 
   return (
@@ -20,23 +36,25 @@ export default function Sidebar() {
         <span className="text-lg font-semibold text-slate-900">CRM Pérola</span>
       </div>
       <nav className="flex-1 space-y-1 px-3 py-4">
-        {links.map(({ href, label, icon: Icon }) => {
-          const active = pathname === href;
-          return (
-            <Link
-              key={href}
-              href={href}
-              className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                active
-                  ? "bg-violet-50 text-violet-700"
-                  : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-              }`}
-            >
-              <Icon className="h-4 w-4" />
-              {label}
-            </Link>
-          );
-        })}
+        {links
+          .filter((link) => link.papeis.includes(papel))
+          .map(({ href, label, icon: Icon }) => {
+            const active = pathname === href;
+            return (
+              <Link
+                key={href}
+                href={href}
+                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                  active
+                    ? "bg-violet-50 text-violet-700"
+                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                }`}
+              >
+                <Icon className="h-4 w-4" />
+                {label}
+              </Link>
+            );
+          })}
       </nav>
     </aside>
   );
