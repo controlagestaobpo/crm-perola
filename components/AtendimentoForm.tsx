@@ -17,6 +17,7 @@ interface AtendimentoFormProps {
   meuId: string;
   atendimentoParaEditar?: Atendimento;
   clienteIdInicial?: string;
+  onSalvo?: (clienteId: string, resultado: string) => void;
 }
 
 export default function AtendimentoForm({
@@ -27,6 +28,7 @@ export default function AtendimentoForm({
   meuId,
   atendimentoParaEditar,
   clienteIdInicial,
+  onSalvo,
 }: AtendimentoFormProps) {
   const action = atendimentoParaEditar
     ? editarAtendimento.bind(null, atendimentoParaEditar.id)
@@ -36,8 +38,14 @@ export default function AtendimentoForm({
   const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
-    if (state.success && !atendimentoParaEditar) formRef.current?.reset();
-  }, [state.success, atendimentoParaEditar]);
+    if (state.success) {
+      if (formRef.current) {
+        const dados = new FormData(formRef.current);
+        onSalvo?.(String(dados.get("cliente_id") ?? ""), String(dados.get("resultado") ?? ""));
+      }
+      if (!atendimentoParaEditar) formRef.current?.reset();
+    }
+  }, [state.success, atendimentoParaEditar, onSalvo]);
 
   return (
     <form ref={formRef} action={formAction} className="rounded-xl border border-slate-200 bg-white p-6">

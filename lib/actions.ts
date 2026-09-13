@@ -4,25 +4,11 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getPerfilAtual } from "@/lib/auth";
 import type { ActionState } from "@/lib/form-state";
+import { estagioParaResultado } from "@/lib/estagio";
 import type { Estagio, Papel, ResultadoAtendimento } from "@/types/database";
 
 function ehViolacaoDeDuplicidade(error: { code?: string } | null) {
   return error?.code === "23505";
-}
-
-function estagioParaResultado(resultado: ResultadoAtendimento): Estagio {
-  switch (resultado) {
-    case "compra":
-      return "vendido";
-    case "negociacao":
-      return "negociacao";
-    case "interessado":
-      return "contatado";
-    case "sem_interesse":
-      return "recusado";
-    default:
-      return "contatado";
-  }
 }
 
 export async function criarCliente(_prevState: ActionState, formData: FormData): Promise<ActionState> {

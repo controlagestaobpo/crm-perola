@@ -1,11 +1,14 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { Plus } from "lucide-react";
 import { DragDropContext, Draggable, Droppable, type DropResult } from "@hello-pangea/dnd";
 import { moverClienteKanban } from "@/lib/actions";
+import { estagioParaResultado } from "@/lib/estagio";
 import KanbanAtendimentoModal from "@/components/KanbanAtendimentoModal";
+import NovoAtendimentoModal from "@/components/NovoAtendimentoModal";
 import type { ClienteComHistorico } from "@/lib/clientes";
-import type { Estagio, Perfil, Produto } from "@/types/database";
+import type { Estagio, Perfil, Produto, ResultadoAtendimento } from "@/types/database";
 
 const COLUNAS: { estagio: Estagio; titulo: string }[] = [
   { estagio: "prospectar", titulo: "📞 A Prospectar" },
@@ -43,6 +46,7 @@ export default function KanbanAtendimentos({
     resultado: "compra" | "negociacao";
     novoEstagio: Estagio;
   } | null>(null);
+  const [mostrarNovo, setMostrarNovo] = useState(false);
 
   function handleDragEnd(result: DropResult) {
     if (!result.destination) return;
@@ -73,6 +77,17 @@ export default function KanbanAtendimentos({
 
   return (
     <>
+      <div className="mb-4 flex justify-end">
+        <button
+          type="button"
+          onClick={() => setMostrarNovo(true)}
+          className="flex items-center gap-1.5 rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-700"
+        >
+          <Plus className="h-4 w-4" />
+          Novo atendimento
+        </button>
+      </div>
+
       <DragDropContext onDragEnd={handleDragEnd}>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {COLUNAS.map((coluna) => {
@@ -133,6 +148,23 @@ export default function KanbanAtendimentos({
               atual.map((c) => (c.id === modal.clienteId ? { ...c, estagio: modal.novoEstagio } : c))
             );
             setModal(null);
+          }}
+        />
+      )}
+
+      {mostrarNovo && (
+        <NovoAtendimentoModal
+          clientes={lista}
+          produtos={produtos}
+          vendedores={vendedores}
+          souMaster={souMaster}
+          meuId={meuId}
+          onFechar={() => setMostrarNovo(false)}
+          onSalvo={(clienteId, resultado) => {
+            const novoEstagio = estagioParaResultado(resultado as ResultadoAtendimento);
+            setLista((atual) =>
+              atual.map((c) => (c.id === clienteId ? { ...c, estagio: novoEstagio } : c))
+            );
           }}
         />
       )}
