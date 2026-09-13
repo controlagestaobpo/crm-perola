@@ -233,13 +233,15 @@ export default function AtendimentoFormFields({ produtos, valoresIniciais }: Ate
       </div>
 
       {mostrarVendidos && (
-        <div className="mt-4">
-          <div className="mb-2 flex items-center justify-between">
-            <label className="block text-sm font-medium text-slate-700">Produtos vendidos</label>
+        <div className="mt-4 rounded-xl border-2 border-emerald-300 bg-emerald-50/60 p-4">
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+            <label className="block text-sm font-bold text-emerald-800">
+              ✅ Produtos VENDIDOS — marque aqui o que o cliente realmente comprou
+            </label>
             <button
               type="button"
               onClick={copiarOferecidosParaVendidos}
-              className="flex items-center gap-1.5 rounded-lg bg-violet-50 px-3 py-1 text-xs font-medium text-violet-700 hover:bg-violet-100"
+              className="flex items-center gap-1.5 rounded-lg bg-white px-3 py-1.5 text-xs font-medium text-emerald-700 shadow-sm hover:bg-emerald-100"
             >
               <Copy className="h-3.5 w-3.5" />
               Usar os mesmos produtos oferecidos
