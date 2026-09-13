@@ -16,7 +16,7 @@ export default function Header({ nome, papel }: { nome: string; papel: Papel }) 
   }
 
   return (
-    <header className="flex items-center justify-between border-b border-slate-200 bg-white px-8 py-4">
+    <header className="flex items-center justify-between border-b border-slate-200 bg-white px-8 py-4 print:hidden">
       <div />
       <div className="flex items-center gap-3">
         <div className="rounded-full bg-violet-50 px-3 py-1.5 text-sm font-medium text-violet-700">

@@ -96,6 +96,41 @@ create table if not exists metas (
   unique (vendedor_id, ano, mes)
 );
 
+-- Antes de travar duplicados, mescla clientes que já tinham sido cadastrados
+-- em duplicidade (mantém o mais antigo e move os atendimentos pra ele).
+do $$
+declare
+  grupo record;
+  sobrevivente uuid;
+begin
+  for grupo in
+    select organizacao_id, lower(nome) as nome_lower
+    from clientes
+    group by organizacao_id, lower(nome)
+    having count(*) > 1
+  loop
+    select id into sobrevivente
+    from clientes
+    where organizacao_id = grupo.organizacao_id and lower(nome) = grupo.nome_lower
+    order by criado_em asc
+    limit 1;
+
+    update atendimentos
+    set cliente_id = sobrevivente
+    where cliente_id in (
+      select id from clientes
+      where organizacao_id = grupo.organizacao_id
+        and lower(nome) = grupo.nome_lower
+        and id <> sobrevivente
+    );
+
+    delete from clientes
+    where organizacao_id = grupo.organizacao_id
+      and lower(nome) = grupo.nome_lower
+      and id <> sobrevivente;
+  end loop;
+end $$;
+
 -- Trava duplicados: mesmo nome de cliente (ou mesmo produto na mesma categoria)
 -- não pode ser cadastrado duas vezes dentro da mesma organização.
 create unique index if not exists clientes_org_nome_unique
@@ -111,6 +146,9 @@ create unique index if not exists produtos_org_categoria_nome_unique
 -- 2) Se é o PRIMEIRO usuário do sistema (nenhum perfil existe ainda) -> cria uma organização nova e vira "master"
 -- 3) Caso contrário -> cadastro é bloqueado (precisa de convite do master)
 
+-- Os nomes abaixo usam escape Unicode (U&'...\00E7...') em vez da letra
+-- acentuada literal. Isso evita corrupção de acentos que pode acontecer ao
+-- copiar/colar este script (copia e cola só caracteres ASCII simples).
 create or replace function public.seed_produtos_padrao(p_org_id uuid)
 returns void
 language sql
@@ -122,84 +160,84 @@ as $$
     (p_org_id, 'Bovinos de Corte', 'MULTIBEEF'),
     (p_org_id, 'Bovinos de Corte', 'MULTICROMO'),
     (p_org_id, 'Bovinos de Corte', 'MULTICROMO FML'),
-    (p_org_id, 'Bovinos de Corte', 'MFÓS ENGORDA 40'),
-    (p_org_id, 'Bovinos de Corte', 'MFÓS RECRIA 65'),
-    (p_org_id, 'Bovinos de Corte', 'MFÓS PROTEICO 1G'),
-    (p_org_id, 'Bovinos de Corte', 'MFÓS ENERGÉTICO 4G'),
-    (p_org_id, 'Bovinos de Corte', 'PHÓS CROMO 50 + OP'),
-    (p_org_id, 'Bovinos de Corte', 'PHÓS CROMO PLUS'),
-    (p_org_id, 'Bovinos de Corte', 'PHÓS CROMO ULTRA'),
-    (p_org_id, 'Bovinos de Corte', 'PHÓS CROMO 65'),
-    (p_org_id, 'Bovinos de Corte', 'PHÓS CROMO 130'),
-    (p_org_id, 'Bovinos de Corte', 'PHÓS CROMO DRY 40'),
-    (p_org_id, 'Bovinos de Corte', 'PHÓS CROMO DRY 65'),
+    (p_org_id, 'Bovinos de Corte', U&'MF\00D3S ENGORDA 40'),
+    (p_org_id, 'Bovinos de Corte', U&'MF\00D3S RECRIA 65'),
+    (p_org_id, 'Bovinos de Corte', U&'MF\00D3S PROTEICO 1G'),
+    (p_org_id, 'Bovinos de Corte', U&'MF\00D3S ENERG\00C9TICO 4G'),
+    (p_org_id, 'Bovinos de Corte', U&'PH\00D3S CROMO 50 + OP'),
+    (p_org_id, 'Bovinos de Corte', U&'PH\00D3S CROMO PLUS'),
+    (p_org_id, 'Bovinos de Corte', U&'PH\00D3S CROMO ULTRA'),
+    (p_org_id, 'Bovinos de Corte', U&'PH\00D3S CROMO 65'),
+    (p_org_id, 'Bovinos de Corte', U&'PH\00D3S CROMO 130'),
+    (p_org_id, 'Bovinos de Corte', U&'PH\00D3S CROMO DRY 40'),
+    (p_org_id, 'Bovinos de Corte', U&'PH\00D3S CROMO DRY 65'),
     (p_org_id, 'Bovinos de Corte', 'CONCENTRADO 10'),
-    (p_org_id, 'Bovinos de Corte', 'CONCENTRADO PRÓ MAIS'),
-    (p_org_id, 'Bovinos de Corte', 'NÚCLEO PRÓ MULTI'),
-    (p_org_id, 'Bovinos de Corte', 'NÚCLEO CONFIMASTER'),
-    (p_org_id, 'Bovinos de Corte', 'NÚCLEO CONFIBOI FML'),
-    (p_org_id, 'Bovinos de Corte', 'NÚCLEO TOTAL FOOD PREMIUM'),
-    (p_org_id, 'Bovinos de Corte', 'PRÓ TORQUE 20 FML'),
-    (p_org_id, 'Bovinos de Corte', 'PRÓ TORQUE 35 FML'),
-    (p_org_id, 'Bovinos de Corte', 'PRÓ BULLS'),
-    (p_org_id, 'Bovinos de Corte', 'PRÓ ENERGIA FML'),
-    (p_org_id, 'Bovinos de Corte', 'PRÓ ENERGIA AC'),
-    (p_org_id, 'Bovinos de Corte', 'PRÓ TURBO 200 FML'),
-    (p_org_id, 'Bovinos de Corte', 'PRÓ TURBO CORTE'),
-    (p_org_id, 'Bovinos de Corte', 'PRÓ JUMBO'),
-    (p_org_id, 'Bovinos de Corte', 'RAÇÃO TOP CREEP FML'),
-    (p_org_id, 'Bovinos de Corte', 'RAÇÃO TOP ACABAMENTO'),
-    (p_org_id, 'Bovinos de Corte', 'RAÇÃO TOP SEMI-CONFINAMENTO 16'),
-    (p_org_id, 'Bovinos de Corte', 'RAÇÃO TOP SEMI-CONFINAMENTO 18'),
+    (p_org_id, 'Bovinos de Corte', U&'CONCENTRADO PR\00D3 MAIS'),
+    (p_org_id, 'Bovinos de Corte', U&'N\00DACLEO PR\00D3 MULTI'),
+    (p_org_id, 'Bovinos de Corte', U&'N\00DACLEO CONFIMASTER'),
+    (p_org_id, 'Bovinos de Corte', U&'N\00DACLEO CONFIBOI FML'),
+    (p_org_id, 'Bovinos de Corte', U&'N\00DACLEO TOTAL FOOD PREMIUM'),
+    (p_org_id, 'Bovinos de Corte', U&'PR\00D3 TORQUE 20 FML'),
+    (p_org_id, 'Bovinos de Corte', U&'PR\00D3 TORQUE 35 FML'),
+    (p_org_id, 'Bovinos de Corte', U&'PR\00D3 BULLS'),
+    (p_org_id, 'Bovinos de Corte', U&'PR\00D3 ENERGIA FML'),
+    (p_org_id, 'Bovinos de Corte', U&'PR\00D3 ENERGIA AC'),
+    (p_org_id, 'Bovinos de Corte', U&'PR\00D3 TURBO 200 FML'),
+    (p_org_id, 'Bovinos de Corte', U&'PR\00D3 TURBO CORTE'),
+    (p_org_id, 'Bovinos de Corte', U&'PR\00D3 JUMBO'),
+    (p_org_id, 'Bovinos de Corte', U&'RA\00C7\00C3O TOP CREEP FML'),
+    (p_org_id, 'Bovinos de Corte', U&'RA\00C7\00C3O TOP ACABAMENTO'),
+    (p_org_id, 'Bovinos de Corte', U&'RA\00C7\00C3O TOP SEMI-CONFINAMENTO 16'),
+    (p_org_id, 'Bovinos de Corte', U&'RA\00C7\00C3O TOP SEMI-CONFINAMENTO 18'),
     (p_org_id, 'Bovinos de Corte', 'COLOSSAL'),
-    (p_org_id, 'Bovinos de Corte', 'COLOSSAL ALTO GRÃO 34 FML'),
-    (p_org_id, 'Bovinos de Corte', 'COLOSSAL ALTO GRÃO 38 FML'),
+    (p_org_id, 'Bovinos de Corte', U&'COLOSSAL ALTO GR\00C3O 34 FML'),
+    (p_org_id, 'Bovinos de Corte', U&'COLOSSAL ALTO GR\00C3O 38 FML'),
     -- Bovinos de Leite
     (p_org_id, 'Bovinos de Leite', 'MULTIBEEF LEITE ADE'),
-    (p_org_id, 'Bovinos de Leite', 'MFÓS LEITE 80'),
-    (p_org_id, 'Bovinos de Leite', 'PHÓS CROMO LEITE VITAMINADO'),
+    (p_org_id, 'Bovinos de Leite', U&'MF\00D3S LEITE 80'),
+    (p_org_id, 'Bovinos de Leite', U&'PH\00D3S CROMO LEITE VITAMINADO'),
     (p_org_id, 'Bovinos de Leite', 'CONCENTRADO LEITE'),
-    (p_org_id, 'Bovinos de Leite', 'NÚCLEO CROMOLAC VITAMINADO'),
-    (p_org_id, 'Bovinos de Leite', 'PRÓ TORQUE LEITE'),
-    (p_org_id, 'Bovinos de Leite', 'PRÓ TURBO LACTAÇÃO'),
-    (p_org_id, 'Bovinos de Leite', 'RAÇÃO TOP LEITE 22'),
+    (p_org_id, 'Bovinos de Leite', U&'N\00DACLEO CROMOLAC VITAMINADO'),
+    (p_org_id, 'Bovinos de Leite', U&'PR\00D3 TORQUE LEITE'),
+    (p_org_id, 'Bovinos de Leite', U&'PR\00D3 TURBO LACTA\00C7\00C3O'),
+    (p_org_id, 'Bovinos de Leite', U&'RA\00C7\00C3O TOP LEITE 22'),
     (p_org_id, 'Bovinos de Leite', 'COLOSSAL BEZERROS PRECOCE'),
     (p_org_id, 'Bovinos de Leite', 'COLOSSAL LEITE'),
-    (p_org_id, 'Bovinos de Leite', 'COLOSSAL LACTAÇÃO'),
+    (p_org_id, 'Bovinos de Leite', U&'COLOSSAL LACTA\00C7\00C3O'),
     -- Bovinos de Cria
     (p_org_id, 'Bovinos de Cria', 'MULTIBEEF CRIA'),
-    (p_org_id, 'Bovinos de Cria', 'MULTICROMO PRENHÊZ FML'),
-    (p_org_id, 'Bovinos de Cria', 'MULTICROMO REPRODUÇÃO 1G'),
-    (p_org_id, 'Bovinos de Cria', 'MULTICROMO REPRODUÇÃO 3G'),
-    (p_org_id, 'Bovinos de Cria', 'MFÓS CRIA 80'),
-    (p_org_id, 'Bovinos de Cria', 'M FÓS RP'),
-    (p_org_id, 'Bovinos de Cria', 'PHÓS CROMO 75'),
-    (p_org_id, 'Bovinos de Cria', 'PHÓS CROMO REPRODUÇÃO'),
-    (p_org_id, 'Bovinos de Cria', 'PHÓS CROMO CRIA'),
-    (p_org_id, 'Bovinos de Cria', 'PHÓS CROMO EMBRYO'),
-    (p_org_id, 'Bovinos de Cria', 'PHÓS CROMO DRY 80'),
-    (p_org_id, 'Bovinos de Cria', 'PRÓ BEZERRO'),
+    (p_org_id, 'Bovinos de Cria', U&'MULTICROMO PRENH\00CAZ FML'),
+    (p_org_id, 'Bovinos de Cria', U&'MULTICROMO REPRODU\00C7\00C3O 1G'),
+    (p_org_id, 'Bovinos de Cria', U&'MULTICROMO REPRODU\00C7\00C3O 3G'),
+    (p_org_id, 'Bovinos de Cria', U&'MF\00D3S CRIA 80'),
+    (p_org_id, 'Bovinos de Cria', U&'M F\00D3S RP'),
+    (p_org_id, 'Bovinos de Cria', U&'PH\00D3S CROMO 75'),
+    (p_org_id, 'Bovinos de Cria', U&'PH\00D3S CROMO REPRODU\00C7\00C3O'),
+    (p_org_id, 'Bovinos de Cria', U&'PH\00D3S CROMO CRIA'),
+    (p_org_id, 'Bovinos de Cria', U&'PH\00D3S CROMO EMBRYO'),
+    (p_org_id, 'Bovinos de Cria', U&'PH\00D3S CROMO DRY 80'),
+    (p_org_id, 'Bovinos de Cria', U&'PR\00D3 BEZERRO'),
     -- Suínos
-    (p_org_id, 'Suínos', 'CONC. TOP SUÍNOS'),
-    (p_org_id, 'Suínos', 'RAÇÃO TOP SUÍNOS CRESCIMENTO'),
-    (p_org_id, 'Suínos', 'RAÇÃO TOP SUÍNOS TERMINAÇÃO'),
-    (p_org_id, 'Suínos', 'RAÇÃO TOP SUÍNOS REPRODUÇÃO'),
+    (p_org_id, U&'Su\00EDnos', U&'CONC. TOP SU\00CDNOS'),
+    (p_org_id, U&'Su\00EDnos', U&'RA\00C7\00C3O TOP SU\00CDNOS CRESCIMENTO'),
+    (p_org_id, U&'Su\00EDnos', U&'RA\00C7\00C3O TOP SU\00CDNOS TERMINA\00C7\00C3O'),
+    (p_org_id, U&'Su\00EDnos', U&'RA\00C7\00C3O TOP SU\00CDNOS REPRODU\00C7\00C3O'),
     -- Aves
     (p_org_id, 'Aves', 'CONC. TOP AVES'),
     (p_org_id, 'Aves', 'CONC. TOP AVES POSTURA'),
-    (p_org_id, 'Aves', 'RAÇÃO TOP AVES INICIAL'),
-    (p_org_id, 'Aves', 'RAÇÃO TOP AVES CRESCIMENTO'),
-    (p_org_id, 'Aves', 'RAÇÃO TOP AVES FINAL'),
-    (p_org_id, 'Aves', 'RAÇÃO TOP AVES POSTURA'),
+    (p_org_id, 'Aves', U&'RA\00C7\00C3O TOP AVES INICIAL'),
+    (p_org_id, 'Aves', U&'RA\00C7\00C3O TOP AVES CRESCIMENTO'),
+    (p_org_id, 'Aves', U&'RA\00C7\00C3O TOP AVES FINAL'),
+    (p_org_id, 'Aves', U&'RA\00C7\00C3O TOP AVES POSTURA'),
     -- Peixes
-    (p_org_id, 'Peixes', 'RAÇÃO TOP PEIXE 22% - 12 a 14mm'),
-    (p_org_id, 'Peixes', 'RAÇÃO TOP PEIXE 28% - 06 a 08mm'),
-    (p_org_id, 'Peixes', 'RAÇÃO TOP PEIXE 28% - 08 a 10mm'),
-    (p_org_id, 'Peixes', 'RAÇÃO TOP PEIXE 28% - 12 a 14mm'),
-    (p_org_id, 'Peixes', 'RAÇÃO TOP PEIXE 32% - 06 a 08mm'),
+    (p_org_id, 'Peixes', U&'RA\00C7\00C3O TOP PEIXE 22% - 12 a 14mm'),
+    (p_org_id, 'Peixes', U&'RA\00C7\00C3O TOP PEIXE 28% - 06 a 08mm'),
+    (p_org_id, 'Peixes', U&'RA\00C7\00C3O TOP PEIXE 28% - 08 a 10mm'),
+    (p_org_id, 'Peixes', U&'RA\00C7\00C3O TOP PEIXE 28% - 12 a 14mm'),
+    (p_org_id, 'Peixes', U&'RA\00C7\00C3O TOP PEIXE 32% - 06 a 08mm'),
     -- Equinos
-    (p_org_id, 'Equinos', 'PHÓS CROMO EQUINOS'),
-    (p_org_id, 'Equinos', 'PHÓS CROMO EQUINOS GOLD'),
+    (p_org_id, 'Equinos', U&'PH\00D3S CROMO EQUINOS'),
+    (p_org_id, 'Equinos', U&'PH\00D3S CROMO EQUINOS GOLD'),
     (p_org_id, 'Equinos', 'COLOSSAL EQUINOS'),
     (p_org_id, 'Equinos', 'COLOSSAL EQUINOS LIDA'),
     (p_org_id, 'Equinos', 'COLOSSAL EQUINOS GOLD'),
@@ -257,12 +295,15 @@ create trigger on_auth_user_created
   for each row execute procedure public.handle_new_user();
 
 -- Atualiza organizações que já existem para usar o catálogo real da Marília Nutri
--- (roda apenas se ainda não tiverem os produtos novos, e desativa os antigos de teste)
+-- (roda se ainda não tiverem os produtos novos, OU se detectar nomes corrompidos
+-- por causa do símbolo "√" que aparece quando um copiar/colar corrompe acentos)
 do $$
 declare r record;
 begin
   for r in select id from organizacoes loop
-    if not exists (select 1 from produtos where organizacao_id = r.id and nome = 'STENT') then
+    if not exists (select 1 from produtos where organizacao_id = r.id and nome = 'STENT')
+       or exists (select 1 from produtos where organizacao_id = r.id and nome like '%' || chr(8730) || '%')
+    then
       update produtos set ativo = false where organizacao_id = r.id;
       perform public.seed_produtos_padrao(r.id);
     end if;

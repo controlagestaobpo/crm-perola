@@ -67,7 +67,13 @@ export default async function AtendimentosPage({
       </div>
 
       {view === "kanban" ? (
-        <KanbanAtendimentos clientes={clientesHistorico} />
+        <KanbanAtendimentos
+          clientes={clientesHistorico}
+          produtos={produtos}
+          vendedores={vendedores}
+          souMaster={perfil.papel === "master"}
+          meuId={perfil.id}
+        />
       ) : (
         <>
           <details className="rounded-xl border border-slate-200 bg-white p-4">
