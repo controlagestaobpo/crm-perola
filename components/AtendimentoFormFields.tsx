@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
+import { corCategoria, corBadgeCategoria } from "@/lib/categoriaCores";
 import type { Produto, ResultadoAtendimento } from "@/types/database";
 
 const MOTIVOS = [
@@ -35,7 +36,9 @@ function ProdutoCheckbox({
         defaultChecked={defaultChecked}
         className="peer sr-only"
       />
-      <span className="block rounded-lg border-2 border-slate-200 px-3 py-2 text-center text-xs font-medium text-slate-700 transition-colors peer-checked:border-violet-600 peer-checked:bg-violet-600 peer-checked:text-white">
+      <span
+        className={`block rounded-lg border-2 border-slate-200 px-3 py-2 text-center text-xs font-medium text-slate-700 transition-colors peer-checked:text-white ${corCategoria(produto.categoria)}`}
+      >
         {produto.nome}
       </span>
     </label>
@@ -79,8 +82,12 @@ function GradeProdutos({
       ) : (
         categorias.map((categoria) => (
           <div key={categoria}>
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
-              {categoria}
+            <p className="mb-2">
+              <span
+                className={`rounded px-2 py-0.5 text-xs font-semibold uppercase tracking-wide ${corBadgeCategoria(categoria)}`}
+              >
+                {categoria}
+              </span>
             </p>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
               {produtosFiltrados

@@ -5,8 +5,10 @@ import StatCard from "@/components/StatCard";
 import BarChartCard from "@/components/charts/BarChartCard";
 import LineChartCard from "@/components/charts/LineChartCard";
 import MetaForm from "@/components/MetaForm";
-import { Target, TrendingUp, AlertCircle, Percent } from "lucide-react";
+import { Target, TrendingUp, AlertCircle, Percent, Wallet } from "lucide-react";
 import type { Atendimento, Meta, Perfil } from "@/types/database";
+
+export const dynamic = "force-dynamic";
 
 const MESES = [
   "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
@@ -73,14 +75,17 @@ export default async function MetasPage({
     const vendas = atendimentosVendedor.filter((a) => a.resultado === "compra").length;
     const conversao = prospeccoes > 0 ? (vendas / prospeccoes) * 100 : 0;
     const percentualMeta = meta && Number(meta.meta_valor) > 0 ? (realizado / Number(meta.meta_valor)) * 100 : 0;
+    const comissaoPercentual = Number(meta?.comissao_percentual ?? 1);
+    const comissao = realizado * (comissaoPercentual / 100);
 
-    return { vendedor: v, meta, realizado, prospeccoes, vendas, conversao, percentualMeta };
+    return { vendedor: v, meta, realizado, prospeccoes, vendas, conversao, percentualMeta, comissaoPercentual, comissao };
   });
 
   const ranking = [...dados].sort((a, b) => b.percentualMeta - a.percentualMeta);
 
   const metaTotal = dados.reduce((soma, d) => soma + Number(d.meta?.meta_valor ?? 0), 0);
   const realizadoTotal = dados.reduce((soma, d) => soma + d.realizado, 0);
+  const comissaoTotal = dados.reduce((soma, d) => soma + d.comissao, 0);
   const faltam = Math.max(metaTotal - realizadoTotal, 0);
   const conversaoGeral =
     dados.reduce((s, d) => s + d.prospeccoes, 0) > 0
@@ -129,11 +134,12 @@ export default async function MetasPage({
         </form>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <StatCard label="Meta do período" value={formatBRL(metaTotal)} icon={Target} />
         <StatCard label="Realizado" value={formatBRL(realizadoTotal)} icon={TrendingUp} />
         <StatCard label="Faltam para meta" value={formatBRL(faltam)} icon={AlertCircle} />
         <StatCard label="Conversão geral" value={`${conversaoGeral.toFixed(1)}%`} icon={Percent} />
+        <StatCard label="Comissão ganha (total)" value={formatBRL(comissaoTotal)} icon={Wallet} />
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
@@ -161,6 +167,7 @@ export default async function MetasPage({
                 <th className="px-4 py-3 font-medium">Realizado</th>
                 <th className="px-4 py-3 font-medium">% Meta</th>
                 <th className="px-4 py-3 font-medium">Conversão</th>
+                <th className="px-4 py-3 font-medium">Comissão</th>
               </tr>
             </thead>
             <tbody>
@@ -182,6 +189,9 @@ export default async function MetasPage({
                     </div>
                   </td>
                   <td className="px-4 py-3 text-slate-600">{d.conversao.toFixed(1)}%</td>
+                  <td className="px-4 py-3 text-slate-600">
+                    {formatBRL(d.comissao)} <span className="text-xs text-slate-400">({d.comissaoPercentual}%)</span>
+                  </td>
                 </tr>
               ))}
             </tbody>

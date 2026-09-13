@@ -1,8 +1,11 @@
+import Link from "next/link";
 import { Phone, MapPin, User } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getAgenda, type ItemAgenda } from "@/lib/agenda";
 import { labelResultado } from "@/lib/metrics";
 import type { ResultadoAtendimento } from "@/types/database";
+
+export const dynamic = "force-dynamic";
 
 function diasAte(dataISO: string) {
   const hoje = new Date();
@@ -111,12 +114,20 @@ export default async function AgendaPage() {
                         {item.observacoes && <span className="italic"> — {item.observacoes}</span>}
                       </p>
                     </div>
-                    <span className="shrink-0 text-xs font-medium text-slate-400">
-                      {new Date(item.proximoContato + "T00:00:00").toLocaleDateString("pt-BR", {
-                        day: "2-digit",
-                        month: "2-digit",
-                      })}
-                    </span>
+                    <div className="flex shrink-0 flex-col items-end gap-2">
+                      <span className="text-xs font-medium text-slate-400">
+                        {new Date(item.proximoContato + "T00:00:00").toLocaleDateString("pt-BR", {
+                          day: "2-digit",
+                          month: "2-digit",
+                        })}
+                      </span>
+                      <Link
+                        href={`/atendimentos?cliente=${item.clienteId}`}
+                        className="whitespace-nowrap rounded-lg bg-violet-50 px-3 py-1.5 text-xs font-medium text-violet-700 hover:bg-violet-100"
+                      >
+                        Registrar atendimento
+                      </Link>
+                    </div>
                   </div>
                 ))}
               </div>

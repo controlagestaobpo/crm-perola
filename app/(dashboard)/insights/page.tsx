@@ -2,20 +2,33 @@ import { createClient } from "@/lib/supabase/server";
 import { getClientesComHistorico } from "@/lib/clientes";
 import { contarProdutos, formatBRL } from "@/lib/metrics";
 import StatCard from "@/components/StatCard";
-import { Percent, Clock, AlertTriangle, Receipt } from "lucide-react";
-import type { Atendimento } from "@/types/database";
+import { Percent, Clock, AlertTriangle, Receipt, Wallet } from "lucide-react";
+import type { Atendimento, Meta } from "@/types/database";
+
+export const dynamic = "force-dynamic";
 
 export default async function InsightsPage() {
   const supabase = createClient();
   const hoje = new Date();
-  const inicioMes = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, "0")}-01`;
+  const ano = hoje.getFullYear();
+  const mes = hoje.getMonth() + 1;
+  const inicioMes = `${ano}-${String(mes).padStart(2, "0")}-01`;
 
-  const [{ data: atendimentosData }, clientesHistorico] = await Promise.all([
+  const [{ data: atendimentosData }, clientesHistorico, { data: metasData }] = await Promise.all([
     supabase.from("atendimentos").select("*").gte("data", inicioMes),
     getClientesComHistorico(supabase),
+    supabase.from("metas").select("*").eq("ano", ano).eq("mes", mes),
   ]);
 
   const atendimentos = (atendimentosData ?? []) as Atendimento[];
+  const metas = (metasData ?? []) as Meta[];
+
+  const comissaoTotal = metas.reduce((soma, meta) => {
+    const realizadoVendedor = atendimentos
+      .filter((a) => a.vendedor_id === meta.vendedor_id && a.resultado === "compra")
+      .reduce((s, a) => s + Number(a.valor ?? 0), 0);
+    return soma + realizadoVendedor * (Number(meta.comissao_percentual) / 100);
+  }, 0);
   const totalAtendimentos = atendimentos.length;
   const vendas = atendimentos.filter((a) => a.resultado === "compra");
   const conversaoGeral = totalAtendimentos > 0 ? (vendas.length / totalAtendimentos) * 100 : 0;
@@ -71,11 +84,12 @@ export default async function InsightsPage() {
         <p className="text-sm text-slate-500">Insights do mês atual</p>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <StatCard label="Taxa de conversão" value={`${conversaoGeral.toFixed(1)}%`} icon={Percent} />
         <StatCard label="Ticket médio" value={formatBRL(ticketMedio)} icon={Receipt} />
         <StatCard label="Clientes sem comprar (30d+)" value={String(clientesSemComprar)} icon={AlertTriangle} />
         <StatCard label="Atendimentos no mês" value={String(totalAtendimentos)} icon={Clock} />
+        <StatCard label="Comissão do mês (total)" value={formatBRL(comissaoTotal)} icon={Wallet} />
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">

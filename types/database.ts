@@ -82,5 +82,6 @@ export interface Meta {
   meta_valor: number;
   meta_prospeccoes: number;
   meta_conversao: number;
+  comissao_percentual: number;
   criado_em: string;
 }

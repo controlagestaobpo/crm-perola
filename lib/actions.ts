@@ -61,6 +61,45 @@ export async function criarCliente(_prevState: ActionState, formData: FormData):
   return { success: `Cliente "${nome}" cadastrado com sucesso.` };
 }
 
+export async function editarCliente(
+  clienteId: string,
+  _prevState: ActionState,
+  formData: FormData
+): Promise<ActionState> {
+  const perfil = await getPerfilAtual();
+  if (!perfil) return { error: "Não autenticado" };
+
+  const supabase = createClient();
+  const nome = String(formData.get("nome") ?? "").trim();
+  const telefone = String(formData.get("telefone") ?? "").trim() || null;
+  const cidade = String(formData.get("cidade") ?? "").trim() || null;
+
+  if (!nome) return { error: "Informe o nome do cliente." };
+
+  const { data: existente } = await supabase
+    .from("clientes")
+    .select("id")
+    .ilike("nome", nome)
+    .neq("id", clienteId)
+    .maybeSingle();
+
+  if (existente) return { error: `Já existe outro cliente cadastrado como "${nome}".` };
+
+  const { error } = await supabase
+    .from("clientes")
+    .update({ nome, telefone, cidade })
+    .eq("id", clienteId);
+
+  if (error) {
+    if (ehViolacaoDeDuplicidade(error)) return { error: `Já existe outro cliente cadastrado como "${nome}".` };
+    return { error: error.message };
+  }
+
+  revalidatePath("/clientes");
+  revalidatePath("/atendimentos");
+  return { success: "Cliente atualizado com sucesso." };
+}
+
 export async function criarAtendimento(_prevState: ActionState, formData: FormData): Promise<ActionState> {
   const perfil = await getPerfilAtual();
   if (!perfil) return { error: "Não autenticado" };
@@ -250,6 +289,7 @@ export async function salvarMeta(_prevState: ActionState, formData: FormData): P
   const metaValor = Number(formData.get("meta_valor") ?? 0);
   const metaProspeccoes = Number(formData.get("meta_prospeccoes") ?? 0);
   const metaConversao = Number(formData.get("meta_conversao") ?? 0);
+  const comissaoPercentual = Number(formData.get("comissao_percentual") ?? 1);
 
   if (!vendedorId || !ano || !mes) return { error: "Preencha vendedor, ano e mês." };
 
@@ -262,6 +302,7 @@ export async function salvarMeta(_prevState: ActionState, formData: FormData): P
       meta_valor: metaValor,
       meta_prospeccoes: metaProspeccoes,
       meta_conversao: metaConversao,
+      comissao_percentual: comissaoPercentual,
     },
     { onConflict: "vendedor_id,ano,mes" }
   );

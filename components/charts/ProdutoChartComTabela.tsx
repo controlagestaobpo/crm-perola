@@ -11,7 +11,7 @@ export default function ProdutoChartComTabela({ title, dados, cor }: ProdutoChar
 
   return (
     <div className="space-y-2">
-      <BarChartCard title={`${title} (top 10)`} data={top10} cor={cor} />
+      <BarChartCard title={`${title} (top 10)`} data={top10} cor={cor} altura="h-[28rem]" />
       {dados.length > 10 && (
         <details className="rounded-xl border border-slate-200 bg-white">
           <summary className="cursor-pointer px-5 py-3 text-sm font-medium text-violet-700">

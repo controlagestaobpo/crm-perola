@@ -5,6 +5,8 @@ import ProdutoForm from "@/components/ProdutoForm";
 import ProdutosLista from "@/components/ProdutosLista";
 import type { Produto } from "@/types/database";
 
+export const dynamic = "force-dynamic";
+
 export default async function ProdutosPage() {
   const perfil = await getPerfilAtual();
   if (!perfil) return null;

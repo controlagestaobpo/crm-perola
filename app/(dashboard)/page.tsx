@@ -21,6 +21,8 @@ import {
 } from "@/lib/metrics";
 import type { Atendimento } from "@/types/database";
 
+export const dynamic = "force-dynamic";
+
 function inicioFimMes(ano: number, mes: number) {
   const inicio = `${ano}-${String(mes).padStart(2, "0")}-01`;
   const ultimoDia = new Date(ano, mes, 0).getDate();
@@ -134,10 +136,10 @@ export default async function DashboardPage({
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         {periodo === "hoje" ? (
           <LineChartCard
-            title="Evolução de vendas (hoje)"
+            title="Evolução de atendimentos (hoje)"
             data={agruparPorHora(atendimentos)}
             xKey="hora"
-            lines={[{ key: "valor", nome: "Vendido (R$)", cor: "#7c3aed" }]}
+            lines={[{ key: "valor", nome: "Atendimentos", cor: "#7c3aed" }]}
           />
         ) : (
           <LineChartCard

@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import { removerProduto } from "@/lib/actions";
+import { corBadgeCategoria } from "@/lib/categoriaCores";
 import type { Produto } from "@/types/database";
 
 export default function ProdutosLista({ produtos }: { produtos: Produto[] }) {
@@ -37,8 +38,8 @@ export default function ProdutosLista({ produtos }: { produtos: Produto[] }) {
 
       {categorias.map((categoria) => (
         <div key={categoria}>
-          <h2 className="mb-3 text-base font-semibold text-slate-900">
-            {categoria}{" "}
+          <h2 className="mb-3 flex items-center gap-2 text-base font-semibold text-slate-900">
+            <span className={`rounded px-2 py-0.5 text-sm ${corBadgeCategoria(categoria)}`}>{categoria}</span>
             <span className="text-sm font-normal text-slate-400">
               ({produtosFiltrados.filter((p) => p.categoria === categoria).length})
             </span>

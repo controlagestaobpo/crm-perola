@@ -11,6 +11,8 @@ import {
 import PrintButton from "@/components/PrintButton";
 import type { Atendimento, Meta, Perfil } from "@/types/database";
 
+export const dynamic = "force-dynamic";
+
 const MESES = [
   "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
   "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro",
@@ -37,13 +39,13 @@ export default async function RelatoriosPage({
 
   const [{ data: atendimentosData }, { data: vendedoresData }, { data: metasData }, clientesHistorico] =
     await Promise.all([
-      supabase.from("atendimentos").select("*").gte("data", inicio).lte("data", fim),
+      supabase.from("atendimentos").select("*, clientes(nome)").gte("data", inicio).lte("data", fim),
       supabase.from("perfis").select("*").order("nome"),
       supabase.from("metas").select("*").eq("ano", ano).eq("mes", mes),
       getClientesComHistorico(supabase),
     ]);
 
-  const atendimentos = (atendimentosData ?? []) as Atendimento[];
+  const atendimentos = (atendimentosData ?? []) as (Atendimento & { clientes: { nome: string } | null })[];
   const vendedores = (vendedoresData ?? []) as Perfil[];
   const metas = (metasData ?? []) as Meta[];
 
@@ -61,6 +63,7 @@ export default async function RelatoriosPage({
     const vendas = dele.filter((a) => a.resultado === "compra");
     const receitaVendedor = somaValor(vendas, "valor");
     const meta = metas.find((m) => m.vendedor_id === v.id);
+    const comissaoPercentual = Number(meta?.comissao_percentual ?? 1);
     return {
       vendedor: v,
       atendimentos: dele.length,
@@ -69,8 +72,11 @@ export default async function RelatoriosPage({
       conversao: dele.length > 0 ? (vendas.length / dele.length) * 100 : 0,
       meta: Number(meta?.meta_valor ?? 0),
       percentualMeta: meta && Number(meta.meta_valor) > 0 ? (receitaVendedor / Number(meta.meta_valor)) * 100 : 0,
+      comissao: receitaVendedor * (comissaoPercentual / 100),
     };
   });
+
+  const comissaoTotal = porVendedor.reduce((soma, d) => soma + d.comissao, 0);
 
   const oferecidos = contarProdutos(atendimentos, "produtos_oferecidos");
   const vendidos = contarProdutos(atendimentos, "produtos_vendidos");
@@ -83,8 +89,25 @@ export default async function RelatoriosPage({
 
   const topClientes = [...clientesHistorico].sort((a, b) => b.valorTotal - a.valorTotal).filter((c) => c.valorTotal > 0).slice(0, 10);
   const clientesInativos = clientesHistorico
-    .filter((c) => c.diasSemComprar === null || c.diasSemComprar > 30)
+    .filter((c) => c.diasSemComprar !== null && c.diasSemComprar > 30)
     .sort((a, b) => (b.diasSemComprar ?? 9999) - (a.diasSemComprar ?? 9999));
+  const clientesSemVendas = clientesHistorico
+    .filter((c) => c.totalCompras === 0)
+    .sort((a, b) => a.nome.localeCompare(b.nome));
+
+  const cidadesMap = new Map<string, { quantidade: number; valorTotal: number }>();
+  for (const c of clientesHistorico) {
+    const cidade = c.cidade?.trim() || "Sem cidade cadastrada";
+    const atual = cidadesMap.get(cidade) ?? { quantidade: 0, valorTotal: 0 };
+    cidadesMap.set(cidade, { quantidade: atual.quantidade + 1, valorTotal: atual.valorTotal + c.valorTotal });
+  }
+  const clientesPorCidade = Array.from(cidadesMap.entries())
+    .map(([cidade, dados]) => ({ cidade, ...dados }))
+    .sort((a, b) => b.quantidade - a.quantidade);
+
+  const observacoesCompiladas = atendimentos
+    .filter((a) => a.observacoes && a.observacoes.trim())
+    .sort((a, b) => b.criado_em.localeCompare(a.criado_em));
 
   const semInteresse = atendimentos.filter((a) => a.resultado === "sem_interesse" && a.motivo);
   const motivos = new Map<string, number>();
@@ -140,6 +163,7 @@ export default async function RelatoriosPage({
             ["% da meta batida", metaTotal > 0 ? `${((receita / metaTotal) * 100).toFixed(1)}%` : "—"],
             ["Pipeline em aberto", formatBRL(pipelineValor)],
             ["Negociações abertas", String(pipelineAberto.length)],
+            ["Comissão total (equipe)", formatBRL(comissaoTotal)],
           ].map(([label, value]) => (
             <div key={label} className="rounded-lg border border-slate-200 bg-white p-3">
               <p className="text-xs text-slate-500">{label}</p>
@@ -163,6 +187,7 @@ export default async function RelatoriosPage({
                 <th className="px-3 py-2 font-medium">Receita</th>
                 <th className="px-3 py-2 font-medium">Meta</th>
                 <th className="px-3 py-2 font-medium">% Meta</th>
+                <th className="px-3 py-2 font-medium">Comissão</th>
               </tr>
             </thead>
             <tbody>
@@ -175,6 +200,7 @@ export default async function RelatoriosPage({
                   <td className="px-3 py-2 text-slate-600">{formatBRL(d.receita)}</td>
                   <td className="px-3 py-2 text-slate-600">{formatBRL(d.meta)}</td>
                   <td className="px-3 py-2 text-slate-600">{d.percentualMeta.toFixed(0)}%</td>
+                  <td className="px-3 py-2 text-slate-600">{formatBRL(d.comissao)}</td>
                 </tr>
               ))}
             </tbody>
@@ -274,9 +300,57 @@ export default async function RelatoriosPage({
         </div>
       </section>
 
+      {/* CLIENTES POR CIDADE E SEM VENDAS */}
+      <section className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <div className="break-inside-avoid">
+          <h2 className="mb-3 text-lg font-semibold text-slate-900">7. Clientes por cidade</h2>
+          <div className="max-h-80 overflow-y-auto rounded-xl border border-slate-200 bg-white">
+            <table className="w-full text-left text-sm">
+              <thead className="border-b border-slate-200 bg-slate-50 text-slate-500">
+                <tr>
+                  <th className="px-3 py-2 font-medium">Cidade</th>
+                  <th className="px-3 py-2 font-medium">Clientes</th>
+                  <th className="px-3 py-2 font-medium">Valor total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {clientesPorCidade.map((c) => (
+                  <tr key={c.cidade} className="border-b border-slate-100 last:border-0">
+                    <td className="px-3 py-2 font-medium text-slate-900">{c.cidade}</td>
+                    <td className="px-3 py-2 text-slate-600">{c.quantidade}</td>
+                    <td className="px-3 py-2 text-slate-600">{formatBRL(c.valorTotal)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div className="break-inside-avoid">
+          <h2 className="mb-3 text-lg font-semibold text-slate-900">8. Clientes sem nenhuma venda</h2>
+          <div className="max-h-80 overflow-y-auto rounded-xl border border-slate-200 bg-white">
+            <table className="w-full text-left text-sm">
+              <tbody>
+                {clientesSemVendas.length === 0 ? (
+                  <tr><td className="px-3 py-4 text-center text-slate-400">Todos os clientes já compraram alguma vez.</td></tr>
+                ) : (
+                  clientesSemVendas.map((c) => (
+                    <tr key={c.id} className="border-b border-slate-100 last:border-0">
+                      <td className="px-3 py-2 font-medium text-slate-900">{c.nome}</td>
+                      <td className="px-3 py-2 text-slate-600">{c.cidade ?? "—"}</td>
+                      <td className="px-3 py-2 text-slate-600">{c.telefone ?? "—"}</td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
       {/* MOTIVOS DE NAO VENDA */}
       <section className="break-inside-avoid">
-        <h2 className="mb-3 text-lg font-semibold text-slate-900">7. Motivos de não-venda</h2>
+        <h2 className="mb-3 text-lg font-semibold text-slate-900">9. Motivos de não-venda</h2>
         {razoesNaoVenda.length === 0 ? (
           <p className="text-sm text-slate-400">Sem registros no período.</p>
         ) : (
@@ -292,7 +366,7 @@ export default async function RelatoriosPage({
 
       {/* PIPELINE ABERTO */}
       <section className="break-inside-avoid">
-        <h2 className="mb-3 text-lg font-semibold text-slate-900">8. Negociações em aberto</h2>
+        <h2 className="mb-3 text-lg font-semibold text-slate-900">10. Negociações em aberto</h2>
         {pipelineAberto.length === 0 ? (
           <p className="text-sm text-slate-400">Nenhuma negociação em aberto.</p>
         ) : (
@@ -311,6 +385,37 @@ export default async function RelatoriosPage({
                     <td className="px-3 py-2 text-slate-600">{new Date(a.data + "T00:00:00").toLocaleDateString("pt-BR")}</td>
                     <td className="px-3 py-2 text-slate-600">{labelResultado(a.resultado)}</td>
                     <td className="px-3 py-2 text-slate-600">{formatBRL(Number(a.valor_negociacao ?? 0))}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
+
+      {/* OBSERVACOES COMPILADAS */}
+      <section className="break-inside-avoid">
+        <h2 className="mb-3 text-lg font-semibold text-slate-900">11. Observações dos atendimentos</h2>
+        {observacoesCompiladas.length === 0 ? (
+          <p className="text-sm text-slate-400">Nenhuma observação registrada no período.</p>
+        ) : (
+          <div className="max-h-96 overflow-y-auto rounded-xl border border-slate-200 bg-white">
+            <table className="w-full text-left text-sm">
+              <thead className="sticky top-0 border-b border-slate-200 bg-slate-50 text-slate-500">
+                <tr>
+                  <th className="px-3 py-2 font-medium">Data</th>
+                  <th className="px-3 py-2 font-medium">Cliente</th>
+                  <th className="px-3 py-2 font-medium">Observação</th>
+                </tr>
+              </thead>
+              <tbody>
+                {observacoesCompiladas.map((a) => (
+                  <tr key={a.id} className="border-b border-slate-100 last:border-0">
+                    <td className="px-3 py-2 whitespace-nowrap text-slate-600">
+                      {new Date(a.data + "T00:00:00").toLocaleDateString("pt-BR")}
+                    </td>
+                    <td className="px-3 py-2 font-medium text-slate-900">{a.clientes?.nome ?? "—"}</td>
+                    <td className="px-3 py-2 text-slate-600">{a.observacoes}</td>
                   </tr>
                 ))}
               </tbody>

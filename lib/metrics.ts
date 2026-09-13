@@ -53,13 +53,13 @@ export function agruparResultados(atendimentos: Atendimento[]) {
 }
 
 export function agruparPorHora(atendimentos: Atendimento[]) {
-  const vendas = atendimentos
-    .filter((a) => a.resultado === "compra")
-    .sort((a, b) => new Date(a.criado_em).getTime() - new Date(b.criado_em).getTime());
+  const ordenados = [...atendimentos].sort(
+    (a, b) => new Date(a.criado_em).getTime() - new Date(b.criado_em).getTime()
+  );
 
   let acumulado = 0;
-  return vendas.map((a) => {
-    acumulado += Number(a.valor ?? 0);
+  return ordenados.map((a) => {
+    acumulado += 1;
     const hora = new Date(a.criado_em).toLocaleTimeString("pt-BR", {
       hour: "2-digit",
       minute: "2-digit",

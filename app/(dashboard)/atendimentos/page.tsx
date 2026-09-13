@@ -9,12 +9,15 @@ import ClienteForm from "@/components/ClienteForm";
 import KanbanAtendimentos from "@/components/KanbanAtendimentos";
 import type { Atendimento, Cliente, Perfil, Produto } from "@/types/database";
 
+export const dynamic = "force-dynamic";
+
 export default async function AtendimentosPage({
   searchParams,
 }: {
-  searchParams: { view?: string };
+  searchParams: { view?: string; cliente?: string };
 }) {
   const view = searchParams.view === "kanban" ? "kanban" : "form";
+  const clienteIdInicial = searchParams.cliente;
   const supabase = createClient();
   const perfil = await getPerfilAtual();
   if (!perfil) return null;
@@ -89,6 +92,7 @@ export default async function AtendimentosPage({
             vendedores={vendedores}
             souMaster={perfil.papel === "master"}
             meuId={perfil.id}
+            clienteIdInicial={clienteIdInicial}
           />
 
           <div>

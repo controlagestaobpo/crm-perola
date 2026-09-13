@@ -92,9 +92,12 @@ create table if not exists metas (
   meta_valor numeric not null default 0,
   meta_prospeccoes int not null default 0,
   meta_conversao numeric not null default 0,
+  comissao_percentual numeric not null default 1,
   criado_em timestamptz not null default now(),
   unique (vendedor_id, ano, mes)
 );
+
+alter table metas add column if not exists comissao_percentual numeric not null default 1;
 
 -- Antes de travar duplicados, mescla clientes que já tinham sido cadastrados
 -- em duplicidade (mantém o mais antigo e move os atendimentos pra ele).

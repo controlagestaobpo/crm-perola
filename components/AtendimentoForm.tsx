@@ -16,6 +16,7 @@ interface AtendimentoFormProps {
   souMaster: boolean;
   meuId: string;
   atendimentoParaEditar?: Atendimento;
+  clienteIdInicial?: string;
 }
 
 export default function AtendimentoForm({
@@ -25,6 +26,7 @@ export default function AtendimentoForm({
   souMaster,
   meuId,
   atendimentoParaEditar,
+  clienteIdInicial,
 }: AtendimentoFormProps) {
   const action = atendimentoParaEditar
     ? editarAtendimento.bind(null, atendimentoParaEditar.id)
@@ -73,7 +75,7 @@ export default function AtendimentoForm({
           <select
             name="cliente_id"
             required
-            defaultValue={atendimentoParaEditar?.cliente_id ?? ""}
+            defaultValue={atendimentoParaEditar?.cliente_id ?? clienteIdInicial ?? ""}
             className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
           >
             <option value="">-- Selecione --</option>

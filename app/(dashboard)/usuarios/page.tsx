@@ -6,6 +6,8 @@ import { removerConvite } from "@/lib/actions";
 import ConviteForm from "@/components/ConviteForm";
 import type { Convite, Perfil } from "@/types/database";
 
+export const dynamic = "force-dynamic";
+
 export default async function UsuariosPage() {
   const perfil = await getPerfilAtual();
   if (!perfil) return null;
