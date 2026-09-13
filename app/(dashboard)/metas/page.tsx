@@ -164,17 +164,29 @@ export default async function MetasPage({
         </form>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-6">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard label="Meta do período" value={formatBRL(metaTotal)} icon={Target} />
         <StatCard label="Realizado" value={formatBRL(realizadoTotal)} icon={TrendingUp} />
         <StatCard label="Faltam para meta" value={formatBRL(faltam)} icon={AlertCircle} />
         <StatCard label="Conversão geral" value={`${conversaoGeral.toFixed(1)}%`} icon={Percent} />
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <StatCard label="Comissão ganha (total)" value={formatBRL(comissaoTotal)} icon={Wallet} />
-        <StatCard
-          label="Ritmo de contatos"
-          value={`${ritmoAtualGeral.toFixed(1)}/dia (precisa ${ritmoNecessarioGeral.toFixed(1)}/dia)`}
-          icon={Gauge}
-        />
+        <div className="flex items-center gap-4 rounded-xl border border-slate-200 bg-white p-5">
+          <div className="rounded-lg bg-violet-50 p-3">
+            <Gauge className="h-5 w-5 text-violet-600" />
+          </div>
+          <div>
+            <p className="text-sm text-slate-500">Ritmo de contatos</p>
+            <p className="text-lg font-semibold text-slate-900">
+              {ritmoAtualGeral.toFixed(1)} / dia
+              <span className="ml-2 text-sm font-normal text-slate-400">
+                (precisa de {ritmoNecessarioGeral.toFixed(1)}/dia pra bater a meta)
+              </span>
+            </p>
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
