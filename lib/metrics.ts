@@ -52,20 +52,20 @@ export function agruparResultados(atendimentos: Atendimento[]) {
     .filter((item) => item.quantidade > 0);
 }
 
-export function agruparPorHora(atendimentos: Atendimento[]) {
-  const ordenados = [...atendimentos].sort(
-    (a, b) => new Date(a.criado_em).getTime() - new Date(b.criado_em).getTime()
-  );
+const HORA_INICIO_EXPEDIENTE = 8;
+const HORA_FIM_EXPEDIENTE = 18;
 
-  let acumulado = 0;
-  return ordenados.map((a) => {
-    acumulado += 1;
-    const hora = new Date(a.criado_em).toLocaleTimeString("pt-BR", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-    return { hora, valor: acumulado };
-  });
+export function agruparPorHora(atendimentos: Atendimento[], metaDiaria = 0) {
+  const horas: { hora: string; valor: number; meta: number }[] = [];
+  const totalHoras = HORA_FIM_EXPEDIENTE - HORA_INICIO_EXPEDIENTE + 1;
+
+  for (let h = HORA_INICIO_EXPEDIENTE; h <= HORA_FIM_EXPEDIENTE; h++) {
+    const realizado = atendimentos.filter((a) => new Date(a.criado_em).getHours() <= h).length;
+    const passoMeta = ((h - HORA_INICIO_EXPEDIENTE + 1) / totalHoras) * metaDiaria;
+    horas.push({ hora: `${h}h`, valor: realizado, meta: Math.round(passoMeta) });
+  }
+
+  return horas;
 }
 
 export function agruparPorDiaAcumulado(atendimentos: Atendimento[], ano: number, mes: number) {

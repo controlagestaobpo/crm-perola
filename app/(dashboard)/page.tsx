@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { DollarSign, Phone, ShoppingCart, Target, PhoneMissed, Receipt } from "lucide-react";
+import { DollarSign, Phone, ShoppingCart, Target, CalendarCheck, Receipt } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getPerfilAtual } from "@/lib/auth";
 import { getClientesComHistorico } from "@/lib/clientes";
@@ -71,9 +71,12 @@ export default async function DashboardPage({
   const vendido = somaValor(atendimentos, "valor");
   const totalAtendimentos = atendimentos.length;
   const totalVendas = contarResultado(atendimentos, "compra");
-  const naoAtendeu = contarResultado(atendimentos, "nao_atendeu");
   const ticketMedio = totalVendas > 0 ? vendido / totalVendas : 0;
   const conversao = totalAtendimentos > 0 ? (totalVendas / totalAtendimentos) * 100 : 0;
+
+  const metaProspeccoesTotal = metas.reduce((soma, m) => soma + Number(m.meta_prospeccoes), 0);
+  const metaAtendimentosDiaria = diasUteisTotais > 0 ? metaProspeccoesTotal / diasUteisTotais : 0;
+  const metaAtendimentosPeriodo = periodo === "hoje" ? metaAtendimentosDiaria : metaProspeccoesTotal;
 
   const pipelineAbertos = atendimentos.filter((a) => a.resultado === "negociacao");
   const pipelineValor = somaValor(pipelineAbertos, "valor_negociacao");
@@ -130,16 +133,23 @@ export default async function DashboardPage({
           icon={ShoppingCart}
         />
         <StatCard label="Ticket médio" value={formatBRL(ticketMedio)} icon={DollarSign} />
-        <StatCard label="Não atendeu" value={String(naoAtendeu)} icon={PhoneMissed} />
+        <StatCard
+          label={periodo === "hoje" ? "Meta de atendimentos (dia)" : "Meta de atendimentos (mês)"}
+          value={`${totalAtendimentos} / ${Math.round(metaAtendimentosPeriodo)}`}
+          icon={CalendarCheck}
+        />
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         {periodo === "hoje" ? (
           <LineChartCard
-            title="Evolução de atendimentos (hoje)"
-            data={agruparPorHora(atendimentos)}
+            title="Evolução de atendimentos (hoje) vs ritmo da meta"
+            data={agruparPorHora(atendimentos, metaAtendimentosDiaria)}
             xKey="hora"
-            lines={[{ key: "valor", nome: "Atendimentos", cor: "#7c3aed" }]}
+            lines={[
+              { key: "meta", nome: "Ritmo necessário", cor: "#94a3b8", tracejada: true },
+              { key: "valor", nome: "Atendimentos", cor: "#7c3aed" },
+            ]}
           />
         ) : (
           <LineChartCard

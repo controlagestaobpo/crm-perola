@@ -1,11 +1,11 @@
 import { createClient } from "@/lib/supabase/server";
 import { getPerfilAtual } from "@/lib/auth";
-import { formatBRL } from "@/lib/metrics";
+import { diasUteisNoMes, formatBRL } from "@/lib/metrics";
 import StatCard from "@/components/StatCard";
 import BarChartCard from "@/components/charts/BarChartCard";
 import LineChartCard from "@/components/charts/LineChartCard";
 import MetaForm from "@/components/MetaForm";
-import { Target, TrendingUp, AlertCircle, Percent, Wallet } from "lucide-react";
+import { Target, TrendingUp, AlertCircle, Percent, Wallet, Gauge } from "lucide-react";
 import type { Atendimento, Meta, Perfil } from "@/types/database";
 
 export const dynamic = "force-dynamic";
@@ -47,6 +47,13 @@ export default async function MetasPage({
   if (!perfil) return null;
 
   const { inicio, fim } = inicioFimMes(ano, mes);
+  const diasUteisTotais = diasUteisNoMes(ano, mes);
+  const ehMesAtual = ano === hoje.getFullYear() && mes === hoje.getMonth() + 1;
+  const diasUteisDecorridos = ehMesAtual
+    ? diasUteisNoMes(ano, mes, true, hoje)
+    : new Date(ano, mes - 1, 1) < hoje
+      ? diasUteisTotais
+      : 0;
   const periodoTendencia = ultimosMeses(ano, mes, 6);
   const inicioTendencia = inicioFimMes(periodoTendencia[0].ano, periodoTendencia[0].mes).inicio;
 
@@ -78,7 +85,25 @@ export default async function MetasPage({
     const comissaoPercentual = Number(meta?.comissao_percentual ?? 1);
     const comissao = realizado * (comissaoPercentual / 100);
 
-    return { vendedor: v, meta, realizado, prospeccoes, vendas, conversao, percentualMeta, comissaoPercentual, comissao };
+    const metaProspeccoesMensal = Number(meta?.meta_prospeccoes ?? 0);
+    const ritmoNecessario = diasUteisTotais > 0 ? metaProspeccoesMensal / diasUteisTotais : 0;
+    const ritmoAtual = diasUteisDecorridos > 0 ? prospeccoes / diasUteisDecorridos : 0;
+    const noRitmo = metaProspeccoesMensal === 0 || ritmoAtual >= ritmoNecessario;
+
+    return {
+      vendedor: v,
+      meta,
+      realizado,
+      prospeccoes,
+      vendas,
+      conversao,
+      percentualMeta,
+      comissaoPercentual,
+      comissao,
+      ritmoNecessario,
+      ritmoAtual,
+      noRitmo,
+    };
   });
 
   const ranking = [...dados].sort((a, b) => b.percentualMeta - a.percentualMeta);
@@ -91,6 +116,11 @@ export default async function MetasPage({
     dados.reduce((s, d) => s + d.prospeccoes, 0) > 0
       ? (dados.reduce((s, d) => s + d.vendas, 0) / dados.reduce((s, d) => s + d.prospeccoes, 0)) * 100
       : 0;
+
+  const metaProspeccoesGeral = dados.reduce((soma, d) => soma + Number(d.meta?.meta_prospeccoes ?? 0), 0);
+  const prospeccoesTotal = dados.reduce((soma, d) => soma + d.prospeccoes, 0);
+  const ritmoNecessarioGeral = diasUteisTotais > 0 ? metaProspeccoesGeral / diasUteisTotais : 0;
+  const ritmoAtualGeral = diasUteisDecorridos > 0 ? prospeccoesTotal / diasUteisDecorridos : 0;
 
   const graficoVendedores = dados.map((d) => ({
     produto: d.vendedor.nome,
@@ -134,12 +164,17 @@ export default async function MetasPage({
         </form>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-6">
         <StatCard label="Meta do período" value={formatBRL(metaTotal)} icon={Target} />
         <StatCard label="Realizado" value={formatBRL(realizadoTotal)} icon={TrendingUp} />
         <StatCard label="Faltam para meta" value={formatBRL(faltam)} icon={AlertCircle} />
         <StatCard label="Conversão geral" value={`${conversaoGeral.toFixed(1)}%`} icon={Percent} />
         <StatCard label="Comissão ganha (total)" value={formatBRL(comissaoTotal)} icon={Wallet} />
+        <StatCard
+          label="Ritmo de contatos"
+          value={`${ritmoAtualGeral.toFixed(1)}/dia (precisa ${ritmoNecessarioGeral.toFixed(1)}/dia)`}
+          icon={Gauge}
+        />
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
@@ -167,6 +202,7 @@ export default async function MetasPage({
                 <th className="px-4 py-3 font-medium">Realizado</th>
                 <th className="px-4 py-3 font-medium">% Meta</th>
                 <th className="px-4 py-3 font-medium">Conversão</th>
+                <th className="px-4 py-3 font-medium">Ritmo de contatos</th>
                 <th className="px-4 py-3 font-medium">Comissão</th>
               </tr>
             </thead>
@@ -189,6 +225,15 @@ export default async function MetasPage({
                     </div>
                   </td>
                   <td className="px-4 py-3 text-slate-600">{d.conversao.toFixed(1)}%</td>
+                  <td className="px-4 py-3">
+                    <span
+                      className={`rounded-full px-2 py-1 text-xs font-medium ${
+                        d.noRitmo ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"
+                      }`}
+                    >
+                      {d.ritmoAtual.toFixed(1)}/dia (precisa {d.ritmoNecessario.toFixed(1)}/dia)
+                    </span>
+                  </td>
                   <td className="px-4 py-3 text-slate-600">
                     {formatBRL(d.comissao)} <span className="text-xs text-slate-400">({d.comissaoPercentual}%)</span>
                   </td>
