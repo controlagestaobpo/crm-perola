@@ -2,7 +2,8 @@
 
 import { useEffect, useRef } from "react";
 import { useFormState } from "react-dom";
-import { criarProduto, ESTADO_INICIAL } from "@/lib/actions";
+import { criarProduto } from "@/lib/actions";
+import { ESTADO_INICIAL } from "@/lib/form-state";
 import SubmitButton from "@/components/SubmitButton";
 import FormMessage from "@/components/FormMessage";
 

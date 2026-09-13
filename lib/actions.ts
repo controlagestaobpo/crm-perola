@@ -3,14 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getPerfilAtual } from "@/lib/auth";
+import type { ActionState } from "@/lib/form-state";
 import type { Estagio, Papel, ResultadoAtendimento } from "@/types/database";
-
-export interface ActionState {
-  error?: string;
-  success?: string;
-}
-
-const ESTADO_INICIAL: ActionState = {};
 
 function ehViolacaoDeDuplicidade(error: { code?: string } | null) {
   return error?.code === "23505";
@@ -324,5 +318,3 @@ export async function removerProduto(produtoId: string) {
 
   revalidatePath("/produtos");
 }
-
-export { ESTADO_INICIAL };

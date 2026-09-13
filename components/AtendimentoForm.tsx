@@ -2,7 +2,8 @@
 
 import { useEffect, useRef } from "react";
 import { useFormState } from "react-dom";
-import { criarAtendimento, editarAtendimento, ESTADO_INICIAL } from "@/lib/actions";
+import { criarAtendimento, editarAtendimento } from "@/lib/actions";
+import { ESTADO_INICIAL } from "@/lib/form-state";
 import AtendimentoFormFields from "@/components/AtendimentoFormFields";
 import SubmitButton from "@/components/SubmitButton";
 import FormMessage from "@/components/FormMessage";

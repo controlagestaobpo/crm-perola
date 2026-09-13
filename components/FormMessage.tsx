@@ -1,4 +1,4 @@
-import type { ActionState } from "@/lib/actions";
+import type { ActionState } from "@/lib/form-state";
 
 export default function FormMessage({ state }: { state: ActionState }) {
   if (state.error) return <p className="text-sm text-red-600">{state.error}</p>;
