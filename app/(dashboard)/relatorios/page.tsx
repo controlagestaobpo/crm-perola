@@ -122,22 +122,22 @@ export default async function RelatoriosPage({
     <div className="space-y-8 print:space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3 print:hidden">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Relatório completo</h1>
-          <p className="text-sm text-slate-500">Todos os dados do período, prontos para análise</p>
+          <h1 className="text-2xl font-semibold text-stone-900">Relatório completo</h1>
+          <p className="text-sm text-stone-500">Todos os dados do período, prontos para análise</p>
         </div>
         <div className="flex items-center gap-2">
           <form className="flex items-center gap-2" method="get">
-            <select name="ano" defaultValue={ano} className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm">
+            <select name="ano" defaultValue={ano} className="rounded-lg border border-stone-300 px-3 py-1.5 text-sm">
               {[ano - 1, ano, ano + 1].map((a) => (
                 <option key={a} value={a}>{a}</option>
               ))}
             </select>
-            <select name="mes" defaultValue={mes} className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm">
+            <select name="mes" defaultValue={mes} className="rounded-lg border border-stone-300 px-3 py-1.5 text-sm">
               {MESES.map((nome, index) => (
                 <option key={nome} value={index + 1}>{nome}</option>
               ))}
             </select>
-            <button type="submit" className="rounded-lg bg-slate-200 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-300">
+            <button type="submit" className="rounded-lg bg-stone-200 px-3 py-1.5 text-sm font-medium text-stone-700 hover:bg-stone-300">
               Filtrar
             </button>
           </form>
@@ -146,13 +146,13 @@ export default async function RelatoriosPage({
       </div>
 
       <div className="hidden print:block">
-        <h1 className="text-2xl font-bold text-slate-900">CRM Pérola — Relatório de {MESES[mes - 1]} de {ano}</h1>
-        <p className="text-sm text-slate-500">Gerado em {new Date().toLocaleDateString("pt-BR")}</p>
+        <h1 className="text-2xl font-bold text-stone-900">CRM Pérola — Relatório de {MESES[mes - 1]} de {ano}</h1>
+        <p className="text-sm text-stone-500">Gerado em {new Date().toLocaleDateString("pt-BR")}</p>
       </div>
 
       {/* RESUMO GERAL */}
       <section className="break-inside-avoid">
-        <h2 className="mb-3 text-lg font-semibold text-slate-900">1. Resumo geral</h2>
+        <h2 className="mb-3 text-lg font-semibold text-stone-900">1. Resumo geral</h2>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {[
             ["Atendimentos", String(totalAtendimentos)],
@@ -165,9 +165,9 @@ export default async function RelatoriosPage({
             ["Negociações abertas", String(pipelineAberto.length)],
             ["Comissão total (equipe)", formatBRL(comissaoTotal)],
           ].map(([label, value]) => (
-            <div key={label} className="rounded-lg border border-slate-200 bg-white p-3">
-              <p className="text-xs text-slate-500">{label}</p>
-              <p className="text-lg font-semibold text-slate-900">{value}</p>
+            <div key={label} className="rounded-lg border border-stone-200 bg-white p-3">
+              <p className="text-xs text-stone-500">{label}</p>
+              <p className="text-lg font-semibold text-stone-900">{value}</p>
             </div>
           ))}
         </div>
@@ -175,10 +175,10 @@ export default async function RelatoriosPage({
 
       {/* DESEMPENHO POR VENDEDOR */}
       <section className="break-inside-avoid">
-        <h2 className="mb-3 text-lg font-semibold text-slate-900">2. Desempenho por vendedor</h2>
-        <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+        <h2 className="mb-3 text-lg font-semibold text-stone-900">2. Desempenho por vendedor</h2>
+        <div className="overflow-x-auto rounded-xl border border-stone-200 bg-white">
           <table className="w-full text-left text-sm">
-            <thead className="border-b border-slate-200 bg-slate-50 text-slate-500">
+            <thead className="border-b border-stone-200 bg-stone-50 text-stone-500">
               <tr>
                 <th className="px-3 py-2 font-medium">Vendedor</th>
                 <th className="px-3 py-2 font-medium">Atendimentos</th>
@@ -192,15 +192,15 @@ export default async function RelatoriosPage({
             </thead>
             <tbody>
               {porVendedor.map((d) => (
-                <tr key={d.vendedor.id} className="border-b border-slate-100 last:border-0">
-                  <td className="px-3 py-2 font-medium text-slate-900">{d.vendedor.nome}</td>
-                  <td className="px-3 py-2 text-slate-600">{d.atendimentos}</td>
-                  <td className="px-3 py-2 text-slate-600">{d.vendas}</td>
-                  <td className="px-3 py-2 text-slate-600">{d.conversao.toFixed(1)}%</td>
-                  <td className="px-3 py-2 text-slate-600">{formatBRL(d.receita)}</td>
-                  <td className="px-3 py-2 text-slate-600">{formatBRL(d.meta)}</td>
-                  <td className="px-3 py-2 text-slate-600">{d.percentualMeta.toFixed(0)}%</td>
-                  <td className="px-3 py-2 text-slate-600">{formatBRL(d.comissao)}</td>
+                <tr key={d.vendedor.id} className="border-b border-stone-100 last:border-0">
+                  <td className="px-3 py-2 font-medium text-stone-900">{d.vendedor.nome}</td>
+                  <td className="px-3 py-2 text-stone-600">{d.atendimentos}</td>
+                  <td className="px-3 py-2 text-stone-600">{d.vendas}</td>
+                  <td className="px-3 py-2 text-stone-600">{d.conversao.toFixed(1)}%</td>
+                  <td className="px-3 py-2 text-stone-600">{formatBRL(d.receita)}</td>
+                  <td className="px-3 py-2 text-stone-600">{formatBRL(d.meta)}</td>
+                  <td className="px-3 py-2 text-stone-600">{d.percentualMeta.toFixed(0)}%</td>
+                  <td className="px-3 py-2 text-stone-600">{formatBRL(d.comissao)}</td>
                 </tr>
               ))}
             </tbody>
@@ -210,12 +210,12 @@ export default async function RelatoriosPage({
 
       {/* RESULTADOS */}
       <section className="break-inside-avoid">
-        <h2 className="mb-3 text-lg font-semibold text-slate-900">3. Distribuição de resultados</h2>
+        <h2 className="mb-3 text-lg font-semibold text-stone-900">3. Distribuição de resultados</h2>
         <div className="flex flex-wrap gap-3">
           {resultadosDistribuicao.map((r) => (
-            <div key={r.nome} className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm">
-              <span className="font-medium text-slate-900">{r.nome}:</span>{" "}
-              <span className="text-slate-600">{r.quantidade}</span>
+            <div key={r.nome} className="rounded-lg border border-stone-200 bg-white px-4 py-2 text-sm">
+              <span className="font-medium text-stone-900">{r.nome}:</span>{" "}
+              <span className="text-stone-600">{r.quantidade}</span>
             </div>
           ))}
         </div>
@@ -223,10 +223,10 @@ export default async function RelatoriosPage({
 
       {/* PRODUTOS */}
       <section className="break-inside-avoid">
-        <h2 className="mb-3 text-lg font-semibold text-slate-900">4. Produtos — oferecidos vs. vendidos</h2>
-        <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+        <h2 className="mb-3 text-lg font-semibold text-stone-900">4. Produtos — oferecidos vs. vendidos</h2>
+        <div className="overflow-x-auto rounded-xl border border-stone-200 bg-white">
           <table className="w-full text-left text-sm">
-            <thead className="border-b border-slate-200 bg-slate-50 text-slate-500">
+            <thead className="border-b border-stone-200 bg-stone-50 text-stone-500">
               <tr>
                 <th className="px-3 py-2 font-medium">Produto</th>
                 <th className="px-3 py-2 font-medium">Oferecido</th>
@@ -237,15 +237,15 @@ export default async function RelatoriosPage({
             <tbody>
               {produtosCompletos.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="px-3 py-4 text-center text-slate-400">Sem dados no período.</td>
+                  <td colSpan={4} className="px-3 py-4 text-center text-stone-400">Sem dados no período.</td>
                 </tr>
               ) : (
                 produtosCompletos.map((p) => (
-                  <tr key={p.produto} className="border-b border-slate-100 last:border-0">
-                    <td className="px-3 py-2 text-slate-900">{p.produto}</td>
-                    <td className="px-3 py-2 text-slate-600">{p.oferecido}x</td>
-                    <td className="px-3 py-2 text-slate-600">{p.vendido}x</td>
-                    <td className="px-3 py-2 text-slate-600">{p.conversao.toFixed(0)}%</td>
+                  <tr key={p.produto} className="border-b border-stone-100 last:border-0">
+                    <td className="px-3 py-2 text-stone-900">{p.produto}</td>
+                    <td className="px-3 py-2 text-stone-600">{p.oferecido}x</td>
+                    <td className="px-3 py-2 text-stone-600">{p.vendido}x</td>
+                    <td className="px-3 py-2 text-stone-600">{p.conversao.toFixed(0)}%</td>
                   </tr>
                 ))
               )}
@@ -257,18 +257,18 @@ export default async function RelatoriosPage({
       {/* CLIENTES */}
       <section className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div className="break-inside-avoid">
-          <h2 className="mb-3 text-lg font-semibold text-slate-900">5. Top 10 clientes (histórico)</h2>
-          <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+          <h2 className="mb-3 text-lg font-semibold text-stone-900">5. Top 10 clientes (histórico)</h2>
+          <div className="overflow-x-auto rounded-xl border border-stone-200 bg-white">
             <table className="w-full text-left text-sm">
               <tbody>
                 {topClientes.length === 0 ? (
-                  <tr><td className="px-3 py-4 text-center text-slate-400">Sem compras registradas.</td></tr>
+                  <tr><td className="px-3 py-4 text-center text-stone-400">Sem compras registradas.</td></tr>
                 ) : (
                   topClientes.map((c) => (
-                    <tr key={c.id} className="border-b border-slate-100 last:border-0">
-                      <td className="px-3 py-2 font-medium text-slate-900">{c.nome}</td>
-                      <td className="px-3 py-2 text-slate-600">{formatBRL(c.valorTotal)}</td>
-                      <td className="px-3 py-2 text-slate-600">{c.totalCompras} compras</td>
+                    <tr key={c.id} className="border-b border-stone-100 last:border-0">
+                      <td className="px-3 py-2 font-medium text-stone-900">{c.nome}</td>
+                      <td className="px-3 py-2 text-stone-600">{formatBRL(c.valorTotal)}</td>
+                      <td className="px-3 py-2 text-stone-600">{c.totalCompras} compras</td>
                     </tr>
                   ))
                 )}
@@ -278,17 +278,17 @@ export default async function RelatoriosPage({
         </div>
 
         <div className="break-inside-avoid">
-          <h2 className="mb-3 text-lg font-semibold text-slate-900">6. Clientes inativos (30+ dias)</h2>
-          <div className="max-h-80 overflow-y-auto rounded-xl border border-slate-200 bg-white">
+          <h2 className="mb-3 text-lg font-semibold text-stone-900">6. Clientes inativos (30+ dias)</h2>
+          <div className="max-h-80 overflow-y-auto rounded-xl border border-stone-200 bg-white">
             <table className="w-full text-left text-sm">
               <tbody>
                 {clientesInativos.length === 0 ? (
-                  <tr><td className="px-3 py-4 text-center text-slate-400">Nenhum cliente inativo.</td></tr>
+                  <tr><td className="px-3 py-4 text-center text-stone-400">Nenhum cliente inativo.</td></tr>
                 ) : (
                   clientesInativos.map((c) => (
-                    <tr key={c.id} className="border-b border-slate-100 last:border-0">
-                      <td className="px-3 py-2 font-medium text-slate-900">{c.nome}</td>
-                      <td className="px-3 py-2 text-slate-600">
+                    <tr key={c.id} className="border-b border-stone-100 last:border-0">
+                      <td className="px-3 py-2 font-medium text-stone-900">{c.nome}</td>
+                      <td className="px-3 py-2 text-stone-600">
                         {c.diasSemComprar ? `${c.diasSemComprar} dias` : "Nunca comprou"}
                       </td>
                     </tr>
@@ -303,10 +303,10 @@ export default async function RelatoriosPage({
       {/* CLIENTES POR CIDADE E SEM VENDAS */}
       <section className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div className="break-inside-avoid">
-          <h2 className="mb-3 text-lg font-semibold text-slate-900">7. Clientes por cidade</h2>
-          <div className="max-h-80 overflow-y-auto rounded-xl border border-slate-200 bg-white">
+          <h2 className="mb-3 text-lg font-semibold text-stone-900">7. Clientes por cidade</h2>
+          <div className="max-h-80 overflow-y-auto rounded-xl border border-stone-200 bg-white">
             <table className="w-full text-left text-sm">
-              <thead className="border-b border-slate-200 bg-slate-50 text-slate-500">
+              <thead className="border-b border-stone-200 bg-stone-50 text-stone-500">
                 <tr>
                   <th className="px-3 py-2 font-medium">Cidade</th>
                   <th className="px-3 py-2 font-medium">Clientes</th>
@@ -315,10 +315,10 @@ export default async function RelatoriosPage({
               </thead>
               <tbody>
                 {clientesPorCidade.map((c) => (
-                  <tr key={c.cidade} className="border-b border-slate-100 last:border-0">
-                    <td className="px-3 py-2 font-medium text-slate-900">{c.cidade}</td>
-                    <td className="px-3 py-2 text-slate-600">{c.quantidade}</td>
-                    <td className="px-3 py-2 text-slate-600">{formatBRL(c.valorTotal)}</td>
+                  <tr key={c.cidade} className="border-b border-stone-100 last:border-0">
+                    <td className="px-3 py-2 font-medium text-stone-900">{c.cidade}</td>
+                    <td className="px-3 py-2 text-stone-600">{c.quantidade}</td>
+                    <td className="px-3 py-2 text-stone-600">{formatBRL(c.valorTotal)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -327,18 +327,18 @@ export default async function RelatoriosPage({
         </div>
 
         <div className="break-inside-avoid">
-          <h2 className="mb-3 text-lg font-semibold text-slate-900">8. Clientes sem nenhuma venda</h2>
-          <div className="max-h-80 overflow-y-auto rounded-xl border border-slate-200 bg-white">
+          <h2 className="mb-3 text-lg font-semibold text-stone-900">8. Clientes sem nenhuma venda</h2>
+          <div className="max-h-80 overflow-y-auto rounded-xl border border-stone-200 bg-white">
             <table className="w-full text-left text-sm">
               <tbody>
                 {clientesSemVendas.length === 0 ? (
-                  <tr><td className="px-3 py-4 text-center text-slate-400">Todos os clientes já compraram alguma vez.</td></tr>
+                  <tr><td className="px-3 py-4 text-center text-stone-400">Todos os clientes já compraram alguma vez.</td></tr>
                 ) : (
                   clientesSemVendas.map((c) => (
-                    <tr key={c.id} className="border-b border-slate-100 last:border-0">
-                      <td className="px-3 py-2 font-medium text-slate-900">{c.nome}</td>
-                      <td className="px-3 py-2 text-slate-600">{c.cidade ?? "—"}</td>
-                      <td className="px-3 py-2 text-slate-600">{c.telefone ?? "—"}</td>
+                    <tr key={c.id} className="border-b border-stone-100 last:border-0">
+                      <td className="px-3 py-2 font-medium text-stone-900">{c.nome}</td>
+                      <td className="px-3 py-2 text-stone-600">{c.cidade ?? "—"}</td>
+                      <td className="px-3 py-2 text-stone-600">{c.telefone ?? "—"}</td>
                     </tr>
                   ))
                 )}
@@ -350,13 +350,13 @@ export default async function RelatoriosPage({
 
       {/* MOTIVOS DE NAO VENDA */}
       <section className="break-inside-avoid">
-        <h2 className="mb-3 text-lg font-semibold text-slate-900">9. Motivos de não-venda</h2>
+        <h2 className="mb-3 text-lg font-semibold text-stone-900">9. Motivos de não-venda</h2>
         {razoesNaoVenda.length === 0 ? (
-          <p className="text-sm text-slate-400">Sem registros no período.</p>
+          <p className="text-sm text-stone-400">Sem registros no período.</p>
         ) : (
           <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             {razoesNaoVenda.map((r) => (
-              <li key={r.motivo} className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700">
+              <li key={r.motivo} className="rounded-lg border border-stone-200 bg-white px-4 py-2 text-sm text-stone-700">
                 <strong>{r.motivo}</strong> — {r.quantidade}x
               </li>
             ))}
@@ -366,13 +366,13 @@ export default async function RelatoriosPage({
 
       {/* PIPELINE ABERTO */}
       <section className="break-inside-avoid">
-        <h2 className="mb-3 text-lg font-semibold text-slate-900">10. Negociações em aberto</h2>
+        <h2 className="mb-3 text-lg font-semibold text-stone-900">10. Negociações em aberto</h2>
         {pipelineAberto.length === 0 ? (
-          <p className="text-sm text-slate-400">Nenhuma negociação em aberto.</p>
+          <p className="text-sm text-stone-400">Nenhuma negociação em aberto.</p>
         ) : (
-          <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+          <div className="overflow-x-auto rounded-xl border border-stone-200 bg-white">
             <table className="w-full text-left text-sm">
-              <thead className="border-b border-slate-200 bg-slate-50 text-slate-500">
+              <thead className="border-b border-stone-200 bg-stone-50 text-stone-500">
                 <tr>
                   <th className="px-3 py-2 font-medium">Data</th>
                   <th className="px-3 py-2 font-medium">Resultado</th>
@@ -381,10 +381,10 @@ export default async function RelatoriosPage({
               </thead>
               <tbody>
                 {pipelineAberto.map((a) => (
-                  <tr key={a.id} className="border-b border-slate-100 last:border-0">
-                    <td className="px-3 py-2 text-slate-600">{new Date(a.data + "T00:00:00").toLocaleDateString("pt-BR")}</td>
-                    <td className="px-3 py-2 text-slate-600">{labelResultado(a.resultado)}</td>
-                    <td className="px-3 py-2 text-slate-600">{formatBRL(Number(a.valor_negociacao ?? 0))}</td>
+                  <tr key={a.id} className="border-b border-stone-100 last:border-0">
+                    <td className="px-3 py-2 text-stone-600">{new Date(a.data + "T00:00:00").toLocaleDateString("pt-BR")}</td>
+                    <td className="px-3 py-2 text-stone-600">{labelResultado(a.resultado)}</td>
+                    <td className="px-3 py-2 text-stone-600">{formatBRL(Number(a.valor_negociacao ?? 0))}</td>
                   </tr>
                 ))}
               </tbody>
@@ -395,13 +395,13 @@ export default async function RelatoriosPage({
 
       {/* OBSERVACOES COMPILADAS */}
       <section className="break-inside-avoid">
-        <h2 className="mb-3 text-lg font-semibold text-slate-900">11. Observações dos atendimentos</h2>
+        <h2 className="mb-3 text-lg font-semibold text-stone-900">11. Observações dos atendimentos</h2>
         {observacoesCompiladas.length === 0 ? (
-          <p className="text-sm text-slate-400">Nenhuma observação registrada no período.</p>
+          <p className="text-sm text-stone-400">Nenhuma observação registrada no período.</p>
         ) : (
-          <div className="max-h-96 overflow-y-auto rounded-xl border border-slate-200 bg-white">
+          <div className="max-h-96 overflow-y-auto rounded-xl border border-stone-200 bg-white">
             <table className="w-full text-left text-sm">
-              <thead className="sticky top-0 border-b border-slate-200 bg-slate-50 text-slate-500">
+              <thead className="sticky top-0 border-b border-stone-200 bg-stone-50 text-stone-500">
                 <tr>
                   <th className="px-3 py-2 font-medium">Data</th>
                   <th className="px-3 py-2 font-medium">Cliente</th>
@@ -410,12 +410,12 @@ export default async function RelatoriosPage({
               </thead>
               <tbody>
                 {observacoesCompiladas.map((a) => (
-                  <tr key={a.id} className="border-b border-slate-100 last:border-0">
-                    <td className="px-3 py-2 whitespace-nowrap text-slate-600">
+                  <tr key={a.id} className="border-b border-stone-100 last:border-0">
+                    <td className="px-3 py-2 whitespace-nowrap text-stone-600">
                       {new Date(a.data + "T00:00:00").toLocaleDateString("pt-BR")}
                     </td>
-                    <td className="px-3 py-2 font-medium text-slate-900">{a.clientes?.nome ?? "—"}</td>
-                    <td className="px-3 py-2 text-slate-600">{a.observacoes}</td>
+                    <td className="px-3 py-2 font-medium text-stone-900">{a.clientes?.nome ?? "—"}</td>
+                    <td className="px-3 py-2 text-stone-600">{a.observacoes}</td>
                   </tr>
                 ))}
               </tbody>

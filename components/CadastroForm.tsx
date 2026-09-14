@@ -63,14 +63,14 @@ export default function CadastroForm() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
-      <div className="w-full max-w-sm rounded-xl border border-slate-200 bg-white p-8">
+    <div className="flex min-h-screen items-center justify-center bg-stone-50 px-4">
+      <div className="w-full max-w-sm rounded-xl border border-stone-200 bg-white p-8">
         <div className="mb-8 flex items-center justify-center gap-2">
-          <Gem className="h-6 w-6 text-violet-600" />
-          <span className="text-lg font-semibold text-slate-900">CRM Pérola</span>
+          <Gem className="h-6 w-6 text-oliva-600" />
+          <span className="text-lg font-semibold text-stone-900">CRM Pérola</span>
         </div>
 
-        <h1 className="mb-6 text-center text-sm text-slate-500">
+        <h1 className="mb-6 text-center text-sm text-stone-500">
           {ehConvite
             ? "Complete seu cadastro para entrar na equipe"
             : "Crie sua empresa e sua conta de administrador (master)"}
@@ -78,19 +78,19 @@ export default function CadastroForm() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">Seu nome</label>
+            <label className="mb-1 block text-sm font-medium text-stone-700">Seu nome</label>
             <input
               type="text"
               required
               value={nome}
               onChange={(e) => setNome(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-violet-500 focus:outline-none focus:ring-1 focus:ring-violet-500"
+              className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm focus:border-oliva-500 focus:outline-none focus:ring-1 focus:ring-oliva-500"
             />
           </div>
 
           {!ehConvite && (
             <div>
-              <label className="mb-1 block text-sm font-medium text-slate-700">
+              <label className="mb-1 block text-sm font-medium text-stone-700">
                 Nome da empresa
               </label>
               <input
@@ -98,32 +98,32 @@ export default function CadastroForm() {
                 required
                 value={nomeEmpresa}
                 onChange={(e) => setNomeEmpresa(e.target.value)}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-violet-500 focus:outline-none focus:ring-1 focus:ring-violet-500"
+                className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm focus:border-oliva-500 focus:outline-none focus:ring-1 focus:ring-oliva-500"
               />
             </div>
           )}
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">E-mail</label>
+            <label className="mb-1 block text-sm font-medium text-stone-700">E-mail</label>
             <input
               type="email"
               required
               readOnly={ehConvite}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-violet-500 focus:outline-none focus:ring-1 focus:ring-violet-500 read-only:bg-slate-100"
+              className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm focus:border-oliva-500 focus:outline-none focus:ring-1 focus:ring-oliva-500 read-only:bg-stone-100"
             />
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">Senha</label>
+            <label className="mb-1 block text-sm font-medium text-stone-700">Senha</label>
             <input
               type="password"
               required
               minLength={6}
               value={senha}
               onChange={(e) => setSenha(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-violet-500 focus:outline-none focus:ring-1 focus:ring-violet-500"
+              className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm focus:border-oliva-500 focus:outline-none focus:ring-1 focus:ring-oliva-500"
             />
           </div>
 
@@ -133,15 +133,15 @@ export default function CadastroForm() {
           <button
             type="submit"
             disabled={carregando}
-            className="w-full rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-violet-700 disabled:opacity-60"
+            className="w-full rounded-lg bg-oliva-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-oliva-700 disabled:opacity-60"
           >
             {carregando ? "Criando..." : "Criar conta"}
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-slate-500">
+        <p className="mt-6 text-center text-sm text-stone-500">
           Já tem conta?{" "}
-          <Link href="/login" className="font-medium text-violet-600 hover:underline">
+          <Link href="/login" className="font-medium text-oliva-600 hover:underline">
             Entrar
           </Link>
         </p>

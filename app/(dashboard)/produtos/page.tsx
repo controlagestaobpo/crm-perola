@@ -27,10 +27,10 @@ export default async function ProdutosPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Produtos</h1>
-          <p className="text-sm text-slate-500">Catálogo usado nos atendimentos</p>
+          <h1 className="text-2xl font-semibold text-stone-900">Produtos</h1>
+          <p className="text-sm text-stone-500">Catálogo usado nos atendimentos</p>
         </div>
-        <span className="text-sm text-slate-400">{produtos.length} produtos cadastrados</span>
+        <span className="text-sm text-stone-400">{produtos.length} produtos cadastrados</span>
       </div>
 
       <ProdutoForm categorias={categorias} />

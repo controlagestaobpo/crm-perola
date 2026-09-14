@@ -30,8 +30,8 @@ export default function NovoAtendimentoModal({
     <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/40 p-4 py-8">
       <div className="w-full max-w-2xl rounded-xl bg-white p-6">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-slate-900">Novo atendimento</h2>
-          <button onClick={onFechar} className="text-slate-400 hover:text-slate-700">
+          <h2 className="text-lg font-semibold text-stone-900">Novo atendimento</h2>
+          <button onClick={onFechar} className="text-stone-400 hover:text-stone-700">
             <X className="h-5 w-5" />
           </button>
         </div>

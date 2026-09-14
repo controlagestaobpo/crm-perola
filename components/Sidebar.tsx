@@ -32,10 +32,10 @@ export default function Sidebar({ papel }: { papel: Papel }) {
   const pathname = usePathname();
 
   return (
-    <aside className="flex h-screen w-64 flex-col border-r border-slate-200 bg-white print:hidden">
-      <div className="flex items-center gap-2 border-b border-slate-200 px-6 py-5">
-        <Gem className="h-6 w-6 text-violet-600" />
-        <span className="text-lg font-semibold text-slate-900">CRM Pérola</span>
+    <aside className="flex h-screen w-64 flex-col bg-oliva-900 print:hidden">
+      <div className="flex items-center gap-2 border-b border-oliva-800 px-6 py-5">
+        <Gem className="h-6 w-6 text-trigo-400" />
+        <span className="text-lg font-semibold text-white">CRM Pérola</span>
       </div>
       <nav className="flex-1 space-y-1 px-3 py-4">
         {links
@@ -48,11 +48,11 @@ export default function Sidebar({ papel }: { papel: Papel }) {
                 href={href}
                 className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                   active
-                    ? "bg-violet-50 text-violet-700"
-                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                    ? "bg-oliva-700 text-white"
+                    : "text-oliva-100/80 hover:bg-oliva-800 hover:text-white"
                 }`}
               >
-                <Icon className="h-4 w-4" />
+                <Icon className={`h-4 w-4 ${active ? "text-trigo-400" : ""}`} />
                 {label}
               </Link>
             );

@@ -53,10 +53,10 @@ export default function KanbanAtendimentoModal({
       <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl bg-white p-6">
         <div className="mb-4 flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-slate-900">{titulo}</h2>
-            <p className="text-sm text-slate-500">{clienteNome}</p>
+            <h2 className="text-lg font-semibold text-stone-900">{titulo}</h2>
+            <p className="text-sm text-stone-500">{clienteNome}</p>
           </div>
-          <button onClick={onFechar} className="text-slate-400 hover:text-slate-700">
+          <button onClick={onFechar} className="text-stone-400 hover:text-stone-700">
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -67,11 +67,11 @@ export default function KanbanAtendimentoModal({
 
           {souMaster && (
             <div className="mb-4">
-              <label className="mb-1 block text-sm font-medium text-slate-700">Consultor</label>
+              <label className="mb-1 block text-sm font-medium text-stone-700">Consultor</label>
               <select
                 name="vendedor_id"
                 defaultValue={meuId}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm"
               >
                 {vendedores.map((v) => (
                   <option key={v.id} value={v.id}>
@@ -89,7 +89,7 @@ export default function KanbanAtendimentoModal({
             <button
               type="button"
               onClick={onFechar}
-              className="rounded-lg px-4 py-2 text-sm font-medium text-slate-500 hover:bg-slate-50"
+              className="rounded-lg px-4 py-2 text-sm font-medium text-stone-500 hover:bg-stone-50"
             >
               Cancelar
             </button>

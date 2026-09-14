@@ -19,7 +19,7 @@ export default function AtendimentoRowActions({ atendimentoId }: { atendimentoId
     <div className="flex items-center gap-3">
       <Link
         href={`/atendimentos/${atendimentoId}/editar`}
-        className="text-slate-400 hover:text-violet-600"
+        className="text-stone-400 hover:text-oliva-600"
         title="Editar"
       >
         <Pencil className="h-4 w-4" />
@@ -28,7 +28,7 @@ export default function AtendimentoRowActions({ atendimentoId }: { atendimentoId
         type="button"
         onClick={handleExcluir}
         disabled={pending}
-        className="text-slate-400 hover:text-red-600 disabled:opacity-50"
+        className="text-stone-400 hover:text-red-600 disabled:opacity-50"
         title="Excluir"
       >
         <Trash2 className="h-4 w-4" />

@@ -11,10 +11,10 @@ interface BarChartCardProps {
 
 export default function BarChartCard({ title, data, cor = "#0f9e8c", altura = "h-72" }: BarChartCardProps) {
   return (
-    <div className={`${altura} w-full rounded-xl border border-slate-200 bg-white p-5`}>
-      <p className="mb-4 text-sm font-medium text-slate-700">{title}</p>
+    <div className={`${altura} w-full rounded-xl border border-stone-200 bg-white p-5`}>
+      <p className="mb-4 text-sm font-medium text-stone-700">{title}</p>
       {data.length === 0 ? (
-        <div className="flex h-[90%] items-center justify-center text-sm text-slate-400">
+        <div className="flex h-[90%] items-center justify-center text-sm text-stone-400">
           Sem dados neste período ainda.
         </div>
       ) : (

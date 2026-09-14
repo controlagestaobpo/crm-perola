@@ -80,8 +80,8 @@ export default async function InsightsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-slate-900">Inteligência comercial</h1>
-        <p className="text-sm text-slate-500">Insights do mês atual</p>
+        <h1 className="text-2xl font-semibold text-stone-900">Inteligência comercial</h1>
+        <p className="text-sm text-stone-500">Insights do mês atual</p>
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
@@ -93,14 +93,14 @@ export default async function InsightsPage() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <div className="rounded-xl border border-slate-200 bg-white p-5">
-          <p className="mb-4 text-sm font-medium text-slate-700">🚨 Razões de não-venda</p>
+        <div className="rounded-xl border border-stone-200 bg-white p-5">
+          <p className="mb-4 text-sm font-medium text-stone-700">🚨 Razões de não-venda</p>
           {razoesNaoVenda.length === 0 ? (
-            <p className="text-sm text-slate-400">Sem registros neste mês.</p>
+            <p className="text-sm text-stone-400">Sem registros neste mês.</p>
           ) : (
             <ul className="space-y-3">
               {razoesNaoVenda.map((r) => (
-                <li key={r.motivo} className="text-sm text-slate-700">
+                <li key={r.motivo} className="text-sm text-stone-700">
                   <strong>{r.motivo}</strong> ({r.percentual.toFixed(0)}%) — {r.quantidade} atendimento(s)
                 </li>
               ))}
@@ -108,14 +108,14 @@ export default async function InsightsPage() {
           )}
         </div>
 
-        <div className="rounded-xl border border-slate-200 bg-white p-5">
-          <p className="mb-4 text-sm font-medium text-slate-700">⭐ Oportunidades rápidas</p>
+        <div className="rounded-xl border border-stone-200 bg-white p-5">
+          <p className="mb-4 text-sm font-medium text-stone-700">⭐ Oportunidades rápidas</p>
           {oportunidades.length === 0 ? (
-            <p className="text-sm text-slate-400">Nenhuma negociação em aberto.</p>
+            <p className="text-sm text-stone-400">Nenhuma negociação em aberto.</p>
           ) : (
             <ul className="space-y-3">
               {oportunidades.map((c) => (
-                <li key={c.id} className="text-sm text-slate-700">
+                <li key={c.id} className="text-sm text-stone-700">
                   <strong>{c.nome}</strong> — {c.estagio === "negociacao" ? "Em negociação" : "Contatado"}
                   {c.proximo_contato && (
                     <> · retorno em {new Date(c.proximo_contato + "T00:00:00").toLocaleDateString("pt-BR")}</>
@@ -127,21 +127,21 @@ export default async function InsightsPage() {
         </div>
       </div>
 
-      <div className="rounded-xl border border-slate-200 bg-white p-5">
-        <p className="mb-4 text-sm font-medium text-slate-700">📈 Produtos com maior potencial</p>
+      <div className="rounded-xl border border-stone-200 bg-white p-5">
+        <p className="mb-4 text-sm font-medium text-stone-700">📈 Produtos com maior potencial</p>
         {potencialProdutos.length === 0 ? (
-          <p className="text-sm text-slate-400">Sem dados neste mês ainda.</p>
+          <p className="text-sm text-stone-400">Sem dados neste mês ainda.</p>
         ) : (
           <div className="space-y-4">
             {potencialProdutos.map((p) => (
               <div key={p.produto}>
                 <div className="mb-1 flex items-center justify-between text-sm">
-                  <strong className="text-slate-900">{p.produto}</strong>
+                  <strong className="text-stone-900">{p.produto}</strong>
                   <span className="text-emerald-600">
                     Oferecido {p.oferecido}x | Vendido {p.vendido}x ({p.conversao.toFixed(0)}%)
                   </span>
                 </div>
-                <div className="h-2 overflow-hidden rounded-full bg-slate-100">
+                <div className="h-2 overflow-hidden rounded-full bg-stone-100">
                   <div
                     className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-emerald-400"
                     style={{ width: `${Math.min(p.conversao, 100)}%` }}

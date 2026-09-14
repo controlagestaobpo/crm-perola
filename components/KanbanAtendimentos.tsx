@@ -81,7 +81,7 @@ export default function KanbanAtendimentos({
         <button
           type="button"
           onClick={() => setMostrarNovo(true)}
-          className="flex items-center gap-1.5 rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-700"
+          className="flex items-center gap-1.5 rounded-lg bg-oliva-600 px-4 py-2 text-sm font-medium text-white hover:bg-oliva-700"
         >
           <Plus className="h-4 w-4" />
           Novo atendimento
@@ -98,10 +98,10 @@ export default function KanbanAtendimentos({
                   <div
                     ref={provided.innerRef}
                     {...provided.droppableProps}
-                    className="min-h-[300px] rounded-xl bg-slate-100 p-3"
+                    className="min-h-[300px] rounded-xl bg-stone-100 p-3"
                   >
-                    <p className="mb-3 border-b border-slate-200 pb-2 text-sm font-semibold text-slate-700">
-                      {coluna.titulo} <span className="text-slate-400">({itens.length})</span>
+                    <p className="mb-3 border-b border-stone-200 pb-2 text-sm font-semibold text-stone-700">
+                      {coluna.titulo} <span className="text-stone-400">({itens.length})</span>
                     </p>
                     <div className="space-y-2">
                       {itens.map((cliente, index) => (
@@ -111,10 +111,10 @@ export default function KanbanAtendimentos({
                               ref={provided.innerRef}
                               {...provided.draggableProps}
                               {...provided.dragHandleProps}
-                              className="rounded-lg border-l-4 border-violet-500 bg-white p-3 shadow-sm"
+                              className="rounded-lg border-l-4 border-oliva-500 bg-white p-3 shadow-sm"
                             >
-                              <p className="text-sm font-semibold text-slate-900">{cliente.nome}</p>
-                              <p className="text-xs text-slate-500">
+                              <p className="text-sm font-semibold text-stone-900">{cliente.nome}</p>
+                              <p className="text-xs text-stone-500">
                                 {cliente.ultimaCompra
                                   ? `Última compra: ${new Date(cliente.ultimaCompra + "T00:00:00").toLocaleDateString("pt-BR")}`
                                   : "Ainda sem compras"}

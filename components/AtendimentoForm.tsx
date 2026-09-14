@@ -48,26 +48,26 @@ export default function AtendimentoForm({
   }, [state.success, atendimentoParaEditar, onSalvo]);
 
   return (
-    <form ref={formRef} action={formAction} className="rounded-xl border border-slate-200 bg-white p-6">
+    <form ref={formRef} action={formAction} className="rounded-xl border border-stone-200 bg-white p-6">
       <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div>
-          <label className="mb-1 block text-sm font-medium text-slate-700">Data do contato</label>
+          <label className="mb-1 block text-sm font-medium text-stone-700">Data do contato</label>
           <input
             type="date"
             name="data"
             defaultValue={atendimentoParaEditar?.data ?? new Date().toISOString().slice(0, 10)}
             required
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm"
           />
         </div>
 
         {souMaster && !atendimentoParaEditar && (
           <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">Consultor</label>
+            <label className="mb-1 block text-sm font-medium text-stone-700">Consultor</label>
             <select
               name="vendedor_id"
               defaultValue={meuId}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm"
             >
               {vendedores.map((v) => (
                 <option key={v.id} value={v.id}>
@@ -79,12 +79,12 @@ export default function AtendimentoForm({
         )}
 
         <div>
-          <label className="mb-1 block text-sm font-medium text-slate-700">Cliente</label>
+          <label className="mb-1 block text-sm font-medium text-stone-700">Cliente</label>
           <select
             name="cliente_id"
             required
             defaultValue={atendimentoParaEditar?.cliente_id ?? clienteIdInicial ?? ""}
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm"
           >
             <option value="">-- Selecione --</option>
             {clientes.map((c) => (

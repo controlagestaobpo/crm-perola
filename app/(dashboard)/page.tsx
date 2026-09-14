@@ -93,14 +93,14 @@ export default async function DashboardPage({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Dashboard</h1>
-          <p className="text-sm text-slate-500">Visão geral do seu CRM Pérola</p>
+          <h1 className="text-2xl font-semibold text-stone-900">Dashboard</h1>
+          <p className="text-sm text-stone-500">Visão geral do seu CRM Pérola</p>
         </div>
-        <div className="flex rounded-lg border border-slate-200 bg-white p-1">
+        <div className="flex rounded-lg border border-stone-200 bg-white p-1">
           <Link
             href="/?periodo=hoje"
             className={`rounded-md px-4 py-1.5 text-sm font-medium ${
-              periodo === "hoje" ? "bg-violet-600 text-white" : "text-slate-600"
+              periodo === "hoje" ? "bg-oliva-600 text-white" : "text-stone-600"
             }`}
           >
             Hoje
@@ -108,7 +108,7 @@ export default async function DashboardPage({
           <Link
             href="/?periodo=mes"
             className={`rounded-md px-4 py-1.5 text-sm font-medium ${
-              periodo === "mes" ? "bg-violet-600 text-white" : "text-slate-600"
+              periodo === "mes" ? "bg-oliva-600 text-white" : "text-stone-600"
             }`}
           >
             Este mês
@@ -175,7 +175,7 @@ export default async function DashboardPage({
       </div>
 
       <div>
-        <h2 className="mb-3 text-base font-semibold text-slate-900">
+        <h2 className="mb-3 text-base font-semibold text-stone-900">
           Pipeline e direcionamento do dia
         </h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -197,12 +197,12 @@ export default async function DashboardPage({
 
       {clientesSemComprar.length > 0 && (
         <div>
-          <h2 className="mb-3 text-base font-semibold text-slate-900">
+          <h2 className="mb-3 text-base font-semibold text-stone-900">
             🚨 Clientes sem comprar há mais tempo
           </h2>
-          <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
+          <div className="overflow-hidden rounded-xl border border-stone-200 bg-white">
             <table className="w-full text-left text-sm">
-              <thead className="border-b border-slate-200 bg-slate-50 text-slate-500">
+              <thead className="border-b border-stone-200 bg-stone-50 text-stone-500">
                 <tr>
                   <th className="px-4 py-3 font-medium">Cliente</th>
                   <th className="px-4 py-3 font-medium">Última compra</th>
@@ -212,9 +212,9 @@ export default async function DashboardPage({
               </thead>
               <tbody>
                 {clientesSemComprar.map((c) => (
-                  <tr key={c.id} className="border-b border-slate-100 last:border-0">
-                    <td className="px-4 py-3 font-medium text-slate-900">{c.nome}</td>
-                    <td className="px-4 py-3 text-slate-600">
+                  <tr key={c.id} className="border-b border-stone-100 last:border-0">
+                    <td className="px-4 py-3 font-medium text-stone-900">{c.nome}</td>
+                    <td className="px-4 py-3 text-stone-600">
                       {c.ultimaCompra
                         ? new Date(c.ultimaCompra + "T00:00:00").toLocaleDateString("pt-BR")
                         : "Nunca comprou"}
@@ -224,7 +224,7 @@ export default async function DashboardPage({
                         {c.diasSemComprar ?? "—"} dias
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-slate-600">
+                    <td className="px-4 py-3 text-stone-600">
                       {c.totalCompras} compras (média {formatBRL(c.totalCompras > 0 ? c.valorTotal / c.totalCompras : 0)})
                     </td>
                   </tr>

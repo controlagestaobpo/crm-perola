@@ -26,8 +26,8 @@ export default async function EditarAtendimentoPage({ params }: { params: { id: 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-slate-900">Editar atendimento</h1>
-        <p className="text-sm text-slate-500">Corrija dados de preenchimento ou duplicidade</p>
+        <h1 className="text-2xl font-semibold text-stone-900">Editar atendimento</h1>
+        <p className="text-sm text-stone-500">Corrija dados de preenchimento ou duplicidade</p>
       </div>
 
       <AtendimentoForm

@@ -30,12 +30,12 @@ export default async function ClientesPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-slate-900">Clientes</h1>
-        <p className="text-sm text-slate-500">Sua carteira de clientes</p>
+        <h1 className="text-2xl font-semibold text-stone-900">Clientes</h1>
+        <p className="text-sm text-stone-500">Sua carteira de clientes</p>
       </div>
 
-      <details className="rounded-xl border border-slate-200 bg-white p-4">
-        <summary className="cursor-pointer text-sm font-medium text-violet-700">+ Novo cliente</summary>
+      <details className="rounded-xl border border-stone-200 bg-white p-4">
+        <summary className="cursor-pointer text-sm font-medium text-oliva-700">+ Novo cliente</summary>
         <ClienteForm />
       </details>
 
@@ -48,14 +48,14 @@ export default async function ClientesPage() {
 
       {topClientes.length > 0 && (
         <div>
-          <h2 className="mb-3 text-base font-semibold text-slate-900">🏆 Top clientes</h2>
+          <h2 className="mb-3 text-base font-semibold text-stone-900">🏆 Top clientes</h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 lg:grid-cols-5">
             {topClientes.map((cliente, index) => (
-              <div key={cliente.id} className="rounded-xl border border-slate-200 bg-white p-5 text-center">
+              <div key={cliente.id} className="rounded-xl border border-stone-200 bg-white p-5 text-center">
                 <div className="mb-2 text-3xl">{MEDALHAS[index]}</div>
-                <p className="text-sm font-semibold text-slate-900">{cliente.nome}</p>
-                <p className="mt-1 text-lg font-bold text-violet-600">{formatBRL(cliente.valorTotal)}</p>
-                <p className="mt-1 text-xs text-slate-500">{cliente.totalCompras} compras</p>
+                <p className="text-sm font-semibold text-stone-900">{cliente.nome}</p>
+                <p className="mt-1 text-lg font-bold text-oliva-600">{formatBRL(cliente.valorTotal)}</p>
+                <p className="mt-1 text-xs text-stone-500">{cliente.totalCompras} compras</p>
               </div>
             ))}
           </div>

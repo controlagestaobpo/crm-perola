@@ -37,7 +37,7 @@ function ProdutoCheckbox({
         className="peer sr-only"
       />
       <span
-        className={`block rounded-lg border-2 border-slate-200 px-3 py-2 text-center text-xs font-medium text-slate-700 transition-colors peer-checked:text-white ${corCategoria(produto.categoria)}`}
+        className={`block rounded-lg border-2 border-stone-200 px-3 py-2 text-center text-xs font-medium text-stone-700 transition-colors peer-checked:text-white ${corCategoria(produto.categoria)}`}
       >
         {produto.nome}
       </span>
@@ -62,18 +62,18 @@ const GradeProdutos = forwardRef<
   return (
     <div ref={ref} className="space-y-4">
       <div className="relative max-w-sm">
-        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -transtone-y-1/2 text-stone-400" />
         <input
           type="text"
           value={busca}
           onChange={(e) => setBusca(e.target.value)}
           placeholder="Pesquisar produto..."
-          className="w-full rounded-lg border border-slate-300 py-2 pl-9 pr-3 text-sm"
+          className="w-full rounded-lg border border-stone-300 py-2 pl-9 pr-3 text-sm"
         />
       </div>
 
       {categorias.length === 0 ? (
-        <p className="text-sm text-slate-400">Nenhum produto encontrado.</p>
+        <p className="text-sm text-stone-400">Nenhum produto encontrado.</p>
       ) : (
         categorias.map((categoria) => (
           <div key={categoria}>
@@ -140,7 +140,7 @@ export default function AtendimentoFormFields({ produtos, valoresIniciais }: Ate
     <>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
-          <label className="mb-1 block text-sm font-medium text-slate-700">
+          <label className="mb-1 block text-sm font-medium text-stone-700">
             Resultado do contato
           </label>
           <select
@@ -148,7 +148,7 @@ export default function AtendimentoFormFields({ produtos, valoresIniciais }: Ate
             required
             value={resultado}
             onChange={(e) => setResultado(e.target.value)}
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm"
           >
             <option value="">-- Selecione --</option>
             <option value="compra">✓ Compra realizada</option>
@@ -162,7 +162,7 @@ export default function AtendimentoFormFields({ produtos, valoresIniciais }: Ate
 
         {mostrarValorCompra && (
           <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">
+            <label className="mb-1 block text-sm font-medium text-stone-700">
               💰 Valor da compra (R$)
             </label>
             <input
@@ -171,14 +171,14 @@ export default function AtendimentoFormFields({ produtos, valoresIniciais }: Ate
               step="0.01"
               min="0"
               required
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm"
             />
           </div>
         )}
 
         {mostrarValorNegociacao && (
           <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">
+            <label className="mb-1 block text-sm font-medium text-stone-700">
               📊 Valor em negociação (R$)
             </label>
             <input
@@ -186,20 +186,20 @@ export default function AtendimentoFormFields({ produtos, valoresIniciais }: Ate
               name="valor_negociacao"
               step="0.01"
               min="0"
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm"
             />
           </div>
         )}
 
         {mostrarMotivo && (
           <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">
+            <label className="mb-1 block text-sm font-medium text-stone-700">
               Motivo da não compra
             </label>
             <select
               name="motivo"
               defaultValue={valoresIniciais?.motivo ?? ""}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm"
             >
               <option value="">-- Selecione --</option>
               {MOTIVOS.map((motivo) => (
@@ -210,20 +210,20 @@ export default function AtendimentoFormFields({ produtos, valoresIniciais }: Ate
         )}
 
         <div>
-          <label className="mb-1 block text-sm font-medium text-slate-700">
+          <label className="mb-1 block text-sm font-medium text-stone-700">
             Próximo contato (data preferencial)
           </label>
           <input
             type="date"
             name="proximo_contato"
             defaultValue={valoresIniciais?.proximoContato ?? ""}
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm"
           />
         </div>
       </div>
 
       <div className="mt-4">
-        <label className="mb-2 block text-sm font-medium text-slate-700">Produtos oferecidos</label>
+        <label className="mb-2 block text-sm font-medium text-stone-700">Produtos oferecidos</label>
         <GradeProdutos
           ref={oferecidosRef}
           produtos={produtos}
@@ -257,13 +257,13 @@ export default function AtendimentoFormFields({ produtos, valoresIniciais }: Ate
       )}
 
       <div className="mt-4">
-        <label className="mb-1 block text-sm font-medium text-slate-700">Observações</label>
+        <label className="mb-1 block text-sm font-medium text-stone-700">Observações</label>
         <textarea
           name="observacoes"
           rows={3}
           defaultValue={valoresIniciais?.observacoes ?? ""}
           placeholder="Notas sobre a ligação, feedback do cliente, contexto para próximo contato..."
-          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm"
         />
       </div>
     </>

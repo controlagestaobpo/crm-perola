@@ -142,23 +142,23 @@ export default async function MetasPage({
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Metas</h1>
-          <p className="text-sm text-slate-500">
+          <h1 className="text-2xl font-semibold text-stone-900">Metas</h1>
+          <p className="text-sm text-stone-500">
             Meta vs realizado — {MESES[mes - 1]} de {ano}
           </p>
         </div>
         <form className="flex items-center gap-2" method="get">
-          <select name="ano" defaultValue={ano} className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm">
+          <select name="ano" defaultValue={ano} className="rounded-lg border border-stone-300 px-3 py-1.5 text-sm">
             {[ano - 1, ano, ano + 1].map((a) => (
               <option key={a} value={a}>{a}</option>
             ))}
           </select>
-          <select name="mes" defaultValue={mes} className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm">
+          <select name="mes" defaultValue={mes} className="rounded-lg border border-stone-300 px-3 py-1.5 text-sm">
             {MESES.map((nome, index) => (
               <option key={nome} value={index + 1}>{nome}</option>
             ))}
           </select>
-          <button type="submit" className="rounded-lg bg-slate-200 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-300">
+          <button type="submit" className="rounded-lg bg-stone-200 px-3 py-1.5 text-sm font-medium text-stone-700 hover:bg-stone-300">
             Filtrar
           </button>
         </form>
@@ -173,15 +173,15 @@ export default async function MetasPage({
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <StatCard label="Comissão ganha (total)" value={formatBRL(comissaoTotal)} icon={Wallet} />
-        <div className="flex items-center gap-4 rounded-xl border border-slate-200 bg-white p-5">
-          <div className="rounded-lg bg-violet-50 p-3">
-            <Gauge className="h-5 w-5 text-violet-600" />
+        <div className="flex items-center gap-4 rounded-xl border border-stone-200 bg-white p-5">
+          <div className="rounded-lg bg-oliva-50 p-3">
+            <Gauge className="h-5 w-5 text-oliva-600" />
           </div>
           <div>
-            <p className="text-sm text-slate-500">Ritmo de contatos</p>
-            <p className="text-lg font-semibold text-slate-900">
+            <p className="text-sm text-stone-500">Ritmo de contatos</p>
+            <p className="text-lg font-semibold text-stone-900">
               {ritmoAtualGeral.toFixed(1)} / dia
-              <span className="ml-2 text-sm font-normal text-slate-400">
+              <span className="ml-2 text-sm font-normal text-stone-400">
                 (precisa de {ritmoNecessarioGeral.toFixed(1)}/dia pra bater a meta)
               </span>
             </p>
@@ -203,10 +203,10 @@ export default async function MetasPage({
       </div>
 
       <div>
-        <h2 className="mb-3 text-base font-semibold text-slate-900">🏆 Ranking do período</h2>
-        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
+        <h2 className="mb-3 text-base font-semibold text-stone-900">🏆 Ranking do período</h2>
+        <div className="overflow-hidden rounded-xl border border-stone-200 bg-white">
           <table className="w-full text-left text-sm">
-            <thead className="border-b border-slate-200 bg-slate-50 text-slate-500">
+            <thead className="border-b border-stone-200 bg-stone-50 text-stone-500">
               <tr>
                 <th className="px-4 py-3 font-medium">#</th>
                 <th className="px-4 py-3 font-medium">Vendedor</th>
@@ -220,23 +220,23 @@ export default async function MetasPage({
             </thead>
             <tbody>
               {ranking.map((d, index) => (
-                <tr key={d.vendedor.id} className="border-b border-slate-100 last:border-0">
+                <tr key={d.vendedor.id} className="border-b border-stone-100 last:border-0">
                   <td className="px-4 py-3">{MEDALHAS[index] ?? index + 1}</td>
-                  <td className="px-4 py-3 font-medium text-slate-900">{d.vendedor.nome}</td>
-                  <td className="px-4 py-3 text-slate-600">{formatBRL(Number(d.meta?.meta_valor ?? 0))}</td>
-                  <td className="px-4 py-3 text-slate-600">{formatBRL(d.realizado)}</td>
+                  <td className="px-4 py-3 font-medium text-stone-900">{d.vendedor.nome}</td>
+                  <td className="px-4 py-3 text-stone-600">{formatBRL(Number(d.meta?.meta_valor ?? 0))}</td>
+                  <td className="px-4 py-3 text-stone-600">{formatBRL(d.realizado)}</td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
-                      <div className="h-2 w-24 overflow-hidden rounded-full bg-slate-100">
+                      <div className="h-2 w-24 overflow-hidden rounded-full bg-stone-100">
                         <div
-                          className="h-full rounded-full bg-violet-600"
+                          className="h-full rounded-full bg-oliva-600"
                           style={{ width: `${Math.min(d.percentualMeta, 100)}%` }}
                         />
                       </div>
-                      <span className="text-xs font-medium text-slate-600">{d.percentualMeta.toFixed(0)}%</span>
+                      <span className="text-xs font-medium text-stone-600">{d.percentualMeta.toFixed(0)}%</span>
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-slate-600">{d.conversao.toFixed(1)}%</td>
+                  <td className="px-4 py-3 text-stone-600">{d.conversao.toFixed(1)}%</td>
                   <td className="px-4 py-3">
                     <span
                       className={`rounded-full px-2 py-1 text-xs font-medium ${
@@ -246,8 +246,8 @@ export default async function MetasPage({
                       {d.ritmoAtual.toFixed(1)}/dia (precisa {d.ritmoNecessario.toFixed(1)}/dia)
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-slate-600">
-                    {formatBRL(d.comissao)} <span className="text-xs text-slate-400">({d.comissaoPercentual}%)</span>
+                  <td className="px-4 py-3 text-stone-600">
+                    {formatBRL(d.comissao)} <span className="text-xs text-stone-400">({d.comissaoPercentual}%)</span>
                   </td>
                 </tr>
               ))}
@@ -257,8 +257,8 @@ export default async function MetasPage({
       </div>
 
       {perfil.papel === "master" && (
-        <div className="rounded-xl border border-slate-200 bg-white p-6">
-          <h2 className="mb-4 text-base font-semibold text-slate-900">⚙️ Configurar meta</h2>
+        <div className="rounded-xl border border-stone-200 bg-white p-6">
+          <h2 className="mb-4 text-base font-semibold text-stone-900">⚙️ Configurar meta</h2>
           <MetaForm vendedores={vendedores} ano={ano} mes={mes} />
         </div>
       )}
