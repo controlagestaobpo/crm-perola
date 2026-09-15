@@ -12,7 +12,7 @@ import {
   UserCog,
   CalendarClock,
   FileBarChart,
-  Wheat,
+  Beef,
 } from "lucide-react";
 import type { Papel } from "@/types/database";
 
@@ -32,9 +32,9 @@ export default function Sidebar({ papel }: { papel: Papel }) {
   const pathname = usePathname();
 
   return (
-    <aside className="flex h-screen w-64 flex-col bg-oliva-900 print:hidden">
+    <aside className="flex h-full w-64 flex-col bg-oliva-900 print:hidden">
       <div className="flex items-center gap-2 border-b border-oliva-800 px-6 py-5">
-        <Wheat className="h-6 w-6 text-lime-400" />
+        <Beef className="h-6 w-6 text-lime-400" />
         <span className="text-lg font-semibold text-white">CRM Pérola</span>
       </div>
       <nav className="flex-1 space-y-1 px-3 py-4">

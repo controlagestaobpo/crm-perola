@@ -135,7 +135,8 @@ export default async function DashboardPage({
         <StatCard label="Atendimentos" value={String(totalAtendimentos)} icon={Phone} cor="text-amber-500" />
         <StatCard
           label="Vendas"
-          value={`${totalVendas} (${conversao.toFixed(1)}% conversão)`}
+          value={String(totalVendas)}
+          sub={`${conversao.toFixed(1)}% de conversão`}
           icon={ShoppingCart}
           cor="text-emerald-600"
         />

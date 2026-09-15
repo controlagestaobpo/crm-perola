@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { getClientesComHistorico } from "@/lib/clientes";
-import { contarProdutos, formatBRL } from "@/lib/metrics";
+import { contarProdutos, formatBRL, melhorHorarioContato } from "@/lib/metrics";
 import StatCard from "@/components/StatCard";
 import PieChartCard from "@/components/charts/PieChartCard";
 import BarChartCard from "@/components/charts/BarChartCard";
@@ -85,6 +85,18 @@ export default async function InsightsPage() {
     quantidade: Math.round(p.conversao),
   }));
 
+  const horarios = melhorHorarioContato(atendimentos).slice(0, 6);
+  const graficoHorarios = horarios.map((h) => ({ produto: h.faixa, quantidade: Math.round(h.taxa) }));
+
+  const hojeSemHora = new Date();
+  hojeSemHora.setHours(0, 0, 0, 0);
+  const oportunidadesComUrgencia = oportunidades.map((c) => {
+    const dias = c.proximo_contato
+      ? Math.round((new Date(c.proximo_contato + "T00:00:00").getTime() - hojeSemHora.getTime()) / 86400000)
+      : null;
+    return { ...c, dias };
+  });
+
   return (
     <div className="space-y-8">
       <div>
@@ -108,19 +120,77 @@ export default async function InsightsPage() {
 
         <div className="rounded-xl bg-white/80 backdrop-blur-sm p-5 shadow-sm">
           <p className="mb-4 text-sm font-medium text-stone-700">⭐ Oportunidades rápidas</p>
-          {oportunidades.length === 0 ? (
+          {oportunidadesComUrgencia.length === 0 ? (
             <p className="text-sm text-stone-400">Nenhuma negociação em aberto.</p>
           ) : (
             <ul className="space-y-3">
-              {oportunidades.map((c) => (
-                <li key={c.id} className="text-sm text-stone-700">
-                  <strong>{c.nome}</strong> — {c.estagio === "negociacao" ? "Em negociação" : "Contatado"}
-                  {c.proximo_contato && (
-                    <> · retorno em {new Date(c.proximo_contato + "T00:00:00").toLocaleDateString("pt-BR")}</>
-                  )}
-                </li>
-              ))}
+              {oportunidadesComUrgencia.map((c) => {
+                const corBadge =
+                  c.dias === null
+                    ? "bg-stone-100 text-stone-500"
+                    : c.dias <= 0
+                      ? "bg-red-100 text-red-700"
+                      : c.dias <= 2
+                        ? "bg-amber-100 text-amber-700"
+                        : "bg-emerald-100 text-emerald-700";
+                const textoBadge =
+                  c.dias === null
+                    ? "Sem data"
+                    : c.dias === 0
+                      ? "Hoje"
+                      : c.dias < 0
+                        ? `Atrasado ${Math.abs(c.dias)}d`
+                        : `Em ${c.dias}d`;
+                return (
+                  <li key={c.id} className="flex items-center justify-between gap-3 text-sm">
+                    <div>
+                      <strong className="text-stone-900">{c.nome}</strong>
+                      <span className="text-stone-500">
+                        {" "}
+                        — {c.estagio === "negociacao" ? "Em negociação" : "Contatado"}
+                      </span>
+                    </div>
+                    <span className={`shrink-0 rounded-full px-2 py-1 text-xs font-medium ${corBadge}`}>
+                      {textoBadge}
+                    </span>
+                  </li>
+                );
+              })}
             </ul>
+          )}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <BarChartCard
+          title="📞 Melhor horário para ligar"
+          data={graficoHorarios}
+          cor="#3b82f6"
+        />
+
+        <div className="rounded-2xl bg-white/80 backdrop-blur-sm p-5 shadow-sm">
+          <p className="mb-4 text-sm font-medium text-stone-700">Detalhe: atendimento por horário</p>
+          {horarios.length === 0 ? (
+            <p className="text-sm text-stone-400">Sem dados neste mês ainda.</p>
+          ) : (
+            <div className="space-y-4">
+              {horarios.map((h) => (
+                <div key={h.hora}>
+                  <div className="mb-1 flex items-center justify-between text-sm">
+                    <strong className="text-stone-900">{h.faixa}</strong>
+                    <span className="text-blue-600">
+                      {h.atendidas}/{h.total} atendidas ({h.taxa.toFixed(0)}%)
+                    </span>
+                  </div>
+                  <div className="h-2 overflow-hidden rounded-full bg-stone-100">
+                    <div
+                      className="h-full rounded-full bg-gradient-to-r from-blue-500 to-blue-400"
+                      style={{ width: `${Math.min(h.taxa, 100)}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
         </div>
       </div>

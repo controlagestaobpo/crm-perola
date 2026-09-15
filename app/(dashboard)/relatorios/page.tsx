@@ -11,7 +11,17 @@ import {
   somaValor,
 } from "@/lib/metrics";
 import PrintButton from "@/components/PrintButton";
+import ProdutosTabela from "@/components/ProdutosTabela";
 import type { Atendimento, Meta, Perfil } from "@/types/database";
+
+const CORES_RESULTADO: Record<string, string> = {
+  Compra: "text-emerald-600",
+  Negociação: "text-blue-600",
+  Interessado: "text-purple-600",
+  "Sem interesse": "text-orange-500",
+  "Não atendeu": "text-stone-500",
+  Indisponível: "text-amber-500",
+};
 
 export const dynamic = "force-dynamic";
 
@@ -91,7 +101,7 @@ export default async function RelatoriosPage({
       const v = vendidos.find((x) => x.produto === o.produto)?.quantidade ?? 0;
       return { produto: o.produto, oferecido: o.quantidade, vendido: v, conversao: o.quantidade > 0 ? (v / o.quantidade) * 100 : 0 };
     })
-    .sort((a, b) => b.oferecido - a.oferecido);
+    .sort((a, b) => b.conversao - a.conversao || b.oferecido - a.oferecido);
 
   const topClientes = [...clientesHistorico].sort((a, b) => b.valorTotal - a.valorTotal).filter((c) => c.valorTotal > 0).slice(0, 10);
   const clientesInativos = clientesHistorico
@@ -221,11 +231,11 @@ export default async function RelatoriosPage({
       {/* RESULTADOS */}
       <section className="break-inside-avoid">
         <h2 className="mb-3 text-lg font-semibold text-stone-900">3. Distribuição de resultados</h2>
-        <div className="flex flex-wrap gap-3">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
           {resultadosDistribuicao.map((r) => (
-            <div key={r.nome} className="rounded-lg bg-white/80 backdrop-blur-sm shadow-sm px-4 py-2 text-sm">
-              <span className="font-medium text-stone-900">{r.nome}:</span>{" "}
-              <span className="text-stone-600">{r.quantidade}</span>
+            <div key={r.nome} className="rounded-2xl bg-white/80 backdrop-blur-sm p-4 shadow-sm">
+              <p className="text-xs uppercase tracking-wide text-stone-400">{r.nome}</p>
+              <p className={`text-2xl font-bold ${CORES_RESULTADO[r.nome] ?? "text-stone-700"}`}>{r.quantidade}</p>
             </div>
           ))}
         </div>
@@ -235,32 +245,7 @@ export default async function RelatoriosPage({
       <section className="break-inside-avoid">
         <h2 className="mb-3 text-lg font-semibold text-stone-900">4. Produtos — oferecidos vs. vendidos</h2>
         <div className="overflow-x-auto rounded-xl bg-white/80 backdrop-blur-sm shadow-sm">
-          <table className="w-full text-left text-sm">
-            <thead className="border-b border-stone-200 bg-stone-50 text-stone-500">
-              <tr>
-                <th className="px-3 py-2 font-medium">Produto</th>
-                <th className="px-3 py-2 font-medium">Oferecido</th>
-                <th className="px-3 py-2 font-medium">Vendido</th>
-                <th className="px-3 py-2 font-medium">Conversão</th>
-              </tr>
-            </thead>
-            <tbody>
-              {produtosCompletos.length === 0 ? (
-                <tr>
-                  <td colSpan={4} className="px-3 py-4 text-center text-stone-400">Sem dados no período.</td>
-                </tr>
-              ) : (
-                produtosCompletos.map((p) => (
-                  <tr key={p.produto} className="border-b border-stone-100 last:border-0">
-                    <td className="px-3 py-2 text-stone-900">{p.produto}</td>
-                    <td className="px-3 py-2 text-stone-600">{p.oferecido}x</td>
-                    <td className="px-3 py-2 text-stone-600">{p.vendido}x</td>
-                    <td className="px-3 py-2 text-stone-600">{p.conversao.toFixed(0)}%</td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+          <ProdutosTabela dados={produtosCompletos} />
         </div>
       </section>
 

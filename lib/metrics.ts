@@ -102,3 +102,28 @@ export function contarProdutos(atendimentos: Atendimento[], campo: "produtos_ofe
 export function formatBRL(valor: number) {
   return valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
+
+const OFFSET_HORARIO_BRASIL = -3;
+
+export function melhorHorarioContato(atendimentos: Atendimento[]) {
+  const buckets = new Map<number, { total: number; atendidas: number }>();
+
+  for (const a of atendimentos) {
+    const hora = (new Date(a.criado_em).getUTCHours() + OFFSET_HORARIO_BRASIL + 24) % 24;
+    const atual = buckets.get(hora) ?? { total: 0, atendidas: 0 };
+    atual.total += 1;
+    if (a.resultado !== "nao_atendeu") atual.atendidas += 1;
+    buckets.set(hora, atual);
+  }
+
+  return Array.from(buckets.entries())
+    .map(([hora, { total, atendidas }]) => ({
+      hora,
+      faixa: `${String(hora).padStart(2, "0")}h-${String((hora + 1) % 24).padStart(2, "0")}h`,
+      total,
+      atendidas,
+      taxa: total > 0 ? (atendidas / total) * 100 : 0,
+    }))
+    .filter((b) => b.total > 0)
+    .sort((a, b) => b.taxa - a.taxa || b.total - a.total);
+}
