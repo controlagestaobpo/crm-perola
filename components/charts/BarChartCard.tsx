@@ -9,9 +9,9 @@ interface BarChartCardProps {
   altura?: string;
 }
 
-export default function BarChartCard({ title, data, cor = "#0f9e8c", altura = "h-72" }: BarChartCardProps) {
+export default function BarChartCard({ title, data, cor = "#84cc16", altura = "h-72" }: BarChartCardProps) {
   return (
-    <div className={`${altura} w-full rounded-xl border border-stone-200 bg-white p-5`}>
+    <div className={`${altura} w-full rounded-2xl bg-white p-5 shadow-sm`}>
       <p className="mb-4 text-sm font-medium text-stone-700">{title}</p>
       {data.length === 0 ? (
         <div className="flex h-[90%] items-center justify-center text-sm text-stone-400">

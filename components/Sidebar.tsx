@@ -34,7 +34,7 @@ export default function Sidebar({ papel }: { papel: Papel }) {
   return (
     <aside className="flex h-screen w-64 flex-col bg-oliva-900 print:hidden">
       <div className="flex items-center gap-2 border-b border-oliva-800 px-6 py-5">
-        <Gem className="h-6 w-6 text-trigo-400" />
+        <Gem className="h-6 w-6 text-lime-400" />
         <span className="text-lg font-semibold text-white">CRM Pérola</span>
       </div>
       <nav className="flex-1 space-y-1 px-3 py-4">
@@ -46,13 +46,13 @@ export default function Sidebar({ papel }: { papel: Papel }) {
               <Link
                 key={href}
                 href={href}
-                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                className={`flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold transition-colors ${
                   active
-                    ? "bg-oliva-700 text-white"
+                    ? "bg-lime-400 text-oliva-900"
                     : "text-oliva-100/80 hover:bg-oliva-800 hover:text-white"
                 }`}
               >
-                <Icon className={`h-4 w-4 ${active ? "text-trigo-400" : ""}`} />
+                <Icon className="h-4 w-4" />
                 {label}
               </Link>
             );

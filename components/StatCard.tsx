@@ -4,18 +4,17 @@ interface StatCardProps {
   label: string;
   value: string;
   icon: LucideIcon;
+  cor?: string;
 }
 
-export default function StatCard({ label, value, icon: Icon }: StatCardProps) {
+export default function StatCard({ label, value, icon: Icon, cor = "text-oliva-700" }: StatCardProps) {
   return (
-    <div className="flex items-center gap-4 rounded-xl border border-stone-200 bg-white p-5">
-      <div className="rounded-lg bg-oliva-50 p-3">
-        <Icon className="h-5 w-5 text-oliva-600" />
+    <div className="rounded-2xl bg-white p-5 shadow-sm">
+      <div className="mb-2 flex items-center gap-1.5 text-stone-400">
+        <Icon className="h-3.5 w-3.5" />
+        <p className="text-xs font-medium uppercase tracking-wide">{label}</p>
       </div>
-      <div>
-        <p className="text-sm text-stone-500">{label}</p>
-        <p className="text-2xl font-semibold text-stone-900">{value}</p>
-      </div>
+      <p className={`text-3xl font-bold ${cor}`}>{value}</p>
     </div>
   );
 }

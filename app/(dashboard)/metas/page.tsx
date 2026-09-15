@@ -165,27 +165,25 @@ export default async function MetasPage({
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Meta do período" value={formatBRL(metaTotal)} icon={Target} />
-        <StatCard label="Realizado" value={formatBRL(realizadoTotal)} icon={TrendingUp} />
-        <StatCard label="Faltam para meta" value={formatBRL(faltam)} icon={AlertCircle} />
-        <StatCard label="Conversão geral" value={`${conversaoGeral.toFixed(1)}%`} icon={Percent} />
+        <StatCard label="Meta do período" value={formatBRL(metaTotal)} icon={Target} cor="text-blue-600" />
+        <StatCard label="Realizado" value={formatBRL(realizadoTotal)} icon={TrendingUp} cor="text-emerald-600" />
+        <StatCard label="Faltam para meta" value={formatBRL(faltam)} icon={AlertCircle} cor="text-orange-500" />
+        <StatCard label="Conversão geral" value={`${conversaoGeral.toFixed(1)}%`} icon={Percent} cor="text-amber-500" />
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <StatCard label="Comissão ganha (total)" value={formatBRL(comissaoTotal)} icon={Wallet} />
-        <div className="flex items-center gap-4 rounded-xl border border-stone-200 bg-white p-5">
-          <div className="rounded-lg bg-oliva-50 p-3">
-            <Gauge className="h-5 w-5 text-oliva-600" />
+        <StatCard label="Comissão ganha (total)" value={formatBRL(comissaoTotal)} icon={Wallet} cor="text-emerald-600" />
+        <div className="rounded-2xl bg-white p-5 shadow-sm">
+          <div className="mb-2 flex items-center gap-1.5 text-stone-400">
+            <Gauge className="h-3.5 w-3.5" />
+            <p className="text-xs font-medium uppercase tracking-wide">Ritmo de contatos</p>
           </div>
-          <div>
-            <p className="text-sm text-stone-500">Ritmo de contatos</p>
-            <p className="text-lg font-semibold text-stone-900">
-              {ritmoAtualGeral.toFixed(1)} / dia
-              <span className="ml-2 text-sm font-normal text-stone-400">
-                (precisa de {ritmoNecessarioGeral.toFixed(1)}/dia pra bater a meta)
-              </span>
-            </p>
-          </div>
+          <p className="text-3xl font-bold text-blue-600">
+            {ritmoAtualGeral.toFixed(1)}
+            <span className="ml-2 text-sm font-normal text-stone-400">
+              / dia (precisa {ritmoNecessarioGeral.toFixed(1)}/dia)
+            </span>
+          </p>
         </div>
       </div>
 
@@ -196,7 +194,7 @@ export default async function MetasPage({
           xKey="mes"
           lines={[
             { key: "meta", nome: "Meta", cor: "#94a3b8", tracejada: true },
-            { key: "realizado", nome: "Realizado", cor: "#7c3aed" },
+            { key: "realizado", nome: "Realizado", cor: "#84cc16" },
           ]}
         />
         <BarChartCard title="Realizado por vendedor no período" data={graficoVendedores} />

@@ -40,10 +40,10 @@ export default async function ClientesPage() {
       </details>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Total de clientes" value={String(totalClientes)} icon={Users} />
-        <StatCard label="Clientes ativos (30d)" value={String(clientesAtivos)} icon={UserCheck} />
-        <StatCard label="Valor total da carteira" value={formatBRL(valorTotalCarteira)} icon={Wallet} />
-        <StatCard label="Ticket médio" value={formatBRL(ticketMedio)} icon={Receipt} />
+        <StatCard label="Total de clientes" value={String(totalClientes)} icon={Users} cor="text-blue-600" />
+        <StatCard label="Clientes ativos (30d)" value={String(clientesAtivos)} icon={UserCheck} cor="text-amber-500" />
+        <StatCard label="Valor total da carteira" value={formatBRL(valorTotalCarteira)} icon={Wallet} cor="text-emerald-600" />
+        <StatCard label="Ticket médio" value={formatBRL(ticketMedio)} icon={Receipt} cor="text-orange-500" />
       </div>
 
       {topClientes.length > 0 && (

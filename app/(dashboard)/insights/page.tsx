@@ -85,11 +85,11 @@ export default async function InsightsPage() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
-        <StatCard label="Taxa de conversão" value={`${conversaoGeral.toFixed(1)}%`} icon={Percent} />
-        <StatCard label="Ticket médio" value={formatBRL(ticketMedio)} icon={Receipt} />
-        <StatCard label="Clientes sem comprar (30d+)" value={String(clientesSemComprar)} icon={AlertTriangle} />
-        <StatCard label="Atendimentos no mês" value={String(totalAtendimentos)} icon={Clock} />
-        <StatCard label="Comissão do mês (total)" value={formatBRL(comissaoTotal)} icon={Wallet} />
+        <StatCard label="Taxa de conversão" value={`${conversaoGeral.toFixed(1)}%`} icon={Percent} cor="text-blue-600" />
+        <StatCard label="Ticket médio" value={formatBRL(ticketMedio)} icon={Receipt} cor="text-amber-500" />
+        <StatCard label="Clientes sem comprar (30d+)" value={String(clientesSemComprar)} icon={AlertTriangle} cor="text-orange-500" />
+        <StatCard label="Atendimentos no mês" value={String(totalAtendimentos)} icon={Clock} cor="text-emerald-600" />
+        <StatCard label="Comissão do mês (total)" value={formatBRL(comissaoTotal)} icon={Wallet} cor="text-blue-600" />
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">

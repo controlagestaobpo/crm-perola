@@ -121,22 +121,30 @@ export default async function DashboardPage({
           label={periodo === "hoje" ? "Meta diária" : "Meta do mês"}
           value={formatBRL(periodo === "hoje" ? metaDiaria : metaMensalTotal)}
           icon={Target}
+          cor="text-blue-600"
         />
-        <StatCard label={periodo === "hoje" ? "Vendido hoje" : "Vendido no mês"} value={formatBRL(vendido)} icon={DollarSign} />
+        <StatCard
+          label={periodo === "hoje" ? "Vendido hoje" : "Vendido no mês"}
+          value={formatBRL(vendido)}
+          icon={DollarSign}
+          cor="text-emerald-600"
+        />
         {periodo === "mes" && (
-          <StatCard label="Projeção (fim do mês)" value={formatBRL(projecao)} icon={Receipt} />
+          <StatCard label="Projeção (fim do mês)" value={formatBRL(projecao)} icon={Receipt} cor="text-orange-500" />
         )}
-        <StatCard label="Atendimentos" value={String(totalAtendimentos)} icon={Phone} />
+        <StatCard label="Atendimentos" value={String(totalAtendimentos)} icon={Phone} cor="text-amber-500" />
         <StatCard
           label="Vendas"
           value={`${totalVendas} (${conversao.toFixed(1)}% conversão)`}
           icon={ShoppingCart}
+          cor="text-emerald-600"
         />
-        <StatCard label="Ticket médio" value={formatBRL(ticketMedio)} icon={DollarSign} />
+        <StatCard label="Ticket médio" value={formatBRL(ticketMedio)} icon={DollarSign} cor="text-blue-600" />
         <StatCard
           label={periodo === "hoje" ? "Meta de atendimentos (dia)" : "Meta de atendimentos (mês)"}
           value={`${totalAtendimentos} / ${Math.round(metaAtendimentosPeriodo)}`}
           icon={CalendarCheck}
+          cor="text-orange-500"
         />
       </div>
 
@@ -148,7 +156,7 @@ export default async function DashboardPage({
             xKey="hora"
             lines={[
               { key: "meta", nome: "Ritmo necessário", cor: "#94a3b8", tracejada: true },
-              { key: "valor", nome: "Atendimentos", cor: "#7c3aed" },
+              { key: "valor", nome: "Atendimentos", cor: "#84cc16" },
             ]}
           />
         ) : (
@@ -156,7 +164,7 @@ export default async function DashboardPage({
             title="Evolução da meta no mês"
             data={agruparPorDiaAcumulado(atendimentos, ano, mes)}
             xKey="dia"
-            lines={[{ key: "valor", nome: "Realizado (R$)", cor: "#7c3aed" }]}
+            lines={[{ key: "valor", nome: "Realizado (R$)", cor: "#84cc16" }]}
           />
         )}
         <PieChartCard title="Resultados dos atendimentos" data={agruparResultados(atendimentos)} />
@@ -170,7 +178,7 @@ export default async function DashboardPage({
         <ProdutoChartComTabela
           title="Produtos vendidos"
           dados={contarProdutos(atendimentos, "produtos_vendidos")}
-          cor="#16b896"
+          cor="#3b82f6"
         />
       </div>
 
