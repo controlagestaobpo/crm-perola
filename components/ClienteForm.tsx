@@ -7,13 +7,16 @@ import { ESTADO_INICIAL } from "@/lib/form-state";
 import SubmitButton from "@/components/SubmitButton";
 import FormMessage from "@/components/FormMessage";
 
-export default function ClienteForm() {
+export default function ClienteForm({ onSalvo }: { onSalvo?: () => void } = {}) {
   const [state, formAction] = useFormState(criarCliente, ESTADO_INICIAL);
   const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
-    if (state.success) formRef.current?.reset();
-  }, [state.success]);
+    if (state.success) {
+      formRef.current?.reset();
+      onSalvo?.();
+    }
+  }, [state.success, onSalvo]);
 
   return (
     <form ref={formRef} action={formAction} className="mt-4 space-y-4">

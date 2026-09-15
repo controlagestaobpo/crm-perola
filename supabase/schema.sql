@@ -25,7 +25,7 @@ create table if not exists perfis (
   organizacao_id uuid not null references organizacoes(id) on delete cascade,
   nome text not null,
   email text not null,
-  papel text not null check (papel in ('master', 'vendedor')),
+  papel text not null check (papel in ('master', 'gerente', 'vendedor')),
   criado_em timestamptz not null default now()
 );
 
@@ -34,12 +34,20 @@ create table if not exists convites (
   organizacao_id uuid not null references organizacoes(id) on delete cascade,
   email text not null,
   nome text not null,
-  papel text not null check (papel in ('master', 'vendedor')),
+  papel text not null check (papel in ('master', 'gerente', 'vendedor')),
   criado_por uuid references perfis(id) on delete set null,
   usado boolean not null default false,
   criado_em timestamptz not null default now(),
   unique (organizacao_id, email)
 );
+
+-- Adiciona o papel "gerente" (define metas/comissao dos vendedores, sem ver Relatorios)
+-- em bancos que ja existiam com so master/vendedor.
+alter table perfis drop constraint if exists perfis_papel_check;
+alter table perfis add constraint perfis_papel_check check (papel in ('master', 'gerente', 'vendedor'));
+
+alter table convites drop constraint if exists convites_papel_check;
+alter table convites add constraint convites_papel_check check (papel in ('master', 'gerente', 'vendedor'));
 
 create table if not exists produtos (
   id uuid primary key default gen_random_uuid(),
@@ -391,7 +399,7 @@ drop policy if exists "Ver atendimentos da organizacao" on atendimentos;
 create policy "Ver atendimentos da organizacao" on atendimentos
   for select using (
     organizacao_id = public.minha_organizacao()
-    and (public.meu_papel() = 'master' or vendedor_id = auth.uid())
+    and (public.meu_papel() in ('master', 'gerente') or vendedor_id = auth.uid())
   );
 
 drop policy if exists "Criar atendimentos" on atendimentos;
@@ -419,10 +427,11 @@ drop policy if exists "Ver metas da organizacao" on metas;
 create policy "Ver metas da organizacao" on metas
   for select using (
     organizacao_id = public.minha_organizacao()
-    and (public.meu_papel() = 'master' or vendedor_id = auth.uid())
+    and (public.meu_papel() in ('master', 'gerente') or vendedor_id = auth.uid())
   );
 
 drop policy if exists "Master gerencia metas" on metas;
-create policy "Master gerencia metas" on metas
-  for all using (organizacao_id = public.minha_organizacao() and public.meu_papel() = 'master')
-  with check (organizacao_id = public.minha_organizacao() and public.meu_papel() = 'master');
+drop policy if exists "Master e gerente gerenciam metas" on metas;
+create policy "Master e gerente gerenciam metas" on metas
+  for all using (organizacao_id = public.minha_organizacao() and public.meu_papel() in ('master', 'gerente'))
+  with check (organizacao_id = public.minha_organizacao() and public.meu_papel() in ('master', 'gerente'));

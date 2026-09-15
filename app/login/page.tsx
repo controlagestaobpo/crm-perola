@@ -33,7 +33,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-lime-50 px-4">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-oliva-900 via-oliva-800 to-oliva-950 px-4">
       <div className="w-full max-w-sm rounded-xl bg-white shadow-sm p-8">
         <div className="mb-8 flex items-center justify-center gap-2">
           <Wheat className="h-6 w-6 text-oliva-600" />

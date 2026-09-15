@@ -11,7 +11,7 @@ interface PieChartCardProps {
 
 export default function PieChartCard({ title, data }: PieChartCardProps) {
   return (
-    <div className="h-72 w-full rounded-2xl bg-white p-5 shadow-sm">
+    <div className="h-72 w-full rounded-2xl bg-white/80 backdrop-blur-sm p-5 shadow-sm">
       <p className="mb-4 text-sm font-medium text-stone-700">{title}</p>
       {data.length === 0 ? (
         <div className="flex h-[85%] items-center justify-center text-sm text-stone-400">

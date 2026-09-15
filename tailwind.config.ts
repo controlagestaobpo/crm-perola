@@ -24,6 +24,7 @@ const config: Config = {
           700: "#474d2b",
           800: "#3a3f26",
           900: "#313522",
+          950: "#1c1e13",
         },
         // trigo/palha — acento secundário (calor, colheita)
         trigo: {

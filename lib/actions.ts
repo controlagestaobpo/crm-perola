@@ -274,7 +274,9 @@ export async function removerConvite(conviteId: string) {
 
 export async function salvarMeta(_prevState: ActionState, formData: FormData): Promise<ActionState> {
   const perfil = await getPerfilAtual();
-  if (!perfil || perfil.papel !== "master") return { error: "Apenas o master define metas." };
+  if (!perfil || (perfil.papel !== "master" && perfil.papel !== "gerente")) {
+    return { error: "Apenas master ou gerente definem metas." };
+  }
 
   const supabase = createClient();
   const vendedorId = String(formData.get("vendedor_id") ?? "");

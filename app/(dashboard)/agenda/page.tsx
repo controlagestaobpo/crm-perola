@@ -66,7 +66,7 @@ export default async function AgendaPage() {
       </div>
 
       {itens.length === 0 ? (
-        <div className="rounded-xl bg-white shadow-sm p-10 text-center text-sm text-stone-400">
+        <div className="rounded-xl bg-white/80 backdrop-blur-sm shadow-sm p-10 text-center text-sm text-stone-400">
           Nenhum contato agendado ainda. Ao registrar um atendimento, preencha
           &quot;Próximo contato&quot; para ele aparecer aqui.
         </div>
@@ -84,7 +84,7 @@ export default async function AgendaPage() {
                 {lista.map((item) => (
                   <div
                     key={item.clienteId}
-                    className={`flex items-start gap-4 rounded-xl border-l-4 bg-white p-4 shadow-sm ${estilo}`}
+                    className={`flex items-start gap-4 rounded-xl border-l-4 bg-white/80 backdrop-blur-sm p-4 shadow-sm ${estilo}`}
                   >
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-oliva-100 text-sm font-semibold text-oliva-700">
                       {Iniciais(item.clienteNome)}

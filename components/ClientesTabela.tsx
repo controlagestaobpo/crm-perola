@@ -11,7 +11,7 @@ export default function ClientesTabela({ clientes }: { clientes: ClienteComHisto
 
   return (
     <>
-      <div className="overflow-x-auto rounded-xl bg-white shadow-sm">
+      <div className="overflow-x-auto rounded-xl bg-white/80 backdrop-blur-sm shadow-sm">
         <table className="w-full text-left text-sm">
           <thead className="border-b border-stone-200 bg-stone-50 text-stone-500">
             <tr>

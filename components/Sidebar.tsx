@@ -17,12 +17,12 @@ import {
 import type { Papel } from "@/types/database";
 
 const links = [
-  { href: "/", label: "Dashboard", icon: LayoutDashboard, papeis: ["master", "vendedor"] },
-  { href: "/agenda", label: "Agenda", icon: CalendarClock, papeis: ["master", "vendedor"] },
-  { href: "/atendimentos", label: "Atendimentos", icon: Handshake, papeis: ["master", "vendedor"] },
-  { href: "/clientes", label: "Clientes", icon: Users, papeis: ["master", "vendedor"] },
-  { href: "/metas", label: "Metas", icon: Target, papeis: ["master", "vendedor"] },
-  { href: "/insights", label: "Insights", icon: Lightbulb, papeis: ["master", "vendedor"] },
+  { href: "/", label: "Dashboard", icon: LayoutDashboard, papeis: ["master", "gerente", "vendedor"] },
+  { href: "/agenda", label: "Agenda", icon: CalendarClock, papeis: ["master", "gerente", "vendedor"] },
+  { href: "/atendimentos", label: "Atendimentos", icon: Handshake, papeis: ["master", "gerente", "vendedor"] },
+  { href: "/clientes", label: "Clientes", icon: Users, papeis: ["master", "gerente", "vendedor"] },
+  { href: "/metas", label: "Metas", icon: Target, papeis: ["master", "gerente", "vendedor"] },
+  { href: "/insights", label: "Insights", icon: Lightbulb, papeis: ["master", "gerente", "vendedor"] },
   { href: "/relatorios", label: "Relatórios", icon: FileBarChart, papeis: ["master"] },
   { href: "/produtos", label: "Produtos", icon: Package, papeis: ["master"] },
   { href: "/usuarios", label: "Usuários", icon: UserCog, papeis: ["master"] },

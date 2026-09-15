@@ -7,6 +7,7 @@ import { moverClienteKanban } from "@/lib/actions";
 import { estagioParaResultado } from "@/lib/estagio";
 import KanbanAtendimentoModal from "@/components/KanbanAtendimentoModal";
 import NovoAtendimentoModal from "@/components/NovoAtendimentoModal";
+import NovoClienteModal from "@/components/NovoClienteModal";
 import type { ClienteComHistorico } from "@/lib/clientes";
 import type { Estagio, Perfil, Produto, ResultadoAtendimento } from "@/types/database";
 
@@ -47,6 +48,7 @@ export default function KanbanAtendimentos({
     novoEstagio: Estagio;
   } | null>(null);
   const [mostrarNovo, setMostrarNovo] = useState(false);
+  const [mostrarNovoCliente, setMostrarNovoCliente] = useState(false);
 
   function handleDragEnd(result: DropResult) {
     if (!result.destination) return;
@@ -77,7 +79,15 @@ export default function KanbanAtendimentos({
 
   return (
     <>
-      <div className="mb-4 flex justify-end">
+      <div className="mb-4 flex justify-end gap-2">
+        <button
+          type="button"
+          onClick={() => setMostrarNovoCliente(true)}
+          className="flex items-center gap-1.5 rounded-lg bg-white px-4 py-2 text-sm font-medium text-oliva-700 shadow-sm hover:bg-oliva-50"
+        >
+          <Plus className="h-4 w-4" />
+          Novo cliente
+        </button>
         <button
           type="button"
           onClick={() => setMostrarNovo(true)}
@@ -111,7 +121,7 @@ export default function KanbanAtendimentos({
                               ref={provided.innerRef}
                               {...provided.draggableProps}
                               {...provided.dragHandleProps}
-                              className="rounded-lg border-l-4 border-oliva-500 bg-white p-3 shadow-sm"
+                              className="rounded-lg border-l-4 border-oliva-500 bg-white/80 p-3 shadow-sm backdrop-blur-sm"
                             >
                               <p className="text-sm font-semibold text-stone-900">{cliente.nome}</p>
                               <p className="text-xs text-stone-500">
@@ -168,6 +178,8 @@ export default function KanbanAtendimentos({
           }}
         />
       )}
+
+      {mostrarNovoCliente && <NovoClienteModal onFechar={() => setMostrarNovoCliente(false)} />}
     </>
   );
 }

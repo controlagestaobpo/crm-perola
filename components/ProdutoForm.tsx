@@ -16,7 +16,7 @@ export default function ProdutoForm({ categorias }: { categorias: string[] }) {
   }, [state.success]);
 
   return (
-    <form ref={formRef} action={formAction} className="rounded-xl bg-white shadow-sm p-6">
+    <form ref={formRef} action={formAction} className="rounded-xl bg-white/80 backdrop-blur-sm shadow-sm p-6">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div>
           <label className="mb-1 block text-sm font-medium text-stone-700">Categoria</label>

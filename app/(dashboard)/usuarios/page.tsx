@@ -48,7 +48,7 @@ export default async function UsuariosPage() {
               return (
                 <div
                   key={convite.id}
-                  className="flex flex-col gap-2 rounded-lg bg-white shadow-sm px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+                  className="flex flex-col gap-2 rounded-lg bg-white/80 backdrop-blur-sm shadow-sm px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div>
                     <p className="text-sm font-medium text-stone-900">
@@ -70,7 +70,7 @@ export default async function UsuariosPage() {
 
       <div>
         <h2 className="mb-3 text-base font-semibold text-stone-900">Equipe</h2>
-        <div className="overflow-hidden rounded-xl bg-white shadow-sm">
+        <div className="overflow-hidden rounded-xl bg-white/80 backdrop-blur-sm shadow-sm">
           <table className="w-full text-left text-sm">
             <thead className="border-b border-stone-200 bg-stone-50 text-stone-500">
               <tr>

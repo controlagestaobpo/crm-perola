@@ -1,4 +1,4 @@
-export type Papel = "master" | "vendedor";
+export type Papel = "master" | "gerente" | "vendedor";
 
 export type Estagio = "prospectar" | "contatado" | "negociacao" | "vendido" | "recusado";
 
