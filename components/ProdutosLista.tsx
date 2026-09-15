@@ -50,7 +50,7 @@ export default function ProdutosLista({ produtos }: { produtos: Produto[] }) {
               .map((produto) => (
                 <div
                   key={produto.id}
-                  className="flex items-center justify-between rounded-lg border border-stone-200 bg-white px-4 py-3"
+                  className="flex items-center justify-between rounded-lg bg-white shadow-sm px-4 py-3"
                 >
                   <span className="text-sm font-medium text-stone-900">{produto.nome}</span>
                   <form action={removerProduto.bind(null, produto.id)}>

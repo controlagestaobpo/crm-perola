@@ -202,7 +202,7 @@ export default async function MetasPage({
 
       <div>
         <h2 className="mb-3 text-base font-semibold text-stone-900">🏆 Ranking do período</h2>
-        <div className="overflow-hidden rounded-xl border border-stone-200 bg-white">
+        <div className="overflow-hidden rounded-xl bg-white shadow-sm">
           <table className="w-full text-left text-sm">
             <thead className="border-b border-stone-200 bg-stone-50 text-stone-500">
               <tr>
@@ -255,7 +255,7 @@ export default async function MetasPage({
       </div>
 
       {perfil.papel === "master" && (
-        <div className="rounded-xl border border-stone-200 bg-white p-6">
+        <div className="rounded-xl bg-white shadow-sm p-6">
           <h2 className="mb-4 text-base font-semibold text-stone-900">⚙️ Configurar meta</h2>
           <MetaForm vendedores={vendedores} ano={ano} mes={mes} />
         </div>

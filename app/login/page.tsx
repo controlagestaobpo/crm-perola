@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Gem } from "lucide-react";
+import { Wheat } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
@@ -33,10 +33,10 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-stone-50 px-4">
-      <div className="w-full max-w-sm rounded-xl border border-stone-200 bg-white p-8">
+    <div className="flex min-h-screen items-center justify-center bg-lime-50 px-4">
+      <div className="w-full max-w-sm rounded-xl bg-white shadow-sm p-8">
         <div className="mb-8 flex items-center justify-center gap-2">
-          <Gem className="h-6 w-6 text-oliva-600" />
+          <Wheat className="h-6 w-6 text-oliva-600" />
           <span className="text-lg font-semibold text-stone-900">CRM Pérola</span>
         </div>
 

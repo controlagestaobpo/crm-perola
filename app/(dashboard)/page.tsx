@@ -96,7 +96,7 @@ export default async function DashboardPage({
           <h1 className="text-2xl font-semibold text-stone-900">Dashboard</h1>
           <p className="text-sm text-stone-500">Visão geral do seu CRM Pérola</p>
         </div>
-        <div className="flex rounded-lg border border-stone-200 bg-white p-1">
+        <div className="flex rounded-lg bg-white shadow-sm p-1">
           <Link
             href="/?periodo=hoje"
             className={`rounded-md px-4 py-1.5 text-sm font-medium ${
@@ -208,7 +208,7 @@ export default async function DashboardPage({
           <h2 className="mb-3 text-base font-semibold text-stone-900">
             🚨 Clientes sem comprar há mais tempo
           </h2>
-          <div className="overflow-hidden rounded-xl border border-stone-200 bg-white">
+          <div className="overflow-hidden rounded-xl bg-white shadow-sm">
             <table className="w-full text-left text-sm">
               <thead className="border-b border-stone-200 bg-stone-50 text-stone-500">
                 <tr>

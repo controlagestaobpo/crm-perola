@@ -93,7 +93,7 @@ export default async function InsightsPage() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <div className="rounded-xl border border-stone-200 bg-white p-5">
+        <div className="rounded-xl bg-white shadow-sm p-5">
           <p className="mb-4 text-sm font-medium text-stone-700">🚨 Razões de não-venda</p>
           {razoesNaoVenda.length === 0 ? (
             <p className="text-sm text-stone-400">Sem registros neste mês.</p>
@@ -108,7 +108,7 @@ export default async function InsightsPage() {
           )}
         </div>
 
-        <div className="rounded-xl border border-stone-200 bg-white p-5">
+        <div className="rounded-xl bg-white shadow-sm p-5">
           <p className="mb-4 text-sm font-medium text-stone-700">⭐ Oportunidades rápidas</p>
           {oportunidades.length === 0 ? (
             <p className="text-sm text-stone-400">Nenhuma negociação em aberto.</p>
@@ -127,7 +127,7 @@ export default async function InsightsPage() {
         </div>
       </div>
 
-      <div className="rounded-xl border border-stone-200 bg-white p-5">
+      <div className="rounded-xl bg-white shadow-sm p-5">
         <p className="mb-4 text-sm font-medium text-stone-700">📈 Produtos com maior potencial</p>
         {potencialProdutos.length === 0 ? (
           <p className="text-sm text-stone-400">Sem dados neste mês ainda.</p>

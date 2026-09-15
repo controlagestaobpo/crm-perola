@@ -66,7 +66,7 @@ export default async function AgendaPage() {
       </div>
 
       {itens.length === 0 ? (
-        <div className="rounded-xl border border-stone-200 bg-white p-10 text-center text-sm text-stone-400">
+        <div className="rounded-xl bg-white shadow-sm p-10 text-center text-sm text-stone-400">
           Nenhum contato agendado ainda. Ao registrar um atendimento, preencha
           &quot;Próximo contato&quot; para ele aparecer aqui.
         </div>

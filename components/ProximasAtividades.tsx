@@ -5,7 +5,7 @@ export default function ProximasAtividades({ itens }: { itens: ItemAgenda[] }) {
   const proximos = itens.slice(0, 6);
 
   return (
-    <div className="rounded-xl border border-stone-200 bg-white p-5">
+    <div className="rounded-xl bg-white shadow-sm p-5">
       <div className="mb-4 flex items-center justify-between">
         <p className="text-sm font-medium text-stone-700">📅 Próximas atividades</p>
         <Link href="/agenda" className="text-xs font-medium text-oliva-600 hover:underline">

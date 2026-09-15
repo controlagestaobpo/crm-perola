@@ -12,7 +12,7 @@ import {
   UserCog,
   CalendarClock,
   FileBarChart,
-  Gem,
+  Wheat,
 } from "lucide-react";
 import type { Papel } from "@/types/database";
 
@@ -34,7 +34,7 @@ export default function Sidebar({ papel }: { papel: Papel }) {
   return (
     <aside className="flex h-screen w-64 flex-col bg-oliva-900 print:hidden">
       <div className="flex items-center gap-2 border-b border-oliva-800 px-6 py-5">
-        <Gem className="h-6 w-6 text-lime-400" />
+        <Wheat className="h-6 w-6 text-lime-400" />
         <span className="text-lg font-semibold text-white">CRM Pérola</span>
       </div>
       <nav className="flex-1 space-y-1 px-3 py-4">

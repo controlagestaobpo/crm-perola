@@ -48,7 +48,7 @@ export default function AtendimentoForm({
   }, [state.success, atendimentoParaEditar, onSalvo]);
 
   return (
-    <form ref={formRef} action={formAction} className="rounded-xl border border-stone-200 bg-white p-6">
+    <form ref={formRef} action={formAction} className="rounded-xl bg-white shadow-sm p-6">
       <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div>
           <label className="mb-1 block text-sm font-medium text-stone-700">Data do contato</label>
