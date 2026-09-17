@@ -16,6 +16,7 @@ import {
   contarProdutos,
   contarResultado,
   diasUteisNoMes,
+  diasUteisRestantes,
   formatBRL,
   somaValor,
 } from "@/lib/metrics";
@@ -46,36 +47,41 @@ export default async function DashboardPage({
   const mes = hoje.getMonth() + 1;
   const { inicio, fim } = inicioFimMes(ano, mes);
 
-  const dataInicio = periodo === "hoje" ? hojeISO : inicio;
-  const dataFim = periodo === "hoje" ? hojeISO : fim;
-
   const [{ data: atendimentosData }, { data: metasData }, clientesHistorico, agendaItens] = await Promise.all([
     supabase
       .from("atendimentos")
       .select("*")
-      .gte("data", dataInicio)
-      .lte("data", dataFim)
+      .gte("data", inicio)
+      .lte("data", fim)
       .order("criado_em", { ascending: true }),
     supabase.from("metas").select("*").eq("ano", ano).eq("mes", mes),
     getClientesComHistorico(supabase),
     getAgenda(supabase),
   ]);
 
-  const atendimentos = (atendimentosData ?? []) as Atendimento[];
+  const atendimentosMes = (atendimentosData ?? []) as Atendimento[];
   const metas = metasData ?? [];
+
+  // "hoje" mostra só os atendimentos de hoje, mas o cálculo de ritmo/meta diária
+  // sempre usa o mês inteiro até agora, senão a meta dinâmica fica errada.
+  const atendimentos = periodo === "hoje" ? atendimentosMes.filter((a) => a.data === hojeISO) : atendimentosMes;
 
   const metaMensalTotal = metas.reduce((soma, m) => soma + Number(m.meta_valor), 0);
   const diasUteisTotais = diasUteisNoMes(ano, mes);
   const diasUteisAteHoje = diasUteisNoMes(ano, mes, true, hoje);
+  const diasUteisFaltando = diasUteisRestantes(diasUteisTotais, diasUteisAteHoje);
 
   const vendido = somaValor(atendimentos, "valor");
+  const vendidoMes = somaValor(atendimentosMes, "valor");
   const totalAtendimentos = atendimentos.length;
   const totalVendas = contarResultado(atendimentos, "compra");
   const ticketMedio = totalVendas > 0 ? vendido / totalVendas : 0;
   const conversao = totalAtendimentos > 0 ? (totalVendas / totalAtendimentos) * 100 : 0;
 
   const metaProspeccoesTotal = metas.reduce((soma, m) => soma + Number(m.meta_prospeccoes), 0);
-  const metaAtendimentosDiaria = diasUteisTotais > 0 ? metaProspeccoesTotal / diasUteisTotais : 0;
+  // Meta diária de atendimentos = o que falta pra bater a meta do mês, dividido
+  // pelos dias úteis que ainda restam — não um valor fixo o mês inteiro.
+  const metaAtendimentosDiaria = Math.max(metaProspeccoesTotal - atendimentosMes.length, 0) / diasUteisFaltando;
   const metaAtendimentosPeriodo = periodo === "hoje" ? metaAtendimentosDiaria : metaProspeccoesTotal;
 
   const pipelineAbertos = atendimentos.filter((a) => a.resultado === "negociacao");
@@ -86,8 +92,10 @@ export default async function DashboardPage({
     .sort((a, b) => (b.diasSemComprar ?? 9999) - (a.diasSemComprar ?? 9999))
     .slice(0, 5);
 
-  const metaDiaria = diasUteisTotais > 0 ? metaMensalTotal / diasUteisTotais : 0;
-  const projecao = diasUteisAteHoje > 0 ? (vendido / diasUteisAteHoje) * diasUteisTotais : 0;
+  // Mesma lógica pra meta diária em R$: o que falta pra bater a meta, dividido
+  // pelos dias úteis restantes. Quem já bateu a meta não tem mais pressão diária.
+  const metaDiaria = Math.max(metaMensalTotal - vendidoMes, 0) / diasUteisFaltando;
+  const projecao = diasUteisAteHoje > 0 ? (vendidoMes / diasUteisAteHoje) * diasUteisTotais : 0;
 
   return (
     <div className="space-y-6">

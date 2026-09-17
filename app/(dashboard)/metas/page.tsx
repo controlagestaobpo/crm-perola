@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { getPerfilAtual } from "@/lib/auth";
-import { diasUteisNoMes, formatBRL } from "@/lib/metrics";
+import { diasUteisNoMes, diasUteisRestantes, formatBRL } from "@/lib/metrics";
 import StatCard from "@/components/StatCard";
 import BarChartCard from "@/components/charts/BarChartCard";
 import LineChartCard from "@/components/charts/LineChartCard";
@@ -86,7 +86,8 @@ export default async function MetasPage({
     const comissao = realizado * (comissaoPercentual / 100);
 
     const metaProspeccoesMensal = Number(meta?.meta_prospeccoes ?? 0);
-    const ritmoNecessario = diasUteisTotais > 0 ? metaProspeccoesMensal / diasUteisTotais : 0;
+    const faltamProspeccoes = Math.max(metaProspeccoesMensal - prospeccoes, 0);
+    const ritmoNecessario = faltamProspeccoes / diasUteisRestantes(diasUteisTotais, diasUteisDecorridos);
     const ritmoAtual = diasUteisDecorridos > 0 ? prospeccoes / diasUteisDecorridos : 0;
     const noRitmo = metaProspeccoesMensal === 0 || ritmoAtual >= ritmoNecessario;
 
@@ -119,7 +120,8 @@ export default async function MetasPage({
 
   const metaProspeccoesGeral = dados.reduce((soma, d) => soma + Number(d.meta?.meta_prospeccoes ?? 0), 0);
   const prospeccoesTotal = dados.reduce((soma, d) => soma + d.prospeccoes, 0);
-  const ritmoNecessarioGeral = diasUteisTotais > 0 ? metaProspeccoesGeral / diasUteisTotais : 0;
+  const faltamProspeccoesGeral = Math.max(metaProspeccoesGeral - prospeccoesTotal, 0);
+  const ritmoNecessarioGeral = faltamProspeccoesGeral / diasUteisRestantes(diasUteisTotais, diasUteisDecorridos);
   const ritmoAtualGeral = diasUteisDecorridos > 0 ? prospeccoesTotal / diasUteisDecorridos : 0;
 
   const graficoVendedores = dados.map((d) => ({

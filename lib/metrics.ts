@@ -27,6 +27,10 @@ export function diasUteisNoMes(ano: number, mes: number, ateHoje = false, hoje =
   return dias;
 }
 
+export function diasUteisRestantes(diasUteisTotais: number, diasUteisDecorridos: number) {
+  return Math.max(diasUteisTotais - diasUteisDecorridos, 1);
+}
+
 export function somaValor(atendimentos: Atendimento[], campo: "valor" | "valor_negociacao") {
   return atendimentos.reduce((soma, a) => soma + Number(a[campo] ?? 0), 0);
 }
