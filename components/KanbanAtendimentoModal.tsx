@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
 import { criarAtendimento } from "@/lib/actions";
 import { ESTADO_INICIAL } from "@/lib/form-state";
+import { hojeISOBrasil } from "@/lib/metrics";
 import AtendimentoFormFields from "@/components/AtendimentoFormFields";
 import SubmitButton from "@/components/SubmitButton";
 import FormMessage from "@/components/FormMessage";
@@ -63,7 +64,7 @@ export default function KanbanAtendimentoModal({
 
         <form action={formAction}>
           <input type="hidden" name="cliente_id" value={clienteId} />
-          <input type="hidden" name="data" value={new Date().toISOString().slice(0, 10)} />
+          <input type="hidden" name="data" value={hojeISOBrasil()} />
 
           {souMaster && (
             <div className="mb-4">

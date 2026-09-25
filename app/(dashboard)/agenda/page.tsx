@@ -2,17 +2,10 @@ import Link from "next/link";
 import { Phone, MapPin, User } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getAgenda, type ItemAgenda } from "@/lib/agenda";
-import { labelResultado } from "@/lib/metrics";
+import { diasEntreHojeE, labelResultado } from "@/lib/metrics";
 import type { ResultadoAtendimento } from "@/types/database";
 
 export const dynamic = "force-dynamic";
-
-function diasAte(dataISO: string) {
-  const hoje = new Date();
-  hoje.setHours(0, 0, 0, 0);
-  const data = new Date(dataISO + "T00:00:00");
-  return Math.round((data.getTime() - hoje.getTime()) / 86400000);
-}
 
 function agrupar(itens: ItemAgenda[]) {
   const grupos = {
@@ -24,7 +17,7 @@ function agrupar(itens: ItemAgenda[]) {
   };
 
   for (const item of itens) {
-    const dias = diasAte(item.proximoContato);
+    const dias = diasEntreHojeE(item.proximoContato);
     if (dias < 0) grupos.atrasados.push(item);
     else if (dias === 0) grupos.hoje.push(item);
     else if (dias === 1) grupos.amanha.push(item);

@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { diasEntreHojeE } from "@/lib/metrics";
 
 export interface ItemAgenda {
   atendimentoId: string;
@@ -52,10 +53,7 @@ export async function getAgenda(supabase: SupabaseClient): Promise<ItemAgenda[]>
 }
 
 export function rotuloData(dataISO: string): { texto: string; cor: string } {
-  const hoje = new Date();
-  hoje.setHours(0, 0, 0, 0);
-  const data = new Date(dataISO + "T00:00:00");
-  const diffDias = Math.round((data.getTime() - hoje.getTime()) / 86400000);
+  const diffDias = diasEntreHojeE(dataISO);
 
   if (diffDias < 0) return { texto: `Atrasado (${Math.abs(diffDias)}d)`, cor: "text-red-600 bg-red-50" };
   if (diffDias === 0) return { texto: "Hoje", cor: "text-amber-700 bg-amber-50" };

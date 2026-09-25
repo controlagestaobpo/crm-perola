@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getPerfilAtual } from "@/lib/auth";
 import type { ActionState } from "@/lib/form-state";
 import { estagioParaResultado } from "@/lib/estagio";
+import { hojeISOBrasil } from "@/lib/metrics";
 import type { Estagio, Papel, ResultadoAtendimento } from "@/types/database";
 
 function ehViolacaoDeDuplicidade(error: { code?: string } | null) {
@@ -109,7 +110,7 @@ export async function criarAtendimento(_prevState: ActionState, formData: FormDa
   const motivo = String(formData.get("motivo") ?? "").trim() || null;
   const proximoContato = String(formData.get("proximo_contato") ?? "").trim() || null;
   const observacoes = String(formData.get("observacoes") ?? "").trim() || null;
-  const data = String(formData.get("data") ?? "").trim() || new Date().toISOString().slice(0, 10);
+  const data = String(formData.get("data") ?? "").trim() || hojeISOBrasil();
 
   const produtosOferecidos = formData.getAll("produtos_oferecidos").map(String);
   const produtosVendidos = formData.getAll("produtos_vendidos").map(String);

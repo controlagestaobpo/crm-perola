@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { useFormState } from "react-dom";
 import { criarAtendimento, editarAtendimento } from "@/lib/actions";
 import { ESTADO_INICIAL } from "@/lib/form-state";
+import { hojeISOBrasil } from "@/lib/metrics";
 import AtendimentoFormFields from "@/components/AtendimentoFormFields";
 import ClienteSelect from "@/components/ClienteSelect";
 import SubmitButton from "@/components/SubmitButton";
@@ -56,7 +57,7 @@ export default function AtendimentoForm({
           <input
             type="date"
             name="data"
-            defaultValue={atendimentoParaEditar?.data ?? new Date().toISOString().slice(0, 10)}
+            defaultValue={atendimentoParaEditar?.data ?? hojeISOBrasil()}
             required
             className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm"
           />

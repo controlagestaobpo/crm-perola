@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getPerfilAtual } from "@/lib/auth";
 import { getClientesComHistorico } from "@/lib/clientes";
 import {
+  agoraBrasil,
   agruparResultados,
   contarProdutos,
   contarResultado,
@@ -47,9 +48,9 @@ export default async function RelatoriosPage({
   if (!perfilAtual) return null;
   if (perfilAtual.papel !== "master") redirect("/");
 
-  const hoje = new Date();
-  const ano = Number(searchParams.ano) || hoje.getFullYear();
-  const mes = Number(searchParams.mes) || hoje.getMonth() + 1;
+  const hoje = agoraBrasil();
+  const ano = Number(searchParams.ano) || hoje.getUTCFullYear();
+  const mes = Number(searchParams.mes) || hoje.getUTCMonth() + 1;
   const { inicio, fim } = inicioFimMes(ano, mes);
 
   const supabase = createClient();
@@ -169,7 +170,7 @@ export default async function RelatoriosPage({
 
       <div className="hidden print:block">
         <h1 className="text-2xl font-bold text-stone-900">CRM Pérola — Relatório de {MESES[mes - 1]} de {ano}</h1>
-        <p className="text-sm text-stone-500">Gerado em {new Date().toLocaleDateString("pt-BR")}</p>
+        <p className="text-sm text-stone-500">Gerado em {hoje.toLocaleDateString("pt-BR", { timeZone: "UTC" })}</p>
       </div>
 
       {/* RESUMO GERAL */}

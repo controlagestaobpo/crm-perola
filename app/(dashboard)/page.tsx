@@ -10,6 +10,7 @@ import PieChartCard from "@/components/charts/PieChartCard";
 import ProdutoChartComTabela from "@/components/charts/ProdutoChartComTabela";
 import ProximasAtividades from "@/components/ProximasAtividades";
 import {
+  agoraBrasil,
   agruparPorDiaAcumulado,
   agruparPorHora,
   agruparResultados,
@@ -18,6 +19,7 @@ import {
   diasUteisNoMes,
   diasUteisRestantes,
   formatBRL,
+  hojeISOBrasil,
   somaValor,
 } from "@/lib/metrics";
 import type { Atendimento } from "@/types/database";
@@ -41,10 +43,10 @@ export default async function DashboardPage({
   const perfil = await getPerfilAtual();
   if (!perfil) return null;
 
-  const hoje = new Date();
-  const hojeISO = hoje.toISOString().slice(0, 10);
-  const ano = hoje.getFullYear();
-  const mes = hoje.getMonth() + 1;
+  const hoje = agoraBrasil();
+  const hojeISO = hojeISOBrasil(hoje);
+  const ano = hoje.getUTCFullYear();
+  const mes = hoje.getUTCMonth() + 1;
   const { inicio, fim } = inicioFimMes(ano, mes);
 
   const [{ data: atendimentosData }, { data: metasData }, clientesHistorico, agendaItens] = await Promise.all([

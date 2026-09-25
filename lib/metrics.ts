@@ -13,10 +13,32 @@ export function labelResultado(resultado: ResultadoAtendimento) {
   return LABEL_RESULTADO[resultado];
 }
 
-export function diasUteisNoMes(ano: number, mes: number, ateHoje = false, hoje = new Date()) {
+// O servidor roda em UTC. Esse deslocamento fixo (-3h, o Brasil não tem mais
+// horário de verão) garante que "hoje"/"agora" sempre reflita o horário de
+// Brasília, e não vire o dia seguinte 3h mais cedo do que deveria.
+// Depois de chamar isso, leia os campos com getUTCFullYear/getUTCMonth/etc.
+export function agoraBrasil() {
+  return new Date(Date.now() - 3 * 60 * 60 * 1000);
+}
+
+export function hojeISOBrasil(agora = agoraBrasil()) {
+  return agora.toISOString().slice(0, 10);
+}
+
+// Diferença em dias (arredondada) entre uma data "YYYY-MM-DD" e o dia atual
+// no horário de Brasília. Positivo = no futuro, negativo = no passado.
+export function diasEntreHojeE(dataISO: string) {
+  const [ano, mes, dia] = dataISO.split("-").map(Number);
+  const alvo = Date.UTC(ano, mes - 1, dia);
+  const agora = agoraBrasil();
+  const hojeMeiaNoite = Date.UTC(agora.getUTCFullYear(), agora.getUTCMonth(), agora.getUTCDate());
+  return Math.round((alvo - hojeMeiaNoite) / 86400000);
+}
+
+export function diasUteisNoMes(ano: number, mes: number, ateHoje = false, hoje = agoraBrasil()) {
   const ultimoDia = new Date(ano, mes, 0).getDate();
-  const limite = ateHoje && hoje.getFullYear() === ano && hoje.getMonth() + 1 === mes
-    ? hoje.getDate()
+  const limite = ateHoje && hoje.getUTCFullYear() === ano && hoje.getUTCMonth() + 1 === mes
+    ? hoje.getUTCDate()
     : ultimoDia;
 
   let dias = 0;
@@ -74,7 +96,9 @@ export function agruparPorHora(atendimentos: Atendimento[], metaDiaria = 0) {
   const totalHoras = HORA_FIM_EXPEDIENTE - HORA_INICIO_EXPEDIENTE + 1;
 
   for (let h = HORA_INICIO_EXPEDIENTE; h <= HORA_FIM_EXPEDIENTE; h++) {
-    const realizado = atendimentos.filter((a) => new Date(a.criado_em).getHours() <= h).length;
+    const realizado = atendimentos.filter(
+      (a) => (new Date(a.criado_em).getUTCHours() + OFFSET_HORARIO_BRASIL + 24) % 24 <= h
+    ).length;
     const passoMeta = ((h - HORA_INICIO_EXPEDIENTE + 1) / totalHoras) * metaDiaria;
     horas.push({ hora: `${h}h`, valor: realizado, meta: Math.round(passoMeta) });
   }

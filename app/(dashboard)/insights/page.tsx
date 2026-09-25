@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { getClientesComHistorico } from "@/lib/clientes";
-import { contarProdutos, formatBRL, melhorHorarioContato, somaComissao, somaValor } from "@/lib/metrics";
+import { agoraBrasil, contarProdutos, diasEntreHojeE, formatBRL, melhorHorarioContato, somaComissao, somaValor } from "@/lib/metrics";
 import StatCard from "@/components/StatCard";
 import PieChartCard from "@/components/charts/PieChartCard";
 import BarChartCard from "@/components/charts/BarChartCard";
@@ -11,9 +11,9 @@ export const dynamic = "force-dynamic";
 
 export default async function InsightsPage() {
   const supabase = createClient();
-  const hoje = new Date();
-  const ano = hoje.getFullYear();
-  const mes = hoje.getMonth() + 1;
+  const hoje = agoraBrasil();
+  const ano = hoje.getUTCFullYear();
+  const mes = hoje.getUTCMonth() + 1;
   const inicioMes = `${ano}-${String(mes).padStart(2, "0")}-01`;
 
   const [{ data: atendimentosData }, clientesHistorico, { data: metasData }] = await Promise.all([
@@ -87,14 +87,10 @@ export default async function InsightsPage() {
   const horarios = melhorHorarioContato(atendimentos).slice(0, 6);
   const graficoHorarios = horarios.map((h) => ({ produto: h.faixa, quantidade: Math.round(h.taxa) }));
 
-  const hojeSemHora = new Date();
-  hojeSemHora.setHours(0, 0, 0, 0);
-  const oportunidadesComUrgencia = oportunidades.map((c) => {
-    const dias = c.proximo_contato
-      ? Math.round((new Date(c.proximo_contato + "T00:00:00").getTime() - hojeSemHora.getTime()) / 86400000)
-      : null;
-    return { ...c, dias };
-  });
+  const oportunidadesComUrgencia = oportunidades.map((c) => ({
+    ...c,
+    dias: c.proximo_contato ? diasEntreHojeE(c.proximo_contato) : null,
+  }));
 
   return (
     <div className="space-y-8">

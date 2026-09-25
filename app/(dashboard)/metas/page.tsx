@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { getPerfilAtual } from "@/lib/auth";
-import { diasUteisNoMes, diasUteisRestantes, formatBRL, somaComissao, somaValor } from "@/lib/metrics";
+import { agoraBrasil, diasUteisNoMes, diasUteisRestantes, formatBRL, somaComissao, somaValor } from "@/lib/metrics";
 import StatCard from "@/components/StatCard";
 import BarChartCard from "@/components/charts/BarChartCard";
 import LineChartCard from "@/components/charts/LineChartCard";
@@ -38,9 +38,9 @@ export default async function MetasPage({
 }: {
   searchParams: { ano?: string; mes?: string };
 }) {
-  const hoje = new Date();
-  const ano = Number(searchParams.ano) || hoje.getFullYear();
-  const mes = Number(searchParams.mes) || hoje.getMonth() + 1;
+  const hoje = agoraBrasil();
+  const ano = Number(searchParams.ano) || hoje.getUTCFullYear();
+  const mes = Number(searchParams.mes) || hoje.getUTCMonth() + 1;
 
   const supabase = createClient();
   const perfil = await getPerfilAtual();
@@ -48,10 +48,10 @@ export default async function MetasPage({
 
   const { inicio, fim } = inicioFimMes(ano, mes);
   const diasUteisTotais = diasUteisNoMes(ano, mes);
-  const ehMesAtual = ano === hoje.getFullYear() && mes === hoje.getMonth() + 1;
+  const ehMesAtual = ano === hoje.getUTCFullYear() && mes === hoje.getUTCMonth() + 1;
   const diasUteisDecorridos = ehMesAtual
     ? diasUteisNoMes(ano, mes, true, hoje)
-    : new Date(ano, mes - 1, 1) < hoje
+    : Date.UTC(ano, mes - 1, 1) < hoje.getTime()
       ? diasUteisTotais
       : 0;
   const periodoTendencia = ultimosMeses(ano, mes, 6);
