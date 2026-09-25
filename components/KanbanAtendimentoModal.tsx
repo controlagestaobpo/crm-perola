@@ -46,7 +46,7 @@ export default function KanbanAtendimentoModal({
     }
   }, [state.success, onSalvo, router]);
 
-  const titulo = resultado === "compra" ? "Registrar venda" : "Registrar negociação";
+  const titulo = resultado === "compra" ? "Registrar venda" : "Registrar orçamento";
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">

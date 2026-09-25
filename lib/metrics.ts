@@ -2,7 +2,7 @@ import type { Atendimento, ResultadoAtendimento } from "@/types/database";
 
 const LABEL_RESULTADO: Record<ResultadoAtendimento, string> = {
   compra: "Compra",
-  negociacao: "Negociação",
+  negociacao: "Orçamento",
   interessado: "Interessado",
   sem_interesse: "Sem interesse",
   nao_atendeu: "Não atendeu",
@@ -31,8 +31,18 @@ export function diasUteisRestantes(diasUteisTotais: number, diasUteisDecorridos:
   return Math.max(diasUteisTotais - diasUteisDecorridos, 1);
 }
 
-export function somaValor(atendimentos: Atendimento[], campo: "valor" | "valor_negociacao") {
+export function somaValor(
+  atendimentos: Atendimento[],
+  campo: "valor" | "valor_negociacao" | "quantidade_sacos" | "valor_frete"
+) {
   return atendimentos.reduce((soma, a) => soma + Number(a[campo] ?? 0), 0);
+}
+
+export function somaComissao(atendimentos: Atendimento[], comissaoPercentual: number) {
+  const base = atendimentos
+    .filter((a) => a.resultado === "compra")
+    .reduce((soma, a) => soma + (Number(a.valor ?? 0) - Number(a.valor_frete ?? 0)), 0);
+  return Math.max(base, 0) * (comissaoPercentual / 100);
 }
 
 export function contarResultado(atendimentos: Atendimento[], resultado: ResultadoAtendimento) {

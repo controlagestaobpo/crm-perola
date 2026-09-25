@@ -84,12 +84,17 @@ create table if not exists atendimentos (
   motivo text,
   valor numeric,
   valor_negociacao numeric,
+  quantidade_sacos int,
+  valor_frete numeric,
   produtos_oferecidos text[] not null default '{}',
   produtos_vendidos text[] not null default '{}',
   proximo_contato date,
   observacoes text,
   criado_em timestamptz not null default now()
 );
+
+alter table atendimentos add column if not exists quantidade_sacos int;
+alter table atendimentos add column if not exists valor_frete numeric;
 
 create table if not exists metas (
   id uuid primary key default gen_random_uuid(),
@@ -100,12 +105,14 @@ create table if not exists metas (
   meta_valor numeric not null default 0,
   meta_prospeccoes int not null default 0,
   meta_conversao numeric not null default 0,
+  meta_sacos int not null default 0,
   comissao_percentual numeric not null default 1,
   criado_em timestamptz not null default now(),
   unique (vendedor_id, ano, mes)
 );
 
 alter table metas add column if not exists comissao_percentual numeric not null default 1;
+alter table metas add column if not exists meta_sacos int not null default 0;
 
 -- Antes de travar duplicados, mescla clientes que já tinham sido cadastrados
 -- em duplicidade (mantém o mais antigo e move os atendimentos pra ele).

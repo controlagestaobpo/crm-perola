@@ -1,11 +1,11 @@
 import { createClient } from "@/lib/supabase/server";
 import { getPerfilAtual } from "@/lib/auth";
-import { diasUteisNoMes, diasUteisRestantes, formatBRL } from "@/lib/metrics";
+import { diasUteisNoMes, diasUteisRestantes, formatBRL, somaComissao, somaValor } from "@/lib/metrics";
 import StatCard from "@/components/StatCard";
 import BarChartCard from "@/components/charts/BarChartCard";
 import LineChartCard from "@/components/charts/LineChartCard";
 import MetaForm from "@/components/MetaForm";
-import { Target, TrendingUp, AlertCircle, Percent, Wallet, Gauge } from "lucide-react";
+import { Target, TrendingUp, AlertCircle, Percent, Wallet, Gauge, Package } from "lucide-react";
 import type { Atendimento, Meta, Perfil } from "@/types/database";
 
 export const dynamic = "force-dynamic";
@@ -75,15 +75,18 @@ export default async function MetasPage({
   const dados = vendedores.map((v) => {
     const meta = metas.find((m) => m.vendedor_id === v.id);
     const atendimentosVendedor = atendimentos.filter((a) => a.vendedor_id === v.id);
-    const realizado = atendimentosVendedor
-      .filter((a) => a.resultado === "compra")
-      .reduce((soma, a) => soma + Number(a.valor ?? 0), 0);
+    const vendasVendedor = atendimentosVendedor.filter((a) => a.resultado === "compra");
+    const realizado = somaValor(vendasVendedor, "valor");
+    const sacosVendidos = somaValor(vendasVendedor, "quantidade_sacos");
     const prospeccoes = atendimentosVendedor.length;
-    const vendas = atendimentosVendedor.filter((a) => a.resultado === "compra").length;
+    const vendas = vendasVendedor.length;
     const conversao = prospeccoes > 0 ? (vendas / prospeccoes) * 100 : 0;
     const percentualMeta = meta && Number(meta.meta_valor) > 0 ? (realizado / Number(meta.meta_valor)) * 100 : 0;
+    const metaSacos = Number(meta?.meta_sacos ?? 0);
+    const percentualMetaSacos = metaSacos > 0 ? (sacosVendidos / metaSacos) * 100 : 0;
     const comissaoPercentual = Number(meta?.comissao_percentual ?? 1);
-    const comissao = realizado * (comissaoPercentual / 100);
+    // Comissão = (valor da venda - frete) x % de comissão, não o valor bruto.
+    const comissao = somaComissao(vendasVendedor, comissaoPercentual);
 
     const metaProspeccoesMensal = Number(meta?.meta_prospeccoes ?? 0);
     const faltamProspeccoes = Math.max(metaProspeccoesMensal - prospeccoes, 0);
@@ -95,6 +98,9 @@ export default async function MetasPage({
       vendedor: v,
       meta,
       realizado,
+      sacosVendidos,
+      metaSacos,
+      percentualMetaSacos,
       prospeccoes,
       vendas,
       conversao,
@@ -113,6 +119,8 @@ export default async function MetasPage({
   const realizadoTotal = dados.reduce((soma, d) => soma + d.realizado, 0);
   const comissaoTotal = dados.reduce((soma, d) => soma + d.comissao, 0);
   const faltam = Math.max(metaTotal - realizadoTotal, 0);
+  const metaSacosTotal = dados.reduce((soma, d) => soma + d.metaSacos, 0);
+  const sacosVendidosTotal = dados.reduce((soma, d) => soma + d.sacosVendidos, 0);
   const conversaoGeral =
     dados.reduce((s, d) => s + d.prospeccoes, 0) > 0
       ? (dados.reduce((s, d) => s + d.vendas, 0) / dados.reduce((s, d) => s + d.prospeccoes, 0)) * 100
@@ -166,11 +174,13 @@ export default async function MetasPage({
         </form>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <StatCard label="Meta do período" value={formatBRL(metaTotal)} icon={Target} cor="text-blue-600" />
         <StatCard label="Realizado" value={formatBRL(realizadoTotal)} icon={TrendingUp} cor="text-emerald-600" />
         <StatCard label="Faltam para meta" value={formatBRL(faltam)} icon={AlertCircle} cor="text-orange-500" />
         <StatCard label="Conversão geral" value={`${conversaoGeral.toFixed(1)}%`} icon={Percent} cor="text-amber-500" />
+        <StatCard label="Meta de sacos" value={`${metaSacosTotal} sacos`} icon={Package} cor="text-blue-600" />
+        <StatCard label="Sacos vendidos" value={`${sacosVendidosTotal} sacos`} icon={Package} cor="text-emerald-600" />
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -214,6 +224,7 @@ export default async function MetasPage({
                 <th className="px-4 py-3 font-medium">Realizado</th>
                 <th className="px-4 py-3 font-medium">% Meta</th>
                 <th className="px-4 py-3 font-medium">Conversão</th>
+                <th className="px-4 py-3 font-medium">Sacos</th>
                 <th className="px-4 py-3 font-medium">Ritmo de contatos</th>
                 <th className="px-4 py-3 font-medium">Comissão</th>
               </tr>
@@ -237,6 +248,19 @@ export default async function MetasPage({
                     </div>
                   </td>
                   <td className="px-4 py-3 text-stone-600">{d.conversao.toFixed(1)}%</td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <div className="h-2 w-16 overflow-hidden rounded-full bg-stone-100">
+                        <div
+                          className="h-full rounded-full bg-amber-500"
+                          style={{ width: `${Math.min(d.percentualMetaSacos, 100)}%` }}
+                        />
+                      </div>
+                      <span className="text-xs font-medium text-stone-600">
+                        {d.sacosVendidos}/{d.metaSacos}
+                      </span>
+                    </div>
+                  </td>
                   <td className="px-4 py-3">
                     <span
                       className={`rounded-full px-2 py-1 text-xs font-medium ${

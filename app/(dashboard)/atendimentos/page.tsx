@@ -14,7 +14,7 @@ export const dynamic = "force-dynamic";
 const OPCOES_RESULTADO: { valor: ResultadoAtendimento | ""; label: string }[] = [
   { valor: "", label: "Todos os estágios" },
   { valor: "compra", label: "✓ Compra realizada" },
-  { valor: "negociacao", label: "⭐ Negociação em andamento" },
+  { valor: "negociacao", label: "⭐ Orçamento em andamento" },
   { valor: "interessado", label: "⊕ Interessado - retornar" },
   { valor: "sem_interesse", label: "⏳ Sem interesse" },
   { valor: "nao_atendeu", label: "☎️ Não atendeu" },

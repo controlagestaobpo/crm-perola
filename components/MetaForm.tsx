@@ -64,6 +64,10 @@ export default function MetaForm({
         <input type="number" name="meta_conversao" step="0.1" min="0" defaultValue={22} className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm" />
       </div>
       <div>
+        <label className="mb-1 block text-sm font-medium text-stone-700">🌾 Meta de sacos</label>
+        <input type="number" name="meta_sacos" step="10" min="0" defaultValue={0} className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm" />
+      </div>
+      <div>
         <label className="mb-1 block text-sm font-medium text-stone-700">Comissão (%)</label>
         <input type="number" name="comissao_percentual" step="0.1" min="0" defaultValue={1} className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm" />
       </div>

@@ -14,7 +14,7 @@ import type { Estagio, Perfil, Produto, ResultadoAtendimento } from "@/types/dat
 const COLUNAS: { estagio: Estagio; titulo: string }[] = [
   { estagio: "prospectar", titulo: "📞 A Prospectar" },
   { estagio: "contatado", titulo: "☎️ Contatado" },
-  { estagio: "negociacao", titulo: "⭐ Negociação" },
+  { estagio: "negociacao", titulo: "⭐ Orçamento" },
   { estagio: "vendido", titulo: "✅ Vendido" },
   { estagio: "recusado", titulo: "❌ Sem Interesse" },
 ];

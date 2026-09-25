@@ -104,6 +104,8 @@ export async function criarAtendimento(_prevState: ActionState, formData: FormDa
   const valorNegociacao = formData.get("valor_negociacao")
     ? Number(formData.get("valor_negociacao"))
     : null;
+  const quantidadeSacos = formData.get("quantidade_sacos") ? Number(formData.get("quantidade_sacos")) : null;
+  const valorFrete = formData.get("valor_frete") ? Number(formData.get("valor_frete")) : null;
   const motivo = String(formData.get("motivo") ?? "").trim() || null;
   const proximoContato = String(formData.get("proximo_contato") ?? "").trim() || null;
   const observacoes = String(formData.get("observacoes") ?? "").trim() || null;
@@ -125,6 +127,8 @@ export async function criarAtendimento(_prevState: ActionState, formData: FormDa
     motivo,
     valor,
     valor_negociacao: valorNegociacao,
+    quantidade_sacos: quantidadeSacos,
+    valor_frete: valorFrete,
     produtos_oferecidos: produtosOferecidos,
     produtos_vendidos: produtosVendidos,
     proximo_contato: proximoContato,
@@ -166,6 +170,8 @@ export async function editarAtendimento(
   const valorNegociacao = formData.get("valor_negociacao")
     ? Number(formData.get("valor_negociacao"))
     : null;
+  const quantidadeSacos = formData.get("quantidade_sacos") ? Number(formData.get("quantidade_sacos")) : null;
+  const valorFrete = formData.get("valor_frete") ? Number(formData.get("valor_frete")) : null;
   const motivo = String(formData.get("motivo") ?? "").trim() || null;
   const proximoContato = String(formData.get("proximo_contato") ?? "").trim() || null;
   const observacoes = String(formData.get("observacoes") ?? "").trim() || null;
@@ -186,6 +192,8 @@ export async function editarAtendimento(
       motivo,
       valor,
       valor_negociacao: valorNegociacao,
+      quantidade_sacos: quantidadeSacos,
+      valor_frete: valorFrete,
       produtos_oferecidos: produtosOferecidos,
       produtos_vendidos: produtosVendidos,
       proximo_contato: proximoContato,
@@ -285,6 +293,7 @@ export async function salvarMeta(_prevState: ActionState, formData: FormData): P
   const metaValor = Number(formData.get("meta_valor") ?? 0);
   const metaProspeccoes = Number(formData.get("meta_prospeccoes") ?? 0);
   const metaConversao = Number(formData.get("meta_conversao") ?? 0);
+  const metaSacos = Number(formData.get("meta_sacos") ?? 0);
   const comissaoPercentual = Number(formData.get("comissao_percentual") ?? 1);
 
   if (!vendedorId || !ano || !mes) return { error: "Preencha vendedor, ano e mês." };
@@ -298,6 +307,7 @@ export async function salvarMeta(_prevState: ActionState, formData: FormData): P
       meta_valor: metaValor,
       meta_prospeccoes: metaProspeccoes,
       meta_conversao: metaConversao,
+      meta_sacos: metaSacos,
       comissao_percentual: comissaoPercentual,
     },
     { onConflict: "vendedor_id,ano,mes" }

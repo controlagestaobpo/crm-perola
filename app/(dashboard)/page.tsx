@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { DollarSign, Phone, ShoppingCart, Target, CalendarCheck, Receipt } from "lucide-react";
+import { DollarSign, Phone, ShoppingCart, Target, CalendarCheck, Receipt, Package, PackageCheck, Users } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getPerfilAtual } from "@/lib/auth";
 import { getClientesComHistorico } from "@/lib/clientes";
@@ -97,6 +97,16 @@ export default async function DashboardPage({
   const metaDiaria = Math.max(metaMensalTotal - vendidoMes, 0) / diasUteisFaltando;
   const projecao = diasUteisAteHoje > 0 ? (vendidoMes / diasUteisAteHoje) * diasUteisTotais : 0;
 
+  // Sacos seguem exatamente o mesmo molde da meta em R$: o que falta pra bater
+  // a meta de sacos do mês, dividido pelos dias úteis restantes.
+  const metaSacosTotal = metas.reduce((soma, m) => soma + Number(m.meta_sacos ?? 0), 0);
+  const sacosVendidos = somaValor(atendimentos, "quantidade_sacos");
+  const sacosVendidosMes = somaValor(atendimentosMes, "quantidade_sacos");
+  const metaSacosDiaria = Math.max(metaSacosTotal - sacosVendidosMes, 0) / diasUteisFaltando;
+  const metaSacosPeriodo = periodo === "hoje" ? metaSacosDiaria : metaSacosTotal;
+
+  const clientesAtendidos = new Set(atendimentos.map((a) => a.cliente_id)).size;
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -141,6 +151,7 @@ export default async function DashboardPage({
           <StatCard label="Projeção (fim do mês)" value={formatBRL(projecao)} icon={Receipt} cor="text-orange-500" />
         )}
         <StatCard label="Atendimentos" value={String(totalAtendimentos)} icon={Phone} cor="text-amber-500" />
+        <StatCard label="Clientes atendidos" value={String(clientesAtendidos)} sub="clientes diferentes no período" icon={Users} cor="text-blue-600" />
         <StatCard
           label="Vendas"
           value={String(totalVendas)}
@@ -154,6 +165,18 @@ export default async function DashboardPage({
           value={`${totalAtendimentos} / ${Math.round(metaAtendimentosPeriodo)}`}
           icon={CalendarCheck}
           cor="text-orange-500"
+        />
+        <StatCard
+          label={periodo === "hoje" ? "Meta de sacos (dia)" : "Meta de sacos (mês)"}
+          value={`${Math.round(metaSacosPeriodo)} sacos`}
+          icon={Package}
+          cor="text-amber-600"
+        />
+        <StatCard
+          label={periodo === "hoje" ? "Sacos vendidos hoje" : "Sacos vendidos no mês"}
+          value={`${sacosVendidos} sacos`}
+          icon={PackageCheck}
+          cor="text-emerald-600"
         />
       </div>
 
@@ -198,7 +221,7 @@ export default async function DashboardPage({
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <div className="rounded-xl border-l-4 border-amber-400 bg-amber-50 p-5">
             <p className="text-sm font-semibold text-amber-700">
-              ⚠️ Negociações em andamento ({pipelineAbertos.length})
+              ⚠️ Orçamentos em andamento ({pipelineAbertos.length})
             </p>
             <p className="mt-2 text-2xl font-bold text-amber-800">{formatBRL(pipelineValor)}</p>
             <p className="mt-1 text-xs text-amber-600">Valor total em risco no pipeline</p>

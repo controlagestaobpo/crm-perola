@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { Pencil, ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
 import ClienteEditModal from "@/components/ClienteEditModal";
 import { formatBRL } from "@/lib/metrics";
+import { labelEstagio } from "@/lib/estagio";
 import type { ClienteComHistorico } from "@/lib/clientes";
 
 type Coluna = "nome" | "cidade" | "estagio" | "valorTotal" | "totalCompras" | "proximo_contato";
@@ -119,7 +120,7 @@ export default function ClientesTabela({ clientes }: { clientes: ClienteComHisto
                   <td className="px-4 py-3 font-medium text-stone-900">{c.nome}</td>
                   <td className="px-4 py-3 text-stone-600">{c.telefone ?? "—"}</td>
                   <td className="px-4 py-3 text-stone-600">{c.cidade ?? "—"}</td>
-                  <td className="px-4 py-3 text-stone-600 capitalize">{c.estagio}</td>
+                  <td className="px-4 py-3 text-stone-600">{labelEstagio(c.estagio)}</td>
                   <td className="px-4 py-3 text-stone-600">
                     {c.ultimaCompra ? new Date(c.ultimaCompra + "T00:00:00").toLocaleDateString("pt-BR") : "—"}
                   </td>

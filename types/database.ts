@@ -66,6 +66,8 @@ export interface Atendimento {
   motivo: string | null;
   valor: number | null;
   valor_negociacao: number | null;
+  quantidade_sacos: number | null;
+  valor_frete: number | null;
   produtos_oferecidos: string[];
   produtos_vendidos: string[];
   proximo_contato: string | null;
@@ -82,6 +84,7 @@ export interface Meta {
   meta_valor: number;
   meta_prospeccoes: number;
   meta_conversao: number;
+  meta_sacos: number;
   comissao_percentual: number;
   criado_em: string;
 }

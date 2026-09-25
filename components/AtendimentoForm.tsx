@@ -5,6 +5,7 @@ import { useFormState } from "react-dom";
 import { criarAtendimento, editarAtendimento } from "@/lib/actions";
 import { ESTADO_INICIAL } from "@/lib/form-state";
 import AtendimentoFormFields from "@/components/AtendimentoFormFields";
+import ClienteSelect from "@/components/ClienteSelect";
 import SubmitButton from "@/components/SubmitButton";
 import FormMessage from "@/components/FormMessage";
 import type { Atendimento, Cliente, Perfil, Produto } from "@/types/database";
@@ -80,19 +81,10 @@ export default function AtendimentoForm({
 
         <div>
           <label className="mb-1 block text-sm font-medium text-stone-700">Cliente</label>
-          <select
-            name="cliente_id"
-            required
+          <ClienteSelect
+            clientes={clientes}
             defaultValue={atendimentoParaEditar?.cliente_id ?? clienteIdInicial ?? ""}
-            className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm"
-          >
-            <option value="">-- Selecione --</option>
-            {clientes.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.nome}
-              </option>
-            ))}
-          </select>
+          />
         </div>
       </div>
 
@@ -107,6 +99,9 @@ export default function AtendimentoForm({
                 observacoes: atendimentoParaEditar.observacoes,
                 produtosOferecidos: atendimentoParaEditar.produtos_oferecidos,
                 produtosVendidos: atendimentoParaEditar.produtos_vendidos,
+                valor: atendimentoParaEditar.valor,
+                quantidadeSacos: atendimentoParaEditar.quantidade_sacos,
+                valorFrete: atendimentoParaEditar.valor_frete,
               }
             : undefined
         }

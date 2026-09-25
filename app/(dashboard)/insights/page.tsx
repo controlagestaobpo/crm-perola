@@ -1,10 +1,10 @@
 import { createClient } from "@/lib/supabase/server";
 import { getClientesComHistorico } from "@/lib/clientes";
-import { contarProdutos, formatBRL, melhorHorarioContato } from "@/lib/metrics";
+import { contarProdutos, formatBRL, melhorHorarioContato, somaComissao, somaValor } from "@/lib/metrics";
 import StatCard from "@/components/StatCard";
 import PieChartCard from "@/components/charts/PieChartCard";
 import BarChartCard from "@/components/charts/BarChartCard";
-import { Percent, Clock, AlertTriangle, Receipt, Wallet } from "lucide-react";
+import { Percent, Clock, AlertTriangle, Receipt, Wallet, Package } from "lucide-react";
 import type { Atendimento, Meta } from "@/types/database";
 
 export const dynamic = "force-dynamic";
@@ -26,11 +26,10 @@ export default async function InsightsPage() {
   const metas = (metasData ?? []) as Meta[];
 
   const comissaoTotal = metas.reduce((soma, meta) => {
-    const realizadoVendedor = atendimentos
-      .filter((a) => a.vendedor_id === meta.vendedor_id && a.resultado === "compra")
-      .reduce((s, a) => s + Number(a.valor ?? 0), 0);
-    return soma + realizadoVendedor * (Number(meta.comissao_percentual) / 100);
+    const atendimentosVendedor = atendimentos.filter((a) => a.vendedor_id === meta.vendedor_id);
+    return soma + somaComissao(atendimentosVendedor, Number(meta.comissao_percentual));
   }, 0);
+  const sacosVendidos = somaValor(atendimentos, "quantidade_sacos");
   const totalAtendimentos = atendimentos.length;
   const vendas = atendimentos.filter((a) => a.resultado === "compra");
   const conversaoGeral = totalAtendimentos > 0 ? (vendas.length / totalAtendimentos) * 100 : 0;
@@ -104,11 +103,12 @@ export default async function InsightsPage() {
         <p className="text-sm text-stone-500">Insights do mês atual</p>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-6">
         <StatCard label="Taxa de conversão" value={`${conversaoGeral.toFixed(1)}%`} icon={Percent} cor="text-blue-600" />
         <StatCard label="Ticket médio" value={formatBRL(ticketMedio)} icon={Receipt} cor="text-amber-500" />
         <StatCard label="Clientes sem comprar (30d+)" value={String(clientesSemComprar)} icon={AlertTriangle} cor="text-orange-500" />
         <StatCard label="Atendimentos no mês" value={String(totalAtendimentos)} icon={Clock} cor="text-emerald-600" />
+        <StatCard label="Sacos vendidos no mês" value={`${sacosVendidos} sacos`} icon={Package} cor="text-amber-600" />
         <StatCard label="Comissão do mês (total)" value={formatBRL(comissaoTotal)} icon={Wallet} cor="text-blue-600" />
       </div>
 
@@ -121,7 +121,7 @@ export default async function InsightsPage() {
         <div className="rounded-xl bg-white/80 backdrop-blur-sm p-5 shadow-sm">
           <p className="mb-4 text-sm font-medium text-stone-700">⭐ Oportunidades rápidas</p>
           {oportunidadesComUrgencia.length === 0 ? (
-            <p className="text-sm text-stone-400">Nenhuma negociação em aberto.</p>
+            <p className="text-sm text-stone-400">Nenhum orçamento em aberto.</p>
           ) : (
             <ul className="space-y-3">
               {oportunidadesComUrgencia.map((c) => {
@@ -147,7 +147,7 @@ export default async function InsightsPage() {
                       <strong className="text-stone-900">{c.nome}</strong>
                       <span className="text-stone-500">
                         {" "}
-                        — {c.estagio === "negociacao" ? "Em negociação" : "Contatado"}
+                        — {c.estagio === "negociacao" ? "Em orçamento" : "Contatado"}
                       </span>
                     </div>
                     <span className={`shrink-0 rounded-full px-2 py-1 text-xs font-medium ${corBadge}`}>

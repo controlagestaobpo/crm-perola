@@ -8,6 +8,7 @@ import {
   contarResultado,
   formatBRL,
   labelResultado,
+  somaComissao,
   somaValor,
 } from "@/lib/metrics";
 import PrintButton from "@/components/PrintButton";
@@ -16,7 +17,7 @@ import type { Atendimento, Meta, Perfil } from "@/types/database";
 
 const CORES_RESULTADO: Record<string, string> = {
   Compra: "text-emerald-600",
-  Negociação: "text-blue-600",
+  Orçamento: "text-blue-600",
   Interessado: "text-purple-600",
   "Sem interesse": "text-orange-500",
   "Não atendeu": "text-stone-500",
@@ -73,11 +74,14 @@ export default async function RelatoriosPage({
   const metaTotal = metas.reduce((s, m) => s + Number(m.meta_valor), 0);
   const pipelineAberto = atendimentos.filter((a) => a.resultado === "negociacao");
   const pipelineValor = somaValor(pipelineAberto, "valor_negociacao");
+  const clientesAtendidos = new Set(atendimentos.map((a) => a.cliente_id)).size;
+  const sacosVendidosTotal = somaValor(atendimentos, "quantidade_sacos");
 
   const porVendedor = vendedores.map((v) => {
     const dele = atendimentos.filter((a) => a.vendedor_id === v.id);
     const vendas = dele.filter((a) => a.resultado === "compra");
     const receitaVendedor = somaValor(vendas, "valor");
+    const sacosVendidos = somaValor(vendas, "quantidade_sacos");
     const meta = metas.find((m) => m.vendedor_id === v.id);
     const comissaoPercentual = Number(meta?.comissao_percentual ?? 1);
     return {
@@ -85,10 +89,12 @@ export default async function RelatoriosPage({
       atendimentos: dele.length,
       vendas: vendas.length,
       receita: receitaVendedor,
+      sacosVendidos,
       conversao: dele.length > 0 ? (vendas.length / dele.length) * 100 : 0,
       meta: Number(meta?.meta_valor ?? 0),
       percentualMeta: meta && Number(meta.meta_valor) > 0 ? (receitaVendedor / Number(meta.meta_valor)) * 100 : 0,
-      comissao: receitaVendedor * (comissaoPercentual / 100),
+      // Comissão = (valor da venda - frete) x % de comissão.
+      comissao: somaComissao(vendas, comissaoPercentual),
     };
   });
 
@@ -174,13 +180,15 @@ export default async function RelatoriosPage({
             const cores = ["text-blue-600", "text-amber-500", "text-emerald-600", "text-orange-500"];
             const itens: [string, string][] = [
               ["Atendimentos", String(totalAtendimentos)],
+              ["Clientes atendidos", String(clientesAtendidos)],
               ["Vendas", `${totalVendas} (${conversaoGeral.toFixed(1)}%)`],
               ["Receita", formatBRL(receita)],
               ["Ticket médio", formatBRL(ticketMedio)],
+              ["Sacos vendidos", `${sacosVendidosTotal} sacos`],
               ["Meta do período", formatBRL(metaTotal)],
               ["% da meta batida", metaTotal > 0 ? `${((receita / metaTotal) * 100).toFixed(1)}%` : "—"],
               ["Pipeline em aberto", formatBRL(pipelineValor)],
-              ["Negociações abertas", String(pipelineAberto.length)],
+              ["Orçamentos abertos", String(pipelineAberto.length)],
               ["Comissão total (equipe)", formatBRL(comissaoTotal)],
             ];
             return itens.map(([label, value], index) => (
@@ -205,6 +213,7 @@ export default async function RelatoriosPage({
                 <th className="px-3 py-2 font-medium">Vendas</th>
                 <th className="px-3 py-2 font-medium">Conversão</th>
                 <th className="px-3 py-2 font-medium">Receita</th>
+                <th className="px-3 py-2 font-medium">Sacos</th>
                 <th className="px-3 py-2 font-medium">Meta</th>
                 <th className="px-3 py-2 font-medium">% Meta</th>
                 <th className="px-3 py-2 font-medium">Comissão</th>
@@ -218,6 +227,7 @@ export default async function RelatoriosPage({
                   <td className="px-3 py-2 text-stone-600">{d.vendas}</td>
                   <td className="px-3 py-2 text-stone-600">{d.conversao.toFixed(1)}%</td>
                   <td className="px-3 py-2 text-stone-600">{formatBRL(d.receita)}</td>
+                  <td className="px-3 py-2 text-stone-600">{d.sacosVendidos} sacos</td>
                   <td className="px-3 py-2 text-stone-600">{formatBRL(d.meta)}</td>
                   <td className="px-3 py-2 text-stone-600">{d.percentualMeta.toFixed(0)}%</td>
                   <td className="px-3 py-2 text-stone-600">{formatBRL(d.comissao)}</td>
@@ -361,9 +371,9 @@ export default async function RelatoriosPage({
 
       {/* PIPELINE ABERTO */}
       <section className="break-inside-avoid">
-        <h2 className="mb-3 text-lg font-semibold text-stone-900">10. Negociações em aberto</h2>
+        <h2 className="mb-3 text-lg font-semibold text-stone-900">10. Orçamentos em aberto</h2>
         {pipelineAberto.length === 0 ? (
-          <p className="text-sm text-stone-400">Nenhuma negociação em aberto.</p>
+          <p className="text-sm text-stone-400">Nenhum orçamento em aberto.</p>
         ) : (
           <div className="overflow-x-auto rounded-xl bg-white/80 backdrop-blur-sm shadow-sm">
             <table className="w-full text-left text-sm">
@@ -371,7 +381,7 @@ export default async function RelatoriosPage({
                 <tr>
                   <th className="px-3 py-2 font-medium">Data</th>
                   <th className="px-3 py-2 font-medium">Resultado</th>
-                  <th className="px-3 py-2 font-medium">Valor em negociação</th>
+                  <th className="px-3 py-2 font-medium">Valor do orçamento</th>
                 </tr>
               </thead>
               <tbody>

@@ -112,6 +112,9 @@ interface AtendimentoFormFieldsProps {
     observacoes?: string | null;
     produtosOferecidos?: string[];
     produtosVendidos?: string[];
+    valor?: number | null;
+    quantidadeSacos?: number | null;
+    valorFrete?: number | null;
   };
 }
 
@@ -152,7 +155,7 @@ export default function AtendimentoFormFields({ produtos, valoresIniciais }: Ate
           >
             <option value="">-- Selecione --</option>
             <option value="compra">✓ Compra realizada</option>
-            <option value="negociacao">⭐ Negociação em andamento</option>
+            <option value="negociacao">⭐ Orçamento em andamento</option>
             <option value="interessado">⊕ Interessado - retornar</option>
             <option value="sem_interesse">⏳ Sem interesse por agora</option>
             <option value="nao_atendeu">☎️ Não atendeu</option>
@@ -171,6 +174,39 @@ export default function AtendimentoFormFields({ produtos, valoresIniciais }: Ate
               step="0.01"
               min="0"
               required
+              defaultValue={valoresIniciais?.valor ?? ""}
+              className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm"
+            />
+          </div>
+        )}
+
+        {mostrarValorCompra && (
+          <div>
+            <label className="mb-1 block text-sm font-medium text-stone-700">
+              🌾 Quantidade de sacos
+            </label>
+            <input
+              type="number"
+              name="quantidade_sacos"
+              step="1"
+              min="0"
+              defaultValue={valoresIniciais?.quantidadeSacos ?? ""}
+              className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm"
+            />
+          </div>
+        )}
+
+        {mostrarValorCompra && (
+          <div>
+            <label className="mb-1 block text-sm font-medium text-stone-700">
+              🚚 Valor do frete (R$)
+            </label>
+            <input
+              type="number"
+              name="valor_frete"
+              step="0.01"
+              min="0"
+              defaultValue={valoresIniciais?.valorFrete ?? ""}
               className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm"
             />
           </div>
@@ -179,7 +215,7 @@ export default function AtendimentoFormFields({ produtos, valoresIniciais }: Ate
         {mostrarValorNegociacao && (
           <div>
             <label className="mb-1 block text-sm font-medium text-stone-700">
-              📊 Valor em negociação (R$)
+              📊 Valor do orçamento (R$)
             </label>
             <input
               type="number"
