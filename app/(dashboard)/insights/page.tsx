@@ -108,7 +108,7 @@ export default async function InsightsPage() {
         <p className="text-sm text-stone-500">Insights do mês atual</p>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-6">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         <StatCard label="Taxa de conversão" value={`${conversaoGeral.toFixed(1)}%`} icon={Percent} cor="text-blue-600" />
         <StatCard label="Ticket médio" value={formatBRL(ticketMedio)} icon={Receipt} cor="text-amber-500" />
         <StatCard label="Clientes sem comprar (30d+)" value={String(clientesSemComprar)} icon={AlertTriangle} cor="text-orange-500" />

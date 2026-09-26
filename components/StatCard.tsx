@@ -15,7 +15,7 @@ export default function StatCard({ label, value, sub, icon: Icon, cor = "text-ol
         <Icon className="h-3.5 w-3.5" />
         <p className="text-xs font-medium uppercase tracking-wide">{label}</p>
       </div>
-      <p className={`text-3xl font-bold ${cor}`}>{value}</p>
+      <p className={`break-words text-2xl font-bold ${cor}`}>{value}</p>
       {sub && <p className="mt-1 text-xs font-medium text-stone-400">{sub}</p>}
     </div>
   );

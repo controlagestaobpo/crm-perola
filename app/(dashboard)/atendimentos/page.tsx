@@ -2,9 +2,8 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getPerfilAtual } from "@/lib/auth";
 import { getClientesComHistorico } from "@/lib/clientes";
-import { labelResultado, formatBRL } from "@/lib/metrics";
 import AtendimentoForm from "@/components/AtendimentoForm";
-import AtendimentoRowActions from "@/components/AtendimentoRowActions";
+import AtendimentosRecentesTabela from "@/components/AtendimentosRecentesTabela";
 import ClienteForm from "@/components/ClienteForm";
 import KanbanAtendimentos from "@/components/KanbanAtendimentos";
 import type { Atendimento, Cliente, Perfil, Produto, ResultadoAtendimento } from "@/types/database";
@@ -137,54 +136,14 @@ export default async function AtendimentosPage({
                 </button>
               </form>
             </div>
-            <div className="overflow-x-auto rounded-xl bg-white/80 backdrop-blur-sm shadow-sm">
-              <table className="w-full text-left text-sm">
-                <thead className="border-b border-stone-200 bg-stone-50 text-stone-500">
-                  <tr>
-                    <th className="px-4 py-3 font-medium">Data</th>
-                    <th className="px-4 py-3 font-medium">Cliente</th>
-                    <th className="px-4 py-3 font-medium">Resultado</th>
-                    <th className="px-4 py-3 font-medium">Valor</th>
-                    <th className="px-4 py-3 font-medium">Próx. contato</th>
-                    <th className="px-4 py-3 font-medium">Ações</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {atendimentos.length === 0 ? (
-                    <tr>
-                      <td colSpan={6} className="px-4 py-6 text-center text-stone-400">
-                        {filtroResultado
-                          ? "Nenhum atendimento encontrado para esse estágio."
-                          : "Nenhum atendimento registrado ainda."}
-                      </td>
-                    </tr>
-                  ) : (
-                    atendimentos.map((a) => (
-                      <tr key={a.id} className="border-b border-stone-100 last:border-0">
-                        <td className="px-4 py-3 text-stone-600">
-                          {new Date(a.data + "T00:00:00").toLocaleDateString("pt-BR")}
-                        </td>
-                        <td className="px-4 py-3 font-medium text-stone-900">
-                          {a.clientes?.nome ?? "—"}
-                        </td>
-                        <td className="px-4 py-3 text-stone-600">{labelResultado(a.resultado)}</td>
-                        <td className="px-4 py-3 text-stone-600">
-                          {a.valor ? formatBRL(Number(a.valor)) : "—"}
-                        </td>
-                        <td className="px-4 py-3 text-stone-600">
-                          {a.proximo_contato
-                            ? new Date(a.proximo_contato + "T00:00:00").toLocaleDateString("pt-BR")
-                            : "—"}
-                        </td>
-                        <td className="px-4 py-3">
-                          <AtendimentoRowActions atendimentoId={a.id} />
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
+            <AtendimentosRecentesTabela
+              atendimentos={atendimentos}
+              mensagemVazio={
+                filtroResultado
+                  ? "Nenhum atendimento encontrado para esse estágio."
+                  : "Nenhum atendimento registrado ainda."
+              }
+            />
           </div>
         </>
       )}
