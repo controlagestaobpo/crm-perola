@@ -53,14 +53,20 @@ export function diasUteisRestantes(diasUteisTotais: number, diasUteisDecorridos:
   return Math.max(diasUteisTotais - diasUteisDecorridos, 1);
 }
 
+// Tipo enxuto: aceita tanto uma linha completa de atendimento quanto uma
+// consulta que só trouxe algumas colunas (ver metas/page.tsx e insights/page.tsx).
+type AtendimentoValores = Pick<Atendimento, "resultado" | "valor" | "quantidade_sacos" | "valor_frete"> & {
+  valor_negociacao?: number | null;
+};
+
 export function somaValor(
-  atendimentos: Atendimento[],
+  atendimentos: AtendimentoValores[],
   campo: "valor" | "valor_negociacao" | "quantidade_sacos" | "valor_frete"
 ) {
   return atendimentos.reduce((soma, a) => soma + Number(a[campo] ?? 0), 0);
 }
 
-export function somaComissao(atendimentos: Atendimento[], comissaoPercentual: number) {
+export function somaComissao(atendimentos: AtendimentoValores[], comissaoPercentual: number) {
   const base = atendimentos
     .filter((a) => a.resultado === "compra")
     .reduce((soma, a) => soma + (Number(a.valor ?? 0) - Number(a.valor_frete ?? 0)), 0);
@@ -125,7 +131,10 @@ export function agruparPorDiaAcumulado(atendimentos: Atendimento[], ano: number,
   return resultado;
 }
 
-export function contarProdutos(atendimentos: Atendimento[], campo: "produtos_oferecidos" | "produtos_vendidos") {
+export function contarProdutos(
+  atendimentos: Pick<Atendimento, "produtos_oferecidos" | "produtos_vendidos">[],
+  campo: "produtos_oferecidos" | "produtos_vendidos"
+) {
   const contagem = new Map<string, number>();
   for (const a of atendimentos) {
     for (const produto of a[campo] ?? []) {
@@ -143,7 +152,7 @@ export function formatBRL(valor: number) {
 
 const OFFSET_HORARIO_BRASIL = -3;
 
-export function melhorHorarioContato(atendimentos: Atendimento[]) {
+export function melhorHorarioContato(atendimentos: Pick<Atendimento, "criado_em" | "resultado">[]) {
   const buckets = new Map<number, { total: number; atendidas: number }>();
 
   for (const a of atendimentos) {

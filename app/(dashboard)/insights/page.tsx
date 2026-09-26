@@ -16,13 +16,21 @@ export default async function InsightsPage() {
   const mes = hoje.getUTCMonth() + 1;
   const inicioMes = `${ano}-${String(mes).padStart(2, "0")}-01`;
 
+  // Só as colunas que essa página usa (sem cliente_id/observações/etc, que
+  // ficam pesadas e não fazem falta aqui).
+  const CAMPOS_ATENDIMENTO =
+    "vendedor_id, resultado, valor, valor_frete, quantidade_sacos, motivo, produtos_oferecidos, produtos_vendidos, criado_em";
+
   const [{ data: atendimentosData }, clientesHistorico, { data: metasData }] = await Promise.all([
-    supabase.from("atendimentos").select("*").gte("data", inicioMes),
+    supabase.from("atendimentos").select(CAMPOS_ATENDIMENTO).gte("data", inicioMes),
     getClientesComHistorico(supabase),
     supabase.from("metas").select("*").eq("ano", ano).eq("mes", mes),
   ]);
 
-  const atendimentos = (atendimentosData ?? []) as Atendimento[];
+  const atendimentos = (atendimentosData ?? []) as Pick<
+    Atendimento,
+    "vendedor_id" | "resultado" | "valor" | "valor_frete" | "quantidade_sacos" | "motivo" | "produtos_oferecidos" | "produtos_vendidos" | "criado_em"
+  >[];
   const metas = (metasData ?? []) as Meta[];
 
   const comissaoTotal = metas.reduce((soma, meta) => {

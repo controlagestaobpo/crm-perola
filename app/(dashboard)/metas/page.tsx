@@ -57,20 +57,22 @@ export default async function MetasPage({
   const periodoTendencia = ultimosMeses(ano, mes, 6);
   const inicioTendencia = inicioFimMes(periodoTendencia[0].ano, periodoTendencia[0].mes).inicio;
 
+  // Só busca as colunas que essa página realmente usa — os atendimentos têm
+  // campos pesados (observações, listas de produtos) que não fazem falta aqui.
   const [{ data: vendedoresData }, { data: metasData }, { data: atendimentosData }, { data: metasTendenciaData }, { data: atendimentosTendenciaData }] =
     await Promise.all([
       supabase.from("perfis").select("*").order("nome"),
       supabase.from("metas").select("*").eq("ano", ano).eq("mes", mes),
-      supabase.from("atendimentos").select("*").gte("data", inicio).lte("data", fim),
-      supabase.from("metas").select("*").gte("ano", periodoTendencia[0].ano),
-      supabase.from("atendimentos").select("*").gte("data", inicioTendencia).lte("data", fim),
+      supabase.from("atendimentos").select("vendedor_id, resultado, valor, valor_frete, quantidade_sacos").gte("data", inicio).lte("data", fim),
+      supabase.from("metas").select("ano, mes, meta_valor").gte("ano", periodoTendencia[0].ano),
+      supabase.from("atendimentos").select("data, resultado, valor").gte("data", inicioTendencia).lte("data", fim),
     ]);
 
   const vendedores = (vendedoresData ?? []) as Perfil[];
   const metas = (metasData ?? []) as Meta[];
-  const atendimentos = (atendimentosData ?? []) as Atendimento[];
-  const metasTendencia = (metasTendenciaData ?? []) as Meta[];
-  const atendimentosTendencia = (atendimentosTendenciaData ?? []) as Atendimento[];
+  const atendimentos = (atendimentosData ?? []) as Pick<Atendimento, "vendedor_id" | "resultado" | "valor" | "valor_frete" | "quantidade_sacos">[];
+  const metasTendencia = (metasTendenciaData ?? []) as Pick<Meta, "ano" | "mes" | "meta_valor">[];
+  const atendimentosTendencia = (atendimentosTendenciaData ?? []) as Pick<Atendimento, "data" | "resultado" | "valor">[];
 
   const dados = vendedores.map((v) => {
     const meta = metas.find((m) => m.vendedor_id === v.id);

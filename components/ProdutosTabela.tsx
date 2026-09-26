@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { ArrowUpDown } from "lucide-react";
 
 interface ProdutoLinha {
@@ -32,11 +32,13 @@ export default function ProdutosTabela({ dados }: { dados: ProdutoLinha[] }) {
     }
   }
 
-  const ordenados = [...dados].sort((a, b) => {
+  const ordenados = useMemo(() => {
     const dir = ordem === "desc" ? -1 : 1;
-    if (coluna === "produto") return dir * a.produto.localeCompare(b.produto);
-    return dir * (a[coluna] - b[coluna]);
-  });
+    return [...dados].sort((a, b) => {
+      if (coluna === "produto") return dir * a.produto.localeCompare(b.produto);
+      return dir * (a[coluna] - b[coluna]);
+    });
+  }, [dados, coluna, ordem]);
 
   return (
     <table className="w-full text-left text-sm">
