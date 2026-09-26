@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { DollarSign, Phone, ShoppingCart, Target, CalendarCheck, Receipt, Package, PackageCheck, Users } from "lucide-react";
+import { DollarSign, Phone, ShoppingCart, Target, CalendarCheck, Receipt, Package, PackageCheck, Users, Truck } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getPerfilAtual } from "@/lib/auth";
 import { getClientesComHistorico } from "@/lib/clientes";
@@ -14,6 +14,7 @@ import {
   agruparPorDiaAcumulado,
   agruparPorHora,
   agruparResultados,
+  atendimentosValidos,
   contarProdutos,
   contarResultado,
   diasUteisNoMes,
@@ -73,9 +74,16 @@ export default async function DashboardPage({
   const diasUteisAteHoje = diasUteisNoMes(ano, mes, true, hoje);
   const diasUteisFaltando = diasUteisRestantes(diasUteisTotais, diasUteisAteHoje);
 
+  // "Não atendeu" não conta como atendimento de verdade (ninguém atendeu o
+  // telefone) — fica de fora das contagens/metas, mas continua salvo e
+  // aparece na Distribuição de resultados.
+  const atendimentosContam = atendimentosValidos(atendimentos);
+  const atendimentosMesContam = atendimentosValidos(atendimentosMes);
+
   const vendido = somaValor(atendimentos, "valor");
   const vendidoMes = somaValor(atendimentosMes, "valor");
-  const totalAtendimentos = atendimentos.length;
+  const freteTotal = somaValor(atendimentos, "valor_frete");
+  const totalAtendimentos = atendimentosContam.length;
   const totalVendas = contarResultado(atendimentos, "compra");
   const ticketMedio = totalVendas > 0 ? vendido / totalVendas : 0;
   const conversao = totalAtendimentos > 0 ? (totalVendas / totalAtendimentos) * 100 : 0;
@@ -83,7 +91,7 @@ export default async function DashboardPage({
   const metaProspeccoesTotal = metas.reduce((soma, m) => soma + Number(m.meta_prospeccoes), 0);
   // Meta diária de atendimentos = o que falta pra bater a meta do mês, dividido
   // pelos dias úteis que ainda restam — não um valor fixo o mês inteiro.
-  const metaAtendimentosDiaria = Math.max(metaProspeccoesTotal - atendimentosMes.length, 0) / diasUteisFaltando;
+  const metaAtendimentosDiaria = Math.max(metaProspeccoesTotal - atendimentosMesContam.length, 0) / diasUteisFaltando;
   const metaAtendimentosPeriodo = periodo === "hoje" ? metaAtendimentosDiaria : metaProspeccoesTotal;
 
   const pipelineAbertos = atendimentos.filter((a) => a.resultado === "negociacao");
@@ -107,7 +115,7 @@ export default async function DashboardPage({
   const metaSacosDiaria = Math.max(metaSacosTotal - sacosVendidosMes, 0) / diasUteisFaltando;
   const metaSacosPeriodo = periodo === "hoje" ? metaSacosDiaria : metaSacosTotal;
 
-  const clientesAtendidos = new Set(atendimentos.map((a) => a.cliente_id)).size;
+  const clientesAtendidos = new Set(atendimentosContam.map((a) => a.cliente_id)).size;
 
   return (
     <div className="space-y-6">
@@ -180,13 +188,19 @@ export default async function DashboardPage({
           icon={PackageCheck}
           cor="text-emerald-600"
         />
+        <StatCard
+          label={periodo === "hoje" ? "Total de frete hoje" : "Total de frete no mês"}
+          value={formatBRL(freteTotal)}
+          icon={Truck}
+          cor="text-orange-500"
+        />
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         {periodo === "hoje" ? (
           <LineChartCard
             title="Evolução de atendimentos (hoje) vs ritmo da meta"
-            data={agruparPorHora(atendimentos, metaAtendimentosDiaria)}
+            data={agruparPorHora(atendimentosContam, metaAtendimentosDiaria)}
             xKey="hora"
             lines={[
               { key: "meta", nome: "Ritmo necessário", cor: "#94a3b8", tracejada: true },

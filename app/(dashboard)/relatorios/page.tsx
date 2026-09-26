@@ -5,11 +5,11 @@ import { getClientesComHistorico } from "@/lib/clientes";
 import {
   agoraBrasil,
   agruparResultados,
+  atendimentosValidos,
   contarProdutos,
   contarResultado,
   formatBRL,
   labelResultado,
-  somaComissao,
   somaValor,
 } from "@/lib/metrics";
 import PrintButton from "@/components/PrintButton";
@@ -67,7 +67,12 @@ export default async function RelatoriosPage({
   const vendedores = (vendedoresData ?? []) as Perfil[];
   const metas = (metasData ?? []) as Meta[];
 
-  const totalAtendimentos = atendimentos.length;
+  // "Não atendeu" não conta como atendimento pra fins de contagem/conversão
+  // (ninguém atendeu o telefone) — continua salvo e aparece na Distribuição
+  // de resultados (seção 3), só fica fora dos totais de atividade.
+  const atendimentosContam = atendimentosValidos(atendimentos);
+
+  const totalAtendimentos = atendimentosContam.length;
   const totalVendas = contarResultado(atendimentos, "compra");
   const receita = somaValor(atendimentos, "valor");
   const ticketMedio = totalVendas > 0 ? receita / totalVendas : 0;
@@ -75,14 +80,17 @@ export default async function RelatoriosPage({
   const metaTotal = metas.reduce((s, m) => s + Number(m.meta_valor), 0);
   const pipelineAberto = atendimentos.filter((a) => a.resultado === "negociacao");
   const pipelineValor = somaValor(pipelineAberto, "valor_negociacao");
-  const clientesAtendidos = new Set(atendimentos.map((a) => a.cliente_id)).size;
+  const clientesAtendidos = new Set(atendimentosContam.map((a) => a.cliente_id)).size;
   const sacosVendidosTotal = somaValor(atendimentos, "quantidade_sacos");
+  const freteTotal = somaValor(atendimentos, "valor_frete");
 
   const porVendedor = vendedores.map((v) => {
-    const dele = atendimentos.filter((a) => a.vendedor_id === v.id);
+    const dele = atendimentosContam.filter((a) => a.vendedor_id === v.id);
     const vendas = dele.filter((a) => a.resultado === "compra");
     const receitaVendedor = somaValor(vendas, "valor");
     const sacosVendidos = somaValor(vendas, "quantidade_sacos");
+    const freteVendedor = somaValor(vendas, "valor_frete");
+    const baseComissao = Math.max(receitaVendedor - freteVendedor, 0);
     const meta = metas.find((m) => m.vendedor_id === v.id);
     const comissaoPercentual = Number(meta?.comissao_percentual ?? 1);
     return {
@@ -91,11 +99,14 @@ export default async function RelatoriosPage({
       vendas: vendas.length,
       receita: receitaVendedor,
       sacosVendidos,
+      freteVendedor,
+      baseComissao,
+      comissaoPercentual,
       conversao: dele.length > 0 ? (vendas.length / dele.length) * 100 : 0,
       meta: Number(meta?.meta_valor ?? 0),
       percentualMeta: meta && Number(meta.meta_valor) > 0 ? (receitaVendedor / Number(meta.meta_valor)) * 100 : 0,
       // Comissão = (valor da venda - frete) x % de comissão.
-      comissao: somaComissao(vendas, comissaoPercentual),
+      comissao: baseComissao * (comissaoPercentual / 100),
     };
   });
 
@@ -186,6 +197,7 @@ export default async function RelatoriosPage({
               ["Receita", formatBRL(receita)],
               ["Ticket médio", formatBRL(ticketMedio)],
               ["Sacos vendidos", `${sacosVendidosTotal} sacos`],
+              ["Total de frete", formatBRL(freteTotal)],
               ["Meta do período", formatBRL(metaTotal)],
               ["% da meta batida", metaTotal > 0 ? `${((receita / metaTotal) * 100).toFixed(1)}%` : "—"],
               ["Pipeline em aberto", formatBRL(pipelineValor)],
@@ -236,6 +248,51 @@ export default async function RelatoriosPage({
               ))}
             </tbody>
           </table>
+        </div>
+      </section>
+
+      {/* FECHAMENTO DE COMISSÃO */}
+      <section className="break-inside-avoid">
+        <div className="rounded-2xl border-2 border-oliva-200 bg-white/80 backdrop-blur-sm p-5 shadow-sm">
+          <h2 className="mb-3 text-base font-semibold text-stone-900">💰 Fechamento de comissão do período</h2>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm">
+              <thead className="border-b border-stone-200 text-stone-500">
+                <tr>
+                  <th className="px-3 py-2 font-medium">Vendedor</th>
+                  <th className="px-3 py-2 font-medium">Vendas (R$)</th>
+                  <th className="px-3 py-2 font-medium">Frete (R$)</th>
+                  <th className="px-3 py-2 font-medium">Base p/ comissão</th>
+                  <th className="px-3 py-2 font-medium">%</th>
+                  <th className="px-3 py-2 font-medium">A pagar</th>
+                </tr>
+              </thead>
+              <tbody>
+                {porVendedor.map((d) => (
+                  <tr key={d.vendedor.id} className="border-b border-stone-100 last:border-0">
+                    <td className="px-3 py-2 font-medium text-stone-900">{d.vendedor.nome}</td>
+                    <td className="px-3 py-2 text-stone-600">{formatBRL(d.receita)}</td>
+                    <td className="px-3 py-2 text-stone-600">{formatBRL(d.freteVendedor)}</td>
+                    <td className="px-3 py-2 text-stone-600">{formatBRL(d.baseComissao)}</td>
+                    <td className="px-3 py-2 text-stone-600">{d.comissaoPercentual}%</td>
+                    <td className="px-3 py-2 font-semibold text-oliva-700">{formatBRL(d.comissao)}</td>
+                  </tr>
+                ))}
+              </tbody>
+              <tfoot>
+                <tr className="border-t-2 border-oliva-200">
+                  <td className="px-3 py-2 font-semibold text-stone-900">Total</td>
+                  <td className="px-3 py-2 font-semibold text-stone-900">{formatBRL(receita)}</td>
+                  <td className="px-3 py-2 font-semibold text-stone-900">{formatBRL(freteTotal)}</td>
+                  <td className="px-3 py-2 font-semibold text-stone-900">
+                    {formatBRL(porVendedor.reduce((soma, d) => soma + d.baseComissao, 0))}
+                  </td>
+                  <td className="px-3 py-2"></td>
+                  <td className="px-3 py-2 font-bold text-oliva-700">{formatBRL(comissaoTotal)}</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
         </div>
       </section>
 

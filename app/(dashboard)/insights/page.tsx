@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { getClientesComHistorico } from "@/lib/clientes";
-import { agoraBrasil, contarProdutos, diasEntreHojeE, formatBRL, melhorHorarioContato, somaComissao, somaValor } from "@/lib/metrics";
+import { agoraBrasil, atendimentosValidos, contarProdutos, diasEntreHojeE, formatBRL, melhorHorarioContato, somaComissao, somaValor } from "@/lib/metrics";
 import StatCard from "@/components/StatCard";
 import PieChartCard from "@/components/charts/PieChartCard";
 import BarChartCard from "@/components/charts/BarChartCard";
@@ -38,7 +38,8 @@ export default async function InsightsPage() {
     return soma + somaComissao(atendimentosVendedor, Number(meta.comissao_percentual));
   }, 0);
   const sacosVendidos = somaValor(atendimentos, "quantidade_sacos");
-  const totalAtendimentos = atendimentos.length;
+  // "Não atendeu" não conta como atendimento pra fins de conversão/contagem.
+  const totalAtendimentos = atendimentosValidos(atendimentos).length;
   const vendas = atendimentos.filter((a) => a.resultado === "compra");
   const conversaoGeral = totalAtendimentos > 0 ? (vendas.length / totalAtendimentos) * 100 : 0;
   const ticketMedio = vendas.length > 0

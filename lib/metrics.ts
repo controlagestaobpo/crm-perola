@@ -13,6 +13,13 @@ export function labelResultado(resultado: ResultadoAtendimento) {
   return LABEL_RESULTADO[resultado];
 }
 
+// "Não atendeu" = ninguém atendeu o telefone, então não conta como um
+// atendimento de verdade pra fins de meta/contagem/conversão. Ainda fica
+// salvo e aparece na Distribuição de resultados — só não entra nesses totais.
+export function atendimentosValidos<T extends { resultado: ResultadoAtendimento }>(atendimentos: T[]): T[] {
+  return atendimentos.filter((a) => a.resultado !== "nao_atendeu");
+}
+
 // O servidor roda em UTC. Esse deslocamento fixo (-3h, o Brasil não tem mais
 // horário de verão) garante que "hoje"/"agora" sempre reflita o horário de
 // Brasília, e não vire o dia seguinte 3h mais cedo do que deveria.

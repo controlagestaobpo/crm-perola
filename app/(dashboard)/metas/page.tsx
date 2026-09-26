@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { getPerfilAtual } from "@/lib/auth";
-import { agoraBrasil, diasUteisNoMes, diasUteisRestantes, formatBRL, somaComissao, somaValor } from "@/lib/metrics";
+import { agoraBrasil, atendimentosValidos, diasUteisNoMes, diasUteisRestantes, formatBRL, somaComissao, somaValor } from "@/lib/metrics";
 import StatCard from "@/components/StatCard";
 import BarChartCard from "@/components/charts/BarChartCard";
 import LineChartCard from "@/components/charts/LineChartCard";
@@ -76,7 +76,8 @@ export default async function MetasPage({
 
   const dados = vendedores.map((v) => {
     const meta = metas.find((m) => m.vendedor_id === v.id);
-    const atendimentosVendedor = atendimentos.filter((a) => a.vendedor_id === v.id);
+    // "Não atendeu" não conta como atendimento pra fins de ritmo/meta de contatos.
+    const atendimentosVendedor = atendimentosValidos(atendimentos.filter((a) => a.vendedor_id === v.id));
     const vendasVendedor = atendimentosVendedor.filter((a) => a.resultado === "compra");
     const realizado = somaValor(vendasVendedor, "valor");
     const sacosVendidos = somaValor(vendasVendedor, "quantidade_sacos");
