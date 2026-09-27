@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { DollarSign, Phone, ShoppingCart, Target, CalendarCheck, Receipt, Package, PackageCheck, Users, Truck } from "lucide-react";
+import { DollarSign, ShoppingCart, Target, CalendarCheck, Receipt, Package, PackageCheck, Users, Truck } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getPerfilAtual } from "@/lib/auth";
 import { getClienteIdsDoVendedor, getClientesComHistorico } from "@/lib/clientes";
@@ -166,7 +166,6 @@ export default async function DashboardPage({
         {periodo === "mes" && (
           <StatCard label="Projeção (fim do mês)" value={formatBRL(projecao)} icon={Receipt} cor="text-orange-500" />
         )}
-        <StatCard label="Atendimentos" value={String(totalAtendimentos)} icon={Phone} cor="text-amber-500" />
         <StatCard label="Clientes atendidos" value={String(clientesAtendidos)} sub="clientes diferentes no período" icon={Users} cor="text-blue-600" />
         <StatCard
           label="Vendas"
