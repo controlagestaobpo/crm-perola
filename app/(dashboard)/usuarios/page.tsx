@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
-import { getPerfilAtual } from "@/lib/auth";
+import { getPerfilAtual, labelPapel } from "@/lib/auth";
 import { removerConvite } from "@/lib/actions";
 import ConviteForm from "@/components/ConviteForm";
 import type { Convite, Perfil } from "@/types/database";
@@ -84,7 +84,7 @@ export default async function UsuariosPage() {
                 <tr key={p.id} className="border-b border-stone-100 last:border-0">
                   <td className="px-4 py-3 font-medium text-stone-900">{p.nome}</td>
                   <td className="px-4 py-3 text-stone-600">{p.email}</td>
-                  <td className="px-4 py-3 capitalize text-stone-600">{p.papel}</td>
+                  <td className="px-4 py-3 text-stone-600">{labelPapel(p.papel)}</td>
                 </tr>
               ))}
             </tbody>

@@ -22,7 +22,7 @@ const links = [
   { href: "/atendimentos", label: "Atendimentos", icon: Handshake, papeis: ["master", "gerente", "vendedor"] },
   { href: "/clientes", label: "Clientes", icon: Users, papeis: ["master", "gerente", "vendedor"] },
   { href: "/metas", label: "Metas", icon: Target, papeis: ["master", "gerente", "vendedor"] },
-  { href: "/insights", label: "Insights", icon: Lightbulb, papeis: ["master"] },
+  { href: "/insights", label: "Insights", icon: Lightbulb, papeis: ["master", "gerente"] },
   { href: "/relatorios", label: "Relatórios", icon: FileBarChart, papeis: ["master"] },
   { href: "/produtos", label: "Produtos", icon: Package, papeis: ["master"] },
   { href: "/usuarios", label: "Usuários", icon: UserCog, papeis: ["master"] },

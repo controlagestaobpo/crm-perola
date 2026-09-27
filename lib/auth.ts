@@ -1,6 +1,19 @@
 import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
-import type { Perfil } from "@/types/database";
+import type { Papel, Perfil } from "@/types/database";
+
+// "gerente" continua sendo o valor salvo no banco (papel/RLS não mudam) —
+// só o texto exibido virou "Sócio", já que esse papel enxerga tudo que os
+// vendedores lançam (não só a própria carteira) e por isso remete ao dono.
+const LABEL_PAPEL: Record<Papel, string> = {
+  master: "Master",
+  gerente: "Sócio",
+  vendedor: "Vendedor(a)",
+};
+
+export function labelPapel(papel: Papel) {
+  return LABEL_PAPEL[papel];
+}
 
 // Toda página chama getPerfilAtual() e o layout tambem chama — sem isso,
 // cada navegação faria essa consulta duas vezes. `cache()` faz a segunda

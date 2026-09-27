@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getPerfilAtual } from "@/lib/auth";
-import { getClientesComHistorico } from "@/lib/clientes";
+import { getClienteIdsDoVendedor, getClientesComHistorico } from "@/lib/clientes";
 import AtendimentoForm from "@/components/AtendimentoForm";
 import AtendimentosRecentesTabela from "@/components/AtendimentosRecentesTabela";
 import ClienteForm from "@/components/ClienteForm";
@@ -41,6 +41,13 @@ export default async function AtendimentosPage({
     ? consultaAtendimentos.eq("resultado", filtroResultado).limit(100)
     : consultaAtendimentos.limit(20);
 
+  // Vendedor só vê no Kanban os clientes que ele mesmo já atendeu — a tabela
+  // de clientes é compartilhada pela organização. Master e sócio veem todo
+  // mundo (o formulário de "novo atendimento" continua livre pra qualquer
+  // cliente, já que qualquer um pode precisar registrar um primeiro contato).
+  const meusClienteIds =
+    perfil.papel === "vendedor" ? await getClienteIdsDoVendedor(supabase, perfil.id) : undefined;
+
   const [{ data: clientesData }, { data: produtosData }, { data: vendedoresData }, { data: atendimentosData }, clientesHistorico] =
     await Promise.all([
       supabase.from("clientes").select("*").order("nome"),
@@ -49,7 +56,7 @@ export default async function AtendimentosPage({
         ? supabase.from("perfis").select("*").order("nome")
         : Promise.resolve({ data: [perfil] }),
       consultaAtendimentos,
-      getClientesComHistorico(supabase),
+      getClientesComHistorico(supabase, meusClienteIds),
     ]);
 
   const clientes = (clientesData ?? []) as Cliente[];

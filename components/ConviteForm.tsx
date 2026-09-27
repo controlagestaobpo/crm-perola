@@ -30,7 +30,7 @@ export default function ConviteForm() {
           <label className="mb-1 block text-sm font-medium text-stone-700">Papel</label>
           <select name="papel" defaultValue="vendedor" className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm">
             <option value="vendedor">Vendedor(a)</option>
-            <option value="gerente">Gerente (metas e comissões)</option>
+            <option value="gerente">Sócio (metas, comissões e insights)</option>
             <option value="master">Master</option>
           </select>
         </div>

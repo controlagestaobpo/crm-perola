@@ -15,7 +15,7 @@ export default async function InsightsPage() {
   const supabase = createClient();
   const perfil = await getPerfilAtual();
   if (!perfil) return null;
-  if (perfil.papel !== "master") redirect("/");
+  if (perfil.papel === "vendedor") redirect("/");
 
   const hoje = agoraBrasil();
   const ano = hoje.getUTCFullYear();
