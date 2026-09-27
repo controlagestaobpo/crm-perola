@@ -9,8 +9,20 @@ export interface ClienteComHistorico extends Cliente {
   diasSemComprar: number | null;
 }
 
+// Quais clientes um vendedor já atendeu (qualquer resultado) — usado pra
+// restringir oportunidades/carteira ao que é "dele", já que a tabela de
+// clientes é compartilhada pela organização inteira (sem dono fixo).
+export async function getClienteIdsDoVendedor(
+  supabase: SupabaseClient,
+  vendedorId: string
+): Promise<Set<string>> {
+  const { data } = await supabase.from("atendimentos").select("cliente_id").eq("vendedor_id", vendedorId);
+  return new Set((data ?? []).map((a) => a.cliente_id as string));
+}
+
 export async function getClientesComHistorico(
-  supabase: SupabaseClient
+  supabase: SupabaseClient,
+  apenasClienteIds?: Set<string>
 ): Promise<ClienteComHistorico[]> {
   const [{ data: clientes }, { data: compras }] = await Promise.all([
     supabase.from("clientes").select("*").order("nome"),
@@ -21,7 +33,9 @@ export async function getClientesComHistorico(
       .order("data", { ascending: false }),
   ]);
 
-  const listaClientes = (clientes ?? []) as Cliente[];
+  const listaClientes = ((clientes ?? []) as Cliente[]).filter(
+    (c) => !apenasClienteIds || apenasClienteIds.has(c.id)
+  );
   const listaCompras = (compras ?? []) as { cliente_id: string; data: string; valor: number | null }[];
 
   return listaClientes.map((cliente) => {

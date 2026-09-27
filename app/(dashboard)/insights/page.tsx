@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
-import { getClientesComHistorico } from "@/lib/clientes";
+import { getPerfilAtual } from "@/lib/auth";
+import { getClienteIdsDoVendedor, getClientesComHistorico } from "@/lib/clientes";
 import { agoraBrasil, atendimentosValidos, contarProdutos, diasEntreHojeE, formatBRL, melhorHorarioContato, somaComissao, somaValor } from "@/lib/metrics";
 import StatCard from "@/components/StatCard";
 import PieChartCard from "@/components/charts/PieChartCard";
@@ -11,10 +12,19 @@ export const dynamic = "force-dynamic";
 
 export default async function InsightsPage() {
   const supabase = createClient();
+  const perfil = await getPerfilAtual();
+  if (!perfil) return null;
+
   const hoje = agoraBrasil();
   const ano = hoje.getUTCFullYear();
   const mes = hoje.getUTCMonth() + 1;
   const inicioMes = `${ano}-${String(mes).padStart(2, "0")}-01`;
+
+  // Vendedor só vê oportunidades/carteira dos clientes que ele mesmo já
+  // atendeu — a tabela de clientes é compartilhada pela organização, então
+  // sem isso ele veria os clientes de todo mundo. Master e gerente veem tudo.
+  const meusClienteIds =
+    perfil.papel === "vendedor" ? await getClienteIdsDoVendedor(supabase, perfil.id) : undefined;
 
   // Só as colunas que essa página usa (sem cliente_id/observações/etc, que
   // ficam pesadas e não fazem falta aqui).
@@ -23,7 +33,7 @@ export default async function InsightsPage() {
 
   const [{ data: atendimentosData }, clientesHistorico, { data: metasData }] = await Promise.all([
     supabase.from("atendimentos").select(CAMPOS_ATENDIMENTO).gte("data", inicioMes),
-    getClientesComHistorico(supabase),
+    getClientesComHistorico(supabase, meusClienteIds),
     supabase.from("metas").select("*").eq("ano", ano).eq("mes", mes),
   ]);
 

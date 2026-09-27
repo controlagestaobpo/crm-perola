@@ -2,7 +2,7 @@ import Link from "next/link";
 import { DollarSign, Phone, ShoppingCart, Target, CalendarCheck, Receipt, Package, PackageCheck, Users, Truck } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getPerfilAtual } from "@/lib/auth";
-import { getClientesComHistorico } from "@/lib/clientes";
+import { getClienteIdsDoVendedor, getClientesComHistorico } from "@/lib/clientes";
 import { getAgenda } from "@/lib/agenda";
 import StatCard from "@/components/StatCard";
 import LineChartCard from "@/components/charts/LineChartCard";
@@ -50,6 +50,12 @@ export default async function DashboardPage({
   const mes = hoje.getUTCMonth() + 1;
   const { inicio, fim } = inicioFimMes(ano, mes);
 
+  // Vendedor só vê a carteira dos clientes que ele mesmo já atendeu — a
+  // tabela de clientes é compartilhada pela organização. Master e gerente
+  // continuam vendo todo mundo.
+  const meusClienteIds =
+    perfil.papel === "vendedor" ? await getClienteIdsDoVendedor(supabase, perfil.id) : undefined;
+
   const [{ data: atendimentosData }, { data: metasData }, clientesHistorico, agendaItens] = await Promise.all([
     supabase
       .from("atendimentos")
@@ -58,7 +64,7 @@ export default async function DashboardPage({
       .lte("data", fim)
       .order("criado_em", { ascending: true }),
     supabase.from("metas").select("*").eq("ano", ano).eq("mes", mes),
-    getClientesComHistorico(supabase),
+    getClientesComHistorico(supabase, meusClienteIds),
     getAgenda(supabase),
   ]);
 
