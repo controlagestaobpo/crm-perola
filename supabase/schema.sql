@@ -372,6 +372,10 @@ drop policy if exists "Master gerencia perfis da organizacao" on perfis;
 create policy "Master gerencia perfis da organizacao" on perfis
   for update using (organizacao_id = public.minha_organizacao() and public.meu_papel() = 'master');
 
+drop policy if exists "Master remove perfis da organizacao" on perfis;
+create policy "Master remove perfis da organizacao" on perfis
+  for delete using (organizacao_id = public.minha_organizacao() and public.meu_papel() = 'master');
+
 drop policy if exists "Master ve convites da organizacao" on convites;
 create policy "Master ve convites da organizacao" on convites
   for select using (organizacao_id = public.minha_organizacao());

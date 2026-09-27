@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getPerfilAtual, labelPapel } from "@/lib/auth";
 import { removerConvite } from "@/lib/actions";
 import ConviteForm from "@/components/ConviteForm";
+import UsuarioRowActions from "@/components/UsuarioRowActions";
 import type { Convite, Perfil } from "@/types/database";
 
 export const dynamic = "force-dynamic";
@@ -77,6 +78,7 @@ export default async function UsuariosPage() {
                 <th className="px-4 py-3 font-medium">Nome</th>
                 <th className="px-4 py-3 font-medium">E-mail</th>
                 <th className="px-4 py-3 font-medium">Papel</th>
+                <th className="px-4 py-3 font-medium"></th>
               </tr>
             </thead>
             <tbody>
@@ -85,6 +87,9 @@ export default async function UsuariosPage() {
                   <td className="px-4 py-3 font-medium text-stone-900">{p.nome}</td>
                   <td className="px-4 py-3 text-stone-600">{p.email}</td>
                   <td className="px-4 py-3 text-stone-600">{labelPapel(p.papel)}</td>
+                  <td className="px-4 py-3">
+                    {p.id !== perfil.id && <UsuarioRowActions usuarioId={p.id} nome={p.nome} />}
+                  </td>
                 </tr>
               ))}
             </tbody>

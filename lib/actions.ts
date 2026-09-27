@@ -366,3 +366,18 @@ export async function removerProduto(produtoId: string) {
 
   revalidatePath("/produtos");
 }
+
+export async function removerUsuario(usuarioId: string) {
+  const perfil = await getPerfilAtual();
+  if (!perfil || perfil.papel !== "master") throw new Error("Apenas o master remove usuários");
+  if (usuarioId === perfil.id) throw new Error("Você não pode remover a sua própria conta.");
+
+  const supabase = createClient();
+  // Apaga só o perfil (login/e-mail continuam existindo no Supabase Auth).
+  // Como atendimentos/metas referenciam o vendedor com "on delete cascade",
+  // o histórico de atendimentos e metas dessa pessoa é apagado junto.
+  const { error } = await supabase.from("perfis").delete().eq("id", usuarioId);
+  if (error) throw new Error(error.message);
+
+  revalidatePath("/usuarios");
+}
