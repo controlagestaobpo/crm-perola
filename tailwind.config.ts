@@ -39,6 +39,26 @@ const config: Config = {
           800: "#714623",
           900: "#5e3a20",
         },
+        // Redesign visual (branch redesign-visual) — paleta exata do briefing.
+        // Nomes próprios (não é uma escala 50-900) pra não colidir com oliva/trigo
+        // e não arriscar mudar nada que já está no ar.
+        perola: {
+          verde: "#1E2A18",
+          "verde-medio": "#7FB52A",
+          lima: "#A6E23A",
+          "lima-texto": "#D6F28A",
+          bg: "#F5F4EE",
+          borda: "#E5E3D9",
+          texto: "#1B2216",
+          "texto-2": "#6D7365",
+          divisor: "#EDEBE3",
+          erro: "#C4452C",
+          "erro-bg": "#FBEAE5",
+          alerta: "#B8751A",
+          tag: "#F1EFE7",
+          "tag-pos-bg": "#EEF3E2",
+          "tag-pos-texto": "#3F5A1E",
+        },
       },
     },
   },
