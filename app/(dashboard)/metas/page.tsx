@@ -155,47 +155,47 @@ export default async function MetasPage({
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold text-stone-900">Metas</h1>
-          <p className="text-sm text-stone-500">
+          <h1 className="text-2xl font-semibold text-perola-texto">Metas</h1>
+          <p className="text-sm text-perola-texto-2">
             Meta vs realizado — {MESES[mes - 1]} de {ano}
           </p>
         </div>
         <form className="flex items-center gap-2" method="get">
-          <select name="ano" defaultValue={ano} className="rounded-lg border border-stone-300 px-3 py-1.5 text-sm">
+          <select name="ano" defaultValue={ano} className="rounded-[10px] border border-[#DAD8CD] bg-white px-3 py-1.5 text-sm text-perola-texto focus:border-perola-verde focus:outline-none">
             {[ano - 1, ano, ano + 1].map((a) => (
               <option key={a} value={a}>{a}</option>
             ))}
           </select>
-          <select name="mes" defaultValue={mes} className="rounded-lg border border-stone-300 px-3 py-1.5 text-sm">
+          <select name="mes" defaultValue={mes} className="rounded-[10px] border border-[#DAD8CD] bg-white px-3 py-1.5 text-sm text-perola-texto focus:border-perola-verde focus:outline-none">
             {MESES.map((nome, index) => (
               <option key={nome} value={index + 1}>{nome}</option>
             ))}
           </select>
-          <button type="submit" className="rounded-lg bg-stone-200 px-3 py-1.5 text-sm font-medium text-stone-700 hover:bg-stone-300">
+          <button type="submit" className="rounded-[10px] bg-perola-tag px-3 py-1.5 text-sm font-medium text-perola-texto hover:brightness-95">
             Filtrar
           </button>
         </form>
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <StatCard label="Meta do período" value={formatBRL(metaTotal)} icon={Target} cor="text-blue-600" />
-        <StatCard label="Realizado" value={formatBRL(realizadoTotal)} icon={TrendingUp} cor="text-emerald-600" />
-        <StatCard label="Faltam para meta" value={formatBRL(faltam)} icon={AlertCircle} cor="text-orange-500" />
-        <StatCard label="Conversão geral" value={`${conversaoGeral.toFixed(1)}%`} icon={Percent} cor="text-amber-500" />
-        <StatCard label="Meta de sacos" value={`${metaSacosTotal} sacos`} icon={Package} cor="text-blue-600" />
-        <StatCard label="Sacos vendidos" value={`${sacosVendidosTotal} sacos`} icon={Package} cor="text-emerald-600" />
+        <StatCard label="Meta do período" value={formatBRL(metaTotal)} icon={Target} />
+        <StatCard label="Realizado" value={formatBRL(realizadoTotal)} icon={TrendingUp} />
+        <StatCard label="Faltam para meta" value={formatBRL(faltam)} icon={AlertCircle} />
+        <StatCard label="Conversão geral" value={`${conversaoGeral.toFixed(1)}%`} icon={Percent} />
+        <StatCard label="Meta de sacos" value={`${metaSacosTotal} sacos`} icon={Package} />
+        <StatCard label="Sacos vendidos" value={`${sacosVendidosTotal} sacos`} icon={Package} />
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <StatCard label="Comissão ganha (total)" value={formatBRL(comissaoTotal)} icon={Wallet} cor="text-emerald-600" />
-        <div className="rounded-2xl bg-oliva-100 p-5 shadow-sm">
-          <div className="mb-2 flex items-center gap-1.5 text-stone-400">
+        <StatCard label="Comissão ganha (total)" value={formatBRL(comissaoTotal)} icon={Wallet} />
+        <div className="rounded-[14px] border border-perola-borda bg-white p-5">
+          <div className="mb-2 flex items-center gap-1.5 text-perola-texto-2">
             <Gauge className="h-3.5 w-3.5" />
             <p className="text-xs font-medium uppercase tracking-wide">Ritmo de contatos</p>
           </div>
-          <p className="text-3xl font-bold text-blue-600">
+          <p className="text-2xl font-semibold text-perola-texto">
             {ritmoAtualGeral.toFixed(1)}
-            <span className="ml-2 text-sm font-normal text-stone-400">
+            <span className="ml-2 text-sm font-normal text-perola-texto-2">
               / dia (precisa {ritmoNecessarioGeral.toFixed(1)}/dia)
             </span>
           </p>
@@ -216,50 +216,50 @@ export default async function MetasPage({
       </div>
 
       <div>
-        <h2 className="mb-3 text-base font-semibold text-stone-900">🏆 Ranking do período</h2>
-        <div className="overflow-hidden rounded-xl bg-oliva-100 shadow-sm">
+        <h2 className="mb-3 text-base font-semibold text-perola-texto">Ranking do período</h2>
+        <div className="overflow-hidden rounded-[14px] border border-perola-borda bg-white">
           <table className="w-full text-left text-sm">
-            <thead className="border-b border-stone-200 bg-stone-50 text-stone-500">
+            <thead className="border-b border-perola-divisor bg-[#FAFAF6] text-xs uppercase text-perola-texto-2">
               <tr>
                 <th className="px-4 py-3 font-medium">#</th>
                 <th className="px-4 py-3 font-medium">Vendedor</th>
-                <th className="px-4 py-3 font-medium">Meta</th>
-                <th className="px-4 py-3 font-medium">Realizado</th>
+                <th className="px-4 py-3 text-right font-medium">Meta</th>
+                <th className="px-4 py-3 text-right font-medium">Realizado</th>
                 <th className="px-4 py-3 font-medium">% Meta</th>
-                <th className="px-4 py-3 font-medium">Conversão</th>
+                <th className="px-4 py-3 text-right font-medium">Conversão</th>
                 <th className="px-4 py-3 font-medium">Sacos</th>
                 <th className="px-4 py-3 font-medium">Ritmo de contatos</th>
-                <th className="px-4 py-3 font-medium">Comissão</th>
+                <th className="px-4 py-3 text-right font-medium">Comissão</th>
               </tr>
             </thead>
             <tbody>
               {ranking.map((d, index) => (
-                <tr key={d.vendedor.id} className="border-b border-stone-100 last:border-0">
+                <tr key={d.vendedor.id} className="border-b border-perola-divisor last:border-0">
                   <td className="px-4 py-3">{MEDALHAS[index] ?? index + 1}</td>
-                  <td className="px-4 py-3 font-medium text-stone-900">{d.vendedor.nome}</td>
-                  <td className="px-4 py-3 text-stone-600">{formatBRL(Number(d.meta?.meta_valor ?? 0))}</td>
-                  <td className="px-4 py-3 text-stone-600">{formatBRL(d.realizado)}</td>
+                  <td className="px-4 py-3 font-medium text-perola-texto">{d.vendedor.nome}</td>
+                  <td className="px-4 py-3 text-right text-perola-texto-2">{formatBRL(Number(d.meta?.meta_valor ?? 0))}</td>
+                  <td className="px-4 py-3 text-right text-perola-texto-2">{formatBRL(d.realizado)}</td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
-                      <div className="h-2 w-24 overflow-hidden rounded-full bg-stone-100">
+                      <div className="h-2 w-24 overflow-hidden rounded-full bg-perola-tag">
                         <div
-                          className="h-full rounded-full bg-oliva-600"
+                          className="h-full rounded-full bg-perola-verde-medio"
                           style={{ width: `${Math.min(d.percentualMeta, 100)}%` }}
                         />
                       </div>
-                      <span className="text-xs font-medium text-stone-600">{d.percentualMeta.toFixed(0)}%</span>
+                      <span className="text-xs font-medium text-perola-texto-2">{d.percentualMeta.toFixed(0)}%</span>
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-stone-600">{d.conversao.toFixed(1)}%</td>
+                  <td className="px-4 py-3 text-right text-perola-texto-2">{d.conversao.toFixed(1)}%</td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
-                      <div className="h-2 w-16 overflow-hidden rounded-full bg-stone-100">
+                      <div className="h-2 w-16 overflow-hidden rounded-full bg-perola-tag">
                         <div
-                          className="h-full rounded-full bg-amber-500"
+                          className="h-full rounded-full bg-perola-alerta"
                           style={{ width: `${Math.min(d.percentualMetaSacos, 100)}%` }}
                         />
                       </div>
-                      <span className="text-xs font-medium text-stone-600">
+                      <span className="text-xs font-medium text-perola-texto-2">
                         {d.sacosVendidos}/{d.metaSacos}
                       </span>
                     </div>
@@ -267,14 +267,14 @@ export default async function MetasPage({
                   <td className="px-4 py-3">
                     <span
                       className={`rounded-full px-2 py-1 text-xs font-medium ${
-                        d.noRitmo ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"
+                        d.noRitmo ? "bg-perola-tag-pos-bg text-perola-tag-pos-texto" : "bg-perola-erro-bg text-perola-erro"
                       }`}
                     >
                       {d.ritmoAtual.toFixed(1)}/dia (precisa {d.ritmoNecessario.toFixed(1)}/dia)
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-stone-600">
-                    {formatBRL(d.comissao)} <span className="text-xs text-stone-400">({d.comissaoPercentual}%)</span>
+                  <td className="px-4 py-3 text-right text-perola-texto-2">
+                    {formatBRL(d.comissao)} <span className="text-xs text-perola-texto-2">({d.comissaoPercentual}%)</span>
                   </td>
                 </tr>
               ))}
@@ -284,8 +284,8 @@ export default async function MetasPage({
       </div>
 
       {(perfil.papel === "master" || perfil.papel === "gerente") && (
-        <div className="rounded-xl bg-oliva-100 shadow-sm p-6">
-          <h2 className="mb-4 text-base font-semibold text-stone-900">⚙️ Configurar meta</h2>
+        <div className="rounded-[14px] border border-perola-borda bg-white p-6">
+          <h2 className="mb-4 text-base font-semibold text-perola-texto">Configurar meta</h2>
           <MetaForm vendedores={vendedores} ano={ano} mes={mes} />
         </div>
       )}
