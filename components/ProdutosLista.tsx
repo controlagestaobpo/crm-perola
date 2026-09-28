@@ -22,25 +22,25 @@ export default function ProdutosLista({ produtos }: { produtos: Produto[] }) {
   return (
     <div className="space-y-6">
       <div className="relative max-w-sm">
-        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -transtone-y-1/2 text-stone-400" />
+        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-perola-texto-2" />
         <input
           type="text"
           value={busca}
           onChange={(e) => setBusca(e.target.value)}
           placeholder="Pesquisar produto ou categoria..."
-          className="w-full rounded-lg border border-stone-300 py-2 pl-9 pr-3 text-sm"
+          className="w-full rounded-[10px] border border-[#DAD8CD] py-2 pl-9 pr-3 text-sm text-perola-texto focus:border-perola-verde focus:outline-none"
         />
       </div>
 
       {categorias.length === 0 && (
-        <p className="text-sm text-stone-400">Nenhum produto encontrado.</p>
+        <p className="text-sm text-perola-texto-2">Nenhum produto encontrado.</p>
       )}
 
       {categorias.map((categoria) => (
         <div key={categoria}>
-          <h2 className="mb-3 flex items-center gap-2 text-base font-semibold text-stone-900">
+          <h2 className="mb-3 flex items-center gap-2 text-base font-semibold text-perola-texto">
             <span className={`rounded px-2 py-0.5 text-sm ${corBadgeCategoria(categoria)}`}>{categoria}</span>
-            <span className="text-sm font-normal text-stone-400">
+            <span className="text-sm font-normal text-perola-texto-2">
               ({produtosFiltrados.filter((p) => p.categoria === categoria).length})
             </span>
           </h2>
@@ -50,11 +50,11 @@ export default function ProdutosLista({ produtos }: { produtos: Produto[] }) {
               .map((produto) => (
                 <div
                   key={produto.id}
-                  className="flex items-center justify-between rounded-lg bg-oliva-100 shadow-sm px-4 py-3"
+                  className="flex items-center justify-between rounded-[10px] border border-perola-borda bg-white px-4 py-3"
                 >
-                  <span className="text-sm font-medium text-stone-900">{produto.nome}</span>
+                  <span className="text-sm font-medium text-perola-texto">{produto.nome}</span>
                   <form action={removerProduto.bind(null, produto.id)}>
-                    <button type="submit" className="text-xs font-medium text-red-500 hover:underline">
+                    <button type="submit" className="text-xs font-medium text-perola-erro hover:underline">
                       Remover
                     </button>
                   </form>

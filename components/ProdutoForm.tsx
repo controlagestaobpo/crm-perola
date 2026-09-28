@@ -16,16 +16,16 @@ export default function ProdutoForm({ categorias }: { categorias: string[] }) {
   }, [state.success]);
 
   return (
-    <form ref={formRef} action={formAction} className="rounded-xl bg-oliva-100 shadow-sm p-6">
+    <form ref={formRef} action={formAction} className="rounded-[14px] border border-perola-borda bg-white p-6">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div>
-          <label className="mb-1 block text-sm font-medium text-stone-700">Categoria</label>
+          <label className="mb-1 block text-[13px] font-semibold text-perola-texto">Categoria</label>
           <input
             name="categoria"
             required
             list="categorias-existentes"
             placeholder="Ex: Bovinos de Corte"
-            className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm"
+            className="w-full rounded-[10px] border border-[#DAD8CD] px-3.5 py-[11px] text-sm text-perola-texto focus:border-perola-verde focus:outline-none"
           />
           <datalist id="categorias-existentes">
             {categorias.map((categoria) => (
@@ -34,12 +34,12 @@ export default function ProdutoForm({ categorias }: { categorias: string[] }) {
           </datalist>
         </div>
         <div>
-          <label className="mb-1 block text-sm font-medium text-stone-700">Nome do produto</label>
+          <label className="mb-1 block text-[13px] font-semibold text-perola-texto">Nome do produto</label>
           <input
             name="nome"
             required
             placeholder="Ex: PRÓ TORQUE 20 FML"
-            className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm"
+            className="w-full rounded-[10px] border border-[#DAD8CD] px-3.5 py-[11px] text-sm text-perola-texto focus:border-perola-verde focus:outline-none"
           />
         </div>
         <div className="flex items-end">
