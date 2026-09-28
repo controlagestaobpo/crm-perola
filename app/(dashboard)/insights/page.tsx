@@ -110,40 +110,40 @@ export default async function InsightsPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-semibold text-stone-900">Inteligência comercial</h1>
-        <p className="text-sm text-stone-500">Insights do mês atual</p>
+        <h1 className="text-2xl font-semibold text-perola-texto">Inteligência comercial</h1>
+        <p className="text-sm text-perola-texto-2">Insights do mês atual</p>
       </div>
 
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-        <StatCard label="Taxa de conversão" value={`${conversaoGeral.toFixed(1)}%`} icon={Percent} cor="text-blue-600" />
-        <StatCard label="Ticket médio" value={formatBRL(ticketMedio)} icon={Receipt} cor="text-amber-500" />
-        <StatCard label="Clientes sem comprar (30d+)" value={String(clientesSemComprar)} icon={AlertTriangle} cor="text-orange-500" />
-        <StatCard label="Atendimentos no mês" value={String(totalAtendimentos)} icon={Clock} cor="text-emerald-600" />
-        <StatCard label="Sacos vendidos no mês" value={`${sacosVendidos} sacos`} icon={Package} cor="text-amber-600" />
-        <StatCard label="Comissão do mês (total)" value={formatBRL(comissaoTotal)} icon={Wallet} cor="text-blue-600" />
+        <StatCard label="Taxa de conversão" value={`${conversaoGeral.toFixed(1)}%`} icon={Percent} />
+        <StatCard label="Ticket médio" value={formatBRL(ticketMedio)} icon={Receipt} />
+        <StatCard label="Clientes sem comprar (30d+)" value={String(clientesSemComprar)} icon={AlertTriangle} />
+        <StatCard label="Atendimentos no mês" value={String(totalAtendimentos)} icon={Clock} />
+        <StatCard label="Sacos vendidos no mês" value={`${sacosVendidos} sacos`} icon={Package} />
+        <StatCard label="Comissão do mês (total)" value={formatBRL(comissaoTotal)} icon={Wallet} />
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <PieChartCard
-          title="🚨 Razões de não-venda"
+          title="Razões de não-venda"
           data={razoesNaoVenda.map((r) => ({ nome: r.motivo, quantidade: r.quantidade }))}
         />
 
-        <div className="rounded-xl bg-oliva-100 p-5 shadow-sm">
-          <p className="mb-4 text-sm font-medium text-stone-700">⭐ Oportunidades rápidas</p>
+        <div className="rounded-[14px] border border-perola-borda bg-white p-5">
+          <p className="mb-4 text-sm font-semibold text-perola-texto">Oportunidades rápidas</p>
           {oportunidadesComUrgencia.length === 0 ? (
-            <p className="text-sm text-stone-400">Nenhum orçamento em aberto.</p>
+            <p className="text-sm text-perola-texto-2">Nenhum orçamento em aberto.</p>
           ) : (
             <ul className="space-y-3">
               {oportunidadesComUrgencia.map((c) => {
                 const corBadge =
                   c.dias === null
-                    ? "bg-stone-100 text-stone-500"
+                    ? "bg-perola-tag text-perola-texto-2"
                     : c.dias <= 0
-                      ? "bg-red-100 text-red-700"
+                      ? "bg-perola-erro-bg text-perola-erro"
                       : c.dias <= 2
-                        ? "bg-amber-100 text-amber-700"
-                        : "bg-emerald-100 text-emerald-700";
+                        ? "bg-[#FBF1E4] text-perola-alerta"
+                        : "bg-perola-tag-pos-bg text-perola-tag-pos-texto";
                 const textoBadge =
                   c.dias === null
                     ? "Sem data"
@@ -155,8 +155,8 @@ export default async function InsightsPage() {
                 return (
                   <li key={c.id} className="flex items-center justify-between gap-3 text-sm">
                     <div>
-                      <strong className="text-stone-900">{c.nome}</strong>
-                      <span className="text-stone-500">
+                      <strong className="text-perola-texto">{c.nome}</strong>
+                      <span className="text-perola-texto-2">
                         {" "}
                         — {c.estagio === "negociacao" ? "Em orçamento" : "Contatado"}
                       </span>
@@ -174,28 +174,28 @@ export default async function InsightsPage() {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <BarChartCard
-          title="📞 Melhor horário para ligar"
+          title="Melhor horário para ligar"
           data={graficoHorarios}
-          cor="#3b82f6"
+          cor="#7FB52A"
         />
 
-        <div className="rounded-2xl bg-oliva-100 p-5 shadow-sm">
-          <p className="mb-4 text-sm font-medium text-stone-700">Detalhe: atendimento por horário</p>
+        <div className="rounded-[14px] border border-perola-borda bg-white p-5">
+          <p className="mb-4 text-sm font-semibold text-perola-texto">Detalhe: atendimento por horário</p>
           {horarios.length === 0 ? (
-            <p className="text-sm text-stone-400">Sem dados neste mês ainda.</p>
+            <p className="text-sm text-perola-texto-2">Sem dados neste mês ainda.</p>
           ) : (
             <div className="space-y-4">
               {horarios.map((h) => (
                 <div key={h.hora}>
                   <div className="mb-1 flex items-center justify-between text-sm">
-                    <strong className="text-stone-900">{h.faixa}</strong>
-                    <span className="text-blue-600">
+                    <strong className="text-perola-texto">{h.faixa}</strong>
+                    <span className="text-perola-texto-2">
                       {h.atendidas}/{h.total} atendidas ({h.taxa.toFixed(0)}%)
                     </span>
                   </div>
-                  <div className="h-2 overflow-hidden rounded-full bg-stone-100">
+                  <div className="h-2 overflow-hidden rounded-full bg-perola-tag">
                     <div
-                      className="h-full rounded-full bg-gradient-to-r from-blue-500 to-blue-400"
+                      className="h-full rounded-full bg-perola-verde-medio"
                       style={{ width: `${Math.min(h.taxa, 100)}%` }}
                     />
                   </div>
@@ -208,28 +208,28 @@ export default async function InsightsPage() {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <BarChartCard
-          title="📈 Produtos com maior potencial (por acerto)"
+          title="Produtos com maior potencial (por acerto)"
           data={graficoPotencial}
-          cor="#84cc16"
+          cor="#1E2A18"
         />
 
-        <div className="rounded-xl bg-oliva-100 p-5 shadow-sm">
-          <p className="mb-4 text-sm font-medium text-stone-700">Detalhe: oferecido x vendido</p>
+        <div className="rounded-[14px] border border-perola-borda bg-white p-5">
+          <p className="mb-4 text-sm font-semibold text-perola-texto">Detalhe: oferecido x vendido</p>
           {potencialProdutos.length === 0 ? (
-            <p className="text-sm text-stone-400">Sem dados neste mês ainda.</p>
+            <p className="text-sm text-perola-texto-2">Sem dados neste mês ainda.</p>
           ) : (
             <div className="space-y-4">
               {potencialProdutos.map((p) => (
                 <div key={p.produto}>
                   <div className="mb-1 flex items-center justify-between text-sm">
-                    <strong className="text-stone-900">{p.produto}</strong>
-                    <span className="text-emerald-600">
+                    <strong className="text-perola-texto">{p.produto}</strong>
+                    <span className="text-perola-texto-2">
                       Oferecido {p.oferecido}x | Vendido {p.vendido}x ({p.conversao.toFixed(0)}%)
                     </span>
                   </div>
-                  <div className="h-2 overflow-hidden rounded-full bg-stone-100">
+                  <div className="h-2 overflow-hidden rounded-full bg-perola-tag">
                     <div
-                      className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-emerald-400"
+                      className="h-full rounded-full bg-perola-verde-medio"
                       style={{ width: `${Math.min(p.conversao, 100)}%` }}
                     />
                   </div>
