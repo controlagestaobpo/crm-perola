@@ -28,12 +28,12 @@ function agrupar(itens: ItemAgenda[]) {
   return grupos;
 }
 
-const SECOES: { chave: keyof ReturnType<typeof agrupar>; titulo: string; estilo: string }[] = [
-  { chave: "atrasados", titulo: "🔴 Atrasados", estilo: "border-red-400" },
-  { chave: "hoje", titulo: "🟡 Hoje", estilo: "border-amber-400" },
-  { chave: "amanha", titulo: "🔵 Amanhã", estilo: "border-oliva-400" },
-  { chave: "semana", titulo: "📅 Próximos 7 dias", estilo: "border-stone-300" },
-  { chave: "depois", titulo: "🗓️ Mais tarde", estilo: "border-stone-200" },
+const SECOES: { chave: keyof ReturnType<typeof agrupar>; titulo: string }[] = [
+  { chave: "atrasados", titulo: "Atrasados" },
+  { chave: "hoje", titulo: "Hoje" },
+  { chave: "amanha", titulo: "Amanhã" },
+  { chave: "semana", titulo: "Próximos 7 dias" },
+  { chave: "depois", titulo: "Mais tarde" },
 ];
 
 function Iniciais(nome: string) {
@@ -44,6 +44,12 @@ function Iniciais(nome: string) {
     .join("");
 }
 
+function estiloPillResultado(resultado: ResultadoAtendimento) {
+  if (resultado === "compra") return "bg-perola-verde text-white";
+  if (resultado === "negociacao") return "bg-perola-tag-pos-bg text-perola-tag-pos-texto";
+  return "bg-perola-tag text-perola-texto-2";
+}
+
 export default async function AgendaPage() {
   const supabase = createClient();
   const itens = await getAgenda(supabase);
@@ -52,39 +58,39 @@ export default async function AgendaPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-semibold text-stone-900">Agenda</h1>
-        <p className="text-sm text-stone-500">
+        <h1 className="text-2xl font-semibold text-perola-texto">Agenda</h1>
+        <p className="text-sm text-perola-texto-2">
           O direcionamento do dia: quem cada vendedor precisa contatar e quando
         </p>
       </div>
 
       {itens.length === 0 ? (
-        <div className="rounded-xl bg-oliva-100 shadow-sm p-10 text-center text-sm text-stone-400">
+        <div className="rounded-[14px] border border-perola-borda bg-white p-10 text-center text-sm text-perola-texto-2">
           Nenhum contato agendado ainda. Ao registrar um atendimento, preencha
           &quot;Próximo contato&quot; para ele aparecer aqui.
         </div>
       ) : (
-        SECOES.map(({ chave, titulo, estilo }) => {
+        SECOES.map(({ chave, titulo }) => {
           const lista = grupos[chave];
           if (lista.length === 0) return null;
 
           return (
             <div key={chave}>
-              <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-stone-500">
-                {titulo} <span className="text-stone-400">({lista.length})</span>
+              <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-perola-texto-2">
+                {titulo} <span className="text-perola-texto-2/70">({lista.length})</span>
               </h2>
               <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
                 {lista.map((item) => (
                   <div
                     key={item.clienteId}
-                    className={`flex items-start gap-4 rounded-xl border-l-4 bg-oliva-100 p-4 shadow-sm ${estilo}`}
+                    className="flex items-start gap-4 rounded-[14px] border border-perola-borda bg-white p-4"
                   >
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-oliva-100 text-sm font-semibold text-oliva-700">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-perola-tag text-sm font-semibold text-perola-texto-2">
                       {Iniciais(item.clienteNome)}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate font-medium text-stone-900">{item.clienteNome}</p>
-                      <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-stone-500">
+                      <p className="truncate font-medium text-perola-texto">{item.clienteNome}</p>
+                      <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-perola-texto-2">
                         {item.clienteCidade && (
                           <span className="flex items-center gap-1">
                             <MapPin className="h-3 w-3" /> {item.clienteCidade}
@@ -99,16 +105,21 @@ export default async function AgendaPage() {
                           <User className="h-3 w-3" /> {item.vendedorNome}
                         </span>
                       </div>
-                      <p className="mt-2 text-xs text-stone-500">
-                        Último contato:{" "}
-                        <span className="font-medium text-stone-700">
+                      <div className="mt-2 flex flex-wrap items-center gap-2">
+                        <span
+                          className={`rounded-full px-2 py-0.5 text-xs font-medium ${estiloPillResultado(
+                            item.ultimoResultado as ResultadoAtendimento
+                          )}`}
+                        >
                           {labelResultado(item.ultimoResultado as ResultadoAtendimento)}
                         </span>
-                        {item.observacoes && <span className="italic"> — {item.observacoes}</span>}
-                      </p>
+                        {item.observacoes && (
+                          <span className="text-xs italic text-perola-texto-2">{item.observacoes}</span>
+                        )}
+                      </div>
                     </div>
                     <div className="flex shrink-0 flex-col items-end gap-2">
-                      <span className="text-xs font-medium text-stone-400">
+                      <span className="text-xs font-medium text-perola-texto-2">
                         {new Date(item.proximoContato + "T00:00:00").toLocaleDateString("pt-BR", {
                           day: "2-digit",
                           month: "2-digit",
@@ -116,7 +127,7 @@ export default async function AgendaPage() {
                       </span>
                       <Link
                         href={`/atendimentos?cliente=${item.clienteId}`}
-                        className="whitespace-nowrap rounded-lg bg-oliva-50 px-3 py-1.5 text-xs font-medium text-oliva-700 hover:bg-oliva-100"
+                        className="whitespace-nowrap rounded-lg bg-perola-lima px-3 py-1.5 text-xs font-semibold text-perola-texto hover:brightness-95"
                       >
                         Registrar atendimento
                       </Link>
