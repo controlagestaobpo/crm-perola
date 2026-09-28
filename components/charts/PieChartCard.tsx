@@ -8,7 +8,7 @@ import type PieChartCardBase from "./PieChartCardBase";
 // navegador, em vez de entrar no JS que a página precisa pra ficar interativa.
 const Carregado = dynamicImport(() => import("./PieChartCardBase"), {
   ssr: false,
-  loading: () => <div className="h-72 w-full animate-pulse rounded-2xl bg-oliva-100 shadow-sm" />,
+  loading: () => <div className="h-72 w-full animate-pulse rounded-[14px] border border-perola-borda bg-white" />,
 });
 
 export default function PieChartCard(props: ComponentProps<typeof PieChartCardBase>) {

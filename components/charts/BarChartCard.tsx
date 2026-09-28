@@ -6,7 +6,7 @@ import type BarChartCardBase from "./BarChartCardBase";
 
 const Carregado = dynamicImport(() => import("./BarChartCardBase"), {
   ssr: false,
-  loading: () => <div className="h-72 w-full animate-pulse rounded-2xl bg-oliva-100 shadow-sm" />,
+  loading: () => <div className="h-72 w-full animate-pulse rounded-[14px] border border-perola-borda bg-white" />,
 });
 
 export default function BarChartCard(props: ComponentProps<typeof BarChartCardBase>) {

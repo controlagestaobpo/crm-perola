@@ -20,18 +20,18 @@ interface LineChartCardProps {
 
 export default function LineChartCard({ title, data, xKey, lines }: LineChartCardProps) {
   return (
-    <div className="h-72 w-full rounded-2xl bg-oliva-100 p-5 shadow-sm">
-      <p className="mb-4 text-sm font-medium text-stone-700">{title}</p>
+    <div className="h-72 w-full rounded-[14px] border border-perola-borda bg-white p-5">
+      <p className="mb-4 text-sm font-semibold text-perola-texto">{title}</p>
       {data.length === 0 ? (
-        <div className="flex h-[85%] items-center justify-center text-sm text-stone-400">
+        <div className="flex h-[85%] items-center justify-center text-sm text-perola-texto-2">
           Sem dados neste período ainda.
         </div>
       ) : (
         <ResponsiveContainer width="100%" height="85%">
           <LineChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-            <XAxis dataKey={xKey} stroke="#94a3b8" fontSize={12} />
-            <YAxis stroke="#94a3b8" fontSize={12} />
+            <CartesianGrid strokeDasharray="3 3" stroke="#EDEBE3" />
+            <XAxis dataKey={xKey} stroke="#6D7365" fontSize={12} />
+            <YAxis stroke="#6D7365" fontSize={12} />
             <Tooltip />
             {lines.length > 1 && <Legend />}
             {lines.map((line) => (

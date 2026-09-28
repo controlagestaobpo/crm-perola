@@ -55,8 +55,8 @@ export async function getAgenda(supabase: SupabaseClient): Promise<ItemAgenda[]>
 export function rotuloData(dataISO: string): { texto: string; cor: string } {
   const diffDias = diasEntreHojeE(dataISO);
 
-  if (diffDias < 0) return { texto: `Atrasado (${Math.abs(diffDias)}d)`, cor: "text-red-600 bg-red-50" };
-  if (diffDias === 0) return { texto: "Hoje", cor: "text-amber-700 bg-amber-50" };
-  if (diffDias === 1) return { texto: "Amanhã", cor: "text-violet-700 bg-violet-50" };
-  return { texto: `Em ${diffDias} dias`, cor: "text-slate-600 bg-slate-100" };
+  if (diffDias < 0) return { texto: `Atrasado (${Math.abs(diffDias)}d)`, cor: "text-perola-erro bg-perola-erro-bg" };
+  if (diffDias === 0) return { texto: "Hoje", cor: "text-perola-alerta bg-[#FBF1E4]" };
+  if (diffDias === 1) return { texto: "Amanhã", cor: "text-perola-tag-pos-texto bg-perola-tag-pos-bg" };
+  return { texto: `Em ${diffDias} dias`, cor: "text-perola-texto-2 bg-perola-tag" };
 }

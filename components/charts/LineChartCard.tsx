@@ -6,7 +6,7 @@ import type LineChartCardBase from "./LineChartCardBase";
 
 const Carregado = dynamicImport(() => import("./LineChartCardBase"), {
   ssr: false,
-  loading: () => <div className="h-72 w-full animate-pulse rounded-2xl bg-oliva-100 shadow-sm" />,
+  loading: () => <div className="h-72 w-full animate-pulse rounded-[14px] border border-perola-borda bg-white" />,
 });
 
 export default function LineChartCard(props: ComponentProps<typeof LineChartCardBase>) {

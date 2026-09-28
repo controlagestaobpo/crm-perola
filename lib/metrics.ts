@@ -104,6 +104,21 @@ export function agruparResultados(atendimentos: Atendimento[]) {
 const HORA_INICIO_EXPEDIENTE = 8;
 const HORA_FIM_EXPEDIENTE = 18;
 
+// Quanto do dia de expediente já passou, em %. Usado só para mostrar
+// "ritmo esperado" ao lado da barra de progresso do dia (visual, não altera metas/cálculos existentes).
+export function ritmoEsperadoPercentual(agora: Date): number {
+  const horaAtual = (agora.getUTCHours() + OFFSET_HORARIO_BRASIL + 24) % 24;
+  const minutos = agora.getUTCMinutes();
+  const horaDecimal = horaAtual + minutos / 60;
+
+  if (horaDecimal <= HORA_INICIO_EXPEDIENTE) return 0;
+  if (horaDecimal >= HORA_FIM_EXPEDIENTE) return 100;
+
+  const totalHoras = HORA_FIM_EXPEDIENTE - HORA_INICIO_EXPEDIENTE;
+  const decorridas = horaDecimal - HORA_INICIO_EXPEDIENTE;
+  return Math.round((decorridas / totalHoras) * 100);
+}
+
 export function agruparPorHora(atendimentos: Atendimento[], metaDiaria = 0) {
   const horas: { hora: string; valor: number; meta: number }[] = [];
   const totalHoras = HORA_FIM_EXPEDIENTE - HORA_INICIO_EXPEDIENTE + 1;

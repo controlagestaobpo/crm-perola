@@ -1,12 +1,11 @@
 import Link from "next/link";
-import { DollarSign, ShoppingCart, Target, CalendarCheck, Receipt, Package, PackageCheck, Users, Truck } from "lucide-react";
+import { DollarSign, ShoppingCart, Receipt, Truck } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getPerfilAtual } from "@/lib/auth";
 import { getClienteIdsDoVendedor, getClientesComHistorico } from "@/lib/clientes";
 import { getAgenda } from "@/lib/agenda";
 import StatCard from "@/components/StatCard";
 import LineChartCard from "@/components/charts/LineChartCard";
-import PieChartCard from "@/components/charts/PieChartCard";
 import ProdutoChartComTabela from "@/components/charts/ProdutoChartComTabela";
 import ProximasAtividades from "@/components/ProximasAtividades";
 import {
@@ -21,11 +20,21 @@ import {
   diasUteisRestantes,
   formatBRL,
   hojeISOBrasil,
+  ritmoEsperadoPercentual,
   somaValor,
 } from "@/lib/metrics";
 import type { Atendimento } from "@/types/database";
 
 export const dynamic = "force-dynamic";
+
+const CORES_RESULTADO: Record<string, string> = {
+  Compra: "#1E2A18",
+  Orçamento: "#7FB52A",
+  Interessado: "#A6E23A",
+  "Sem interesse": "#D9C9A3",
+  "Não atendeu": "#E5E3D9",
+  Indisponível: "#C4CCBA",
+};
 
 function inicioFimMes(ano: number, mes: number) {
   const inicio = `${ano}-${String(mes).padStart(2, "0")}-01`;
@@ -123,18 +132,30 @@ export default async function DashboardPage({
 
   const clientesAtendidos = new Set(atendimentosContam.map((a) => a.cliente_id)).size;
 
+  // Barra de progresso do card principal: mostra o quanto do alvo do período já
+  // foi vendido. Alvo = o que já vendeu + o que falta pra bater a meta (hoje),
+  // ou a meta do mês inteira (visão mensal) — os mesmos números já calculados acima.
+  const metaAlvoPeriodo = periodo === "hoje" ? vendido + metaDiaria : metaMensalTotal;
+  const percentualMeta =
+    metaAlvoPeriodo > 0 ? Math.min(100, (vendido / metaAlvoPeriodo) * 100) : vendido > 0 ? 100 : 0;
+  const ritmoPercentual = ritmoEsperadoPercentual(hoje);
+  const horaAtualBrasil = (hoje.getUTCHours() + 24 - 3) % 24;
+
+  const resultados = agruparResultados(atendimentos);
+  const totalResultados = resultados.reduce((soma, r) => soma + r.quantidade, 0);
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-stone-900">Dashboard</h1>
-          <p className="text-sm text-stone-500">Visão geral do seu CRM Pérola</p>
+          <h1 className="text-2xl font-semibold text-perola-texto">Dashboard</h1>
+          <p className="text-sm text-perola-texto-2">Visão geral do seu CRM Pérola</p>
         </div>
-        <div className="flex rounded-lg bg-oliva-100 shadow-sm p-1">
+        <div className="flex rounded-lg border border-perola-borda bg-white p-1">
           <Link
             href="/?periodo=hoje"
             className={`rounded-md px-4 py-1.5 text-sm font-medium ${
-              periodo === "hoje" ? "bg-oliva-600 text-white" : "text-stone-600"
+              periodo === "hoje" ? "bg-perola-verde text-white" : "text-perola-texto-2"
             }`}
           >
             Hoje
@@ -142,7 +163,7 @@ export default async function DashboardPage({
           <Link
             href="/?periodo=mes"
             className={`rounded-md px-4 py-1.5 text-sm font-medium ${
-              periodo === "mes" ? "bg-oliva-600 text-white" : "text-stone-600"
+              periodo === "mes" ? "bg-perola-verde text-white" : "text-perola-texto-2"
             }`}
           >
             Este mês
@@ -150,151 +171,214 @@ export default async function DashboardPage({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <StatCard
-          label={periodo === "hoje" ? "Meta diária" : "Meta do mês"}
-          value={formatBRL(periodo === "hoje" ? metaDiaria : metaMensalTotal)}
-          icon={Target}
-          cor="text-blue-600"
-        />
-        <StatCard
-          label={periodo === "hoje" ? "Vendido hoje" : "Vendido no mês"}
-          value={formatBRL(vendido)}
-          icon={DollarSign}
-          cor="text-emerald-600"
-        />
-        {periodo === "mes" && (
-          <StatCard label="Projeção (fim do mês)" value={formatBRL(projecao)} icon={Receipt} cor="text-orange-500" />
-        )}
-        <StatCard label="Clientes atendidos" value={String(clientesAtendidos)} sub="clientes diferentes no período" icon={Users} cor="text-blue-600" />
-        <StatCard
-          label="Vendas"
-          value={String(totalVendas)}
-          sub={`${conversao.toFixed(1)}% de conversão`}
-          icon={ShoppingCart}
-          cor="text-emerald-600"
-        />
-        <StatCard label="Ticket médio" value={formatBRL(ticketMedio)} icon={DollarSign} cor="text-blue-600" />
-        <StatCard
-          label={periodo === "hoje" ? "Meta de atendimentos (dia)" : "Meta de atendimentos (mês)"}
-          value={`${totalAtendimentos} / ${Math.round(metaAtendimentosPeriodo)}`}
-          icon={CalendarCheck}
-          cor="text-orange-500"
-        />
-        <StatCard
-          label={periodo === "hoje" ? "Meta de sacos (dia)" : "Meta de sacos (mês)"}
-          value={`${Math.round(metaSacosPeriodo)} sacos`}
-          icon={Package}
-          cor="text-amber-600"
-        />
-        <StatCard
-          label={periodo === "hoje" ? "Sacos vendidos hoje" : "Sacos vendidos no mês"}
-          value={`${sacosVendidos} sacos`}
-          icon={PackageCheck}
-          cor="text-emerald-600"
-        />
-        <StatCard
-          label={periodo === "hoje" ? "Total de frete hoje" : "Total de frete no mês"}
-          value={formatBRL(freteTotal)}
-          icon={Truck}
-          cor="text-orange-500"
-        />
-      </div>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_320px]">
+        <div className="space-y-6">
+          {/* Card principal: vendido + progresso + ritmo esperado */}
+          <div className="flex flex-col gap-6 rounded-[14px] border border-perola-borda bg-white p-6 sm:flex-row sm:items-stretch">
+            <div className="flex-1">
+              <p className="text-sm font-medium text-perola-texto-2">
+                {periodo === "hoje" ? "Vendido hoje" : "Vendido no mês"}
+              </p>
+              <p className="mt-1 text-3xl font-semibold text-perola-texto">{formatBRL(vendido)}</p>
 
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        {periodo === "hoje" ? (
-          <LineChartCard
-            title="Evolução de atendimentos (hoje) vs ritmo da meta"
-            data={agruparPorHora(atendimentosContam, metaAtendimentosDiaria)}
-            xKey="hora"
-            lines={[
-              { key: "meta", nome: "Ritmo necessário", cor: "#94a3b8", tracejada: true },
-              { key: "valor", nome: "Atendimentos", cor: "#84cc16" },
-            ]}
-          />
-        ) : (
-          <LineChartCard
-            title="Evolução da meta no mês"
-            data={agruparPorDiaAcumulado(atendimentos, ano, mes)}
-            xKey="dia"
-            lines={[{ key: "valor", nome: "Realizado (R$)", cor: "#84cc16" }]}
-          />
-        )}
-        <PieChartCard title="Resultados dos atendimentos" data={agruparResultados(atendimentos)} />
-      </div>
+              <div className="relative mt-4 h-2.5 w-full overflow-hidden rounded-full bg-perola-tag">
+                <div
+                  className="h-full rounded-full bg-perola-verde-medio transition-all"
+                  style={{ width: `${percentualMeta}%` }}
+                />
+                {periodo === "hoje" && (
+                  <div
+                    className="absolute top-0 h-2.5 w-0.5 bg-perola-alerta"
+                    style={{ left: `${ritmoPercentual}%` }}
+                    title={`Ritmo esperado às ${horaAtualBrasil}h`}
+                  />
+                )}
+              </div>
 
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <ProdutoChartComTabela
-          title="Produtos oferecidos"
-          dados={contarProdutos(atendimentos, "produtos_oferecidos")}
-        />
-        <ProdutoChartComTabela
-          title="Produtos vendidos"
-          dados={contarProdutos(atendimentos, "produtos_vendidos")}
-          cor="#3b82f6"
-        />
-      </div>
+              <div className="mt-2 flex flex-wrap items-center justify-between gap-1 text-xs text-perola-texto-2">
+                <span>
+                  Meta {periodo === "hoje" ? "diária" : "do mês"}: {formatBRL(periodo === "hoje" ? metaDiaria : metaMensalTotal)}
+                </span>
+                {periodo === "hoje" && (
+                  <span>
+                    Ritmo esperado às {horaAtualBrasil}h: {ritmoPercentual}%
+                  </span>
+                )}
+              </div>
+              {periodo === "mes" && (
+                <p className="mt-3 text-xs text-perola-texto-2">
+                  Projeção de fechamento do mês: <span className="font-medium text-perola-texto">{formatBRL(projecao)}</span>
+                </p>
+              )}
+            </div>
 
-      <div>
-        <h2 className="mb-3 text-base font-semibold text-stone-900">
-          Pipeline e direcionamento do dia
-        </h2>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <div className="rounded-xl border-l-4 border-amber-400 bg-amber-50 p-5">
-            <p className="text-sm font-semibold text-amber-700">
-              ⚠️ Orçamentos em andamento ({pipelineAbertos.length})
-            </p>
-            <p className="mt-2 text-2xl font-bold text-amber-800">{formatBRL(pipelineValor)}</p>
-            <p className="mt-1 text-xs text-amber-600">Valor total em risco no pipeline</p>
+            <div className="flex shrink-0 flex-row gap-4 border-perola-divisor sm:w-44 sm:flex-col sm:border-l sm:pl-6">
+              <div className="flex-1">
+                <p className="text-xs font-medium uppercase tracking-wide text-perola-texto-2">Sacos</p>
+                <p className="text-lg font-semibold text-perola-texto">
+                  {sacosVendidos}
+                  <span className="text-xs font-normal text-perola-texto-2"> / {Math.round(metaSacosPeriodo)}</span>
+                </p>
+              </div>
+              <div className="flex-1">
+                <p className="text-xs font-medium uppercase tracking-wide text-perola-texto-2">Atendimentos</p>
+                <p className="text-lg font-semibold text-perola-texto">
+                  {totalAtendimentos}
+                  <span className="text-xs font-normal text-perola-texto-2"> / {Math.round(metaAtendimentosPeriodo)}</span>
+                </p>
+              </div>
+              <div className="flex-1">
+                <p className="text-xs font-medium uppercase tracking-wide text-perola-texto-2">Clientes diferentes</p>
+                <p className="text-lg font-semibold text-perola-texto">{clientesAtendidos}</p>
+              </div>
+            </div>
           </div>
-          <div className="rounded-xl border-l-4 border-emerald-400 bg-emerald-50 p-5">
-            <p className="text-sm font-semibold text-emerald-700">✓ Compras confirmadas ({totalVendas})</p>
-            <p className="mt-2 text-2xl font-bold text-emerald-800">{formatBRL(vendido)}</p>
-            <p className="mt-1 text-xs text-emerald-600">Dinheiro fechado no período</p>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <StatCard
+              label="Vendas"
+              value={String(totalVendas)}
+              sub={`${conversao.toFixed(1)}% de conversão`}
+              icon={ShoppingCart}
+            />
+            <StatCard label="Ticket médio" value={formatBRL(ticketMedio)} icon={DollarSign} />
+            <StatCard
+              label={periodo === "hoje" ? "Total de frete hoje" : "Total de frete no mês"}
+              value={formatBRL(freteTotal)}
+              icon={Truck}
+            />
+            {periodo === "mes" && (
+              <StatCard label="Projeção (fim do mês)" value={formatBRL(projecao)} icon={Receipt} />
+            )}
           </div>
+
+          {periodo === "hoje" ? (
+            <LineChartCard
+              title="Evolução de atendimentos (hoje) vs ritmo da meta"
+              data={agruparPorHora(atendimentosContam, metaAtendimentosDiaria)}
+              xKey="hora"
+              lines={[
+                { key: "meta", nome: "Ritmo necessário", cor: "#B8751A", tracejada: true },
+                { key: "valor", nome: "Atendimentos", cor: "#7FB52A" },
+              ]}
+            />
+          ) : (
+            <LineChartCard
+              title="Evolução da meta no mês"
+              data={agruparPorDiaAcumulado(atendimentos, ano, mes)}
+              xKey="dia"
+              lines={[{ key: "valor", nome: "Realizado (R$)", cor: "#7FB52A" }]}
+            />
+          )}
+
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+            <ProdutoChartComTabela
+              title="Produtos oferecidos"
+              dados={contarProdutos(atendimentos, "produtos_oferecidos")}
+            />
+            <ProdutoChartComTabela
+              title="Produtos vendidos"
+              dados={contarProdutos(atendimentos, "produtos_vendidos")}
+              cor="#1E2A18"
+            />
+          </div>
+
+          <div>
+            <h2 className="mb-3 text-base font-semibold text-perola-texto">Pipeline do período</h2>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="rounded-[14px] border border-perola-borda bg-white p-5">
+                <p className="text-sm font-semibold text-perola-texto">
+                  Orçamentos em andamento ({pipelineAbertos.length})
+                </p>
+                <p className="mt-2 text-2xl font-semibold text-perola-texto">{formatBRL(pipelineValor)}</p>
+                <p className="mt-1 text-xs text-perola-texto-2">Valor total em negociação no pipeline</p>
+              </div>
+              <div className="rounded-[14px] border border-perola-borda bg-white p-5">
+                <p className="text-sm font-semibold text-perola-texto">Compras confirmadas ({totalVendas})</p>
+                <p className="mt-2 text-2xl font-semibold text-perola-texto">{formatBRL(vendido)}</p>
+                <p className="mt-1 text-xs text-perola-texto-2">Dinheiro fechado no período</p>
+              </div>
+            </div>
+          </div>
+
+          {clientesSemComprar.length > 0 && (
+            <div>
+              <h2 className="mb-3 text-base font-semibold text-perola-texto">Clientes sem comprar há mais tempo</h2>
+              <div className="overflow-hidden rounded-[14px] border border-perola-borda bg-white">
+                <table className="w-full text-left text-sm">
+                  <thead className="border-b border-perola-divisor bg-[#FAFAF6] text-xs uppercase text-perola-texto-2">
+                    <tr>
+                      <th className="px-4 py-3 font-medium">Cliente</th>
+                      <th className="px-4 py-3 font-medium">Última compra</th>
+                      <th className="px-4 py-3 font-medium">Dias</th>
+                      <th className="px-4 py-3 font-medium">Histórico</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {clientesSemComprar.map((c) => (
+                      <tr key={c.id} className="border-b border-perola-divisor last:border-0">
+                        <td className="px-4 py-3 font-medium text-perola-texto">{c.nome}</td>
+                        <td className="px-4 py-3 text-perola-texto-2">
+                          {c.ultimaCompra
+                            ? new Date(c.ultimaCompra + "T00:00:00").toLocaleDateString("pt-BR")
+                            : "Nunca comprou"}
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className="rounded-md bg-perola-erro-bg px-2 py-1 text-xs font-medium text-perola-erro">
+                            {c.diasSemComprar ?? "—"} dias
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-perola-texto-2">
+                          {c.totalCompras} compras (média {formatBRL(c.totalCompras > 0 ? c.valorTotal / c.totalCompras : 0)})
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="space-y-6">
           <ProximasAtividades itens={agendaItens} />
-        </div>
-      </div>
 
-      {clientesSemComprar.length > 0 && (
-        <div>
-          <h2 className="mb-3 text-base font-semibold text-stone-900">
-            🚨 Clientes sem comprar há mais tempo
-          </h2>
-          <div className="overflow-hidden rounded-xl bg-oliva-100 shadow-sm">
-            <table className="w-full text-left text-sm">
-              <thead className="border-b border-stone-200 bg-stone-50 text-stone-500">
-                <tr>
-                  <th className="px-4 py-3 font-medium">Cliente</th>
-                  <th className="px-4 py-3 font-medium">Última compra</th>
-                  <th className="px-4 py-3 font-medium">Dias</th>
-                  <th className="px-4 py-3 font-medium">Histórico</th>
-                </tr>
-              </thead>
-              <tbody>
-                {clientesSemComprar.map((c) => (
-                  <tr key={c.id} className="border-b border-stone-100 last:border-0">
-                    <td className="px-4 py-3 font-medium text-stone-900">{c.nome}</td>
-                    <td className="px-4 py-3 text-stone-600">
-                      {c.ultimaCompra
-                        ? new Date(c.ultimaCompra + "T00:00:00").toLocaleDateString("pt-BR")
-                        : "Nunca comprou"}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className="rounded-md bg-red-100 px-2 py-1 text-xs font-medium text-red-700">
-                        {c.diasSemComprar ?? "—"} dias
+          <div className="rounded-[14px] border border-perola-borda bg-white p-5">
+            <p className="mb-4 text-sm font-semibold text-perola-texto">Resultados dos atendimentos</p>
+            {resultados.length === 0 ? (
+              <p className="text-sm text-perola-texto-2">Sem dados neste período ainda.</p>
+            ) : (
+              <>
+                <div className="flex h-2.5 w-full overflow-hidden rounded-full">
+                  {resultados.map((r) => (
+                    <div
+                      key={r.nome}
+                      style={{
+                        width: `${(r.quantidade / totalResultados) * 100}%`,
+                        backgroundColor: CORES_RESULTADO[r.nome] ?? "#C4CCBA",
+                      }}
+                    />
+                  ))}
+                </div>
+                <div className="mt-4 flex flex-col gap-2">
+                  {resultados.map((r) => (
+                    <div key={r.nome} className="flex items-center justify-between text-sm">
+                      <span className="flex items-center gap-2 text-perola-texto">
+                        <span
+                          className="h-2 w-2 shrink-0 rounded-full"
+                          style={{ backgroundColor: CORES_RESULTADO[r.nome] ?? "#C4CCBA" }}
+                        />
+                        {r.nome}
                       </span>
-                    </td>
-                    <td className="px-4 py-3 text-stone-600">
-                      {c.totalCompras} compras (média {formatBRL(c.totalCompras > 0 ? c.valorTotal / c.totalCompras : 0)})
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                      <span className="text-perola-texto-2">{r.quantidade}</span>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }
