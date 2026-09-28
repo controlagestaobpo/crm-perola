@@ -25,7 +25,7 @@ export default function UsuarioRowActions({ usuarioId, nome }: { usuarioId: stri
       type="button"
       onClick={handleExcluir}
       disabled={pending}
-      className="flex items-center gap-1 text-xs font-medium text-red-500 hover:underline disabled:opacity-50"
+      className="flex items-center gap-1 text-xs font-medium text-perola-erro hover:underline disabled:opacity-50"
       title="Remover usuário"
     >
       <Trash2 className="h-3.5 w-3.5" />

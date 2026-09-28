@@ -31,16 +31,16 @@ export default async function UsuariosPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-stone-900">Usuários</h1>
-        <p className="text-sm text-stone-500">Convide vendedoras e gerencie a equipe</p>
+        <h1 className="text-2xl font-semibold text-perola-texto">Usuários</h1>
+        <p className="text-sm text-perola-texto-2">Convide vendedoras e gerencie a equipe</p>
       </div>
 
       <ConviteForm />
 
       {convites.length > 0 && (
         <div>
-          <h2 className="mb-3 text-base font-semibold text-stone-900">Convites pendentes</h2>
-          <p className="mb-3 text-sm text-stone-500">
+          <h2 className="mb-3 text-base font-semibold text-perola-texto">Convites pendentes</h2>
+          <p className="mb-3 text-sm text-perola-texto-2">
             Envie o link abaixo para a pessoa completar o cadastro dela.
           </p>
           <div className="space-y-3">
@@ -49,16 +49,16 @@ export default async function UsuariosPage() {
               return (
                 <div
                   key={convite.id}
-                  className="flex flex-col gap-2 rounded-lg bg-oliva-100 shadow-sm px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+                  className="flex flex-col gap-2 rounded-[10px] border border-perola-borda bg-white px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div>
-                    <p className="text-sm font-medium text-stone-900">
-                      {convite.nome} <span className="text-stone-400">· {convite.email}</span>
+                    <p className="text-sm font-medium text-perola-texto">
+                      {convite.nome} <span className="text-perola-texto-2">· {convite.email}</span>
                     </p>
-                    <p className="break-all text-xs text-oliva-600">{link}</p>
+                    <p className="break-all text-xs text-perola-tag-pos-texto">{link}</p>
                   </div>
                   <form action={removerConvite.bind(null, convite.id)}>
-                    <button type="submit" className="text-xs font-medium text-red-500 hover:underline">
+                    <button type="submit" className="text-xs font-medium text-perola-erro hover:underline">
                       Cancelar convite
                     </button>
                   </form>
@@ -70,10 +70,10 @@ export default async function UsuariosPage() {
       )}
 
       <div>
-        <h2 className="mb-3 text-base font-semibold text-stone-900">Equipe</h2>
-        <div className="overflow-hidden rounded-xl bg-oliva-100 shadow-sm">
+        <h2 className="mb-3 text-base font-semibold text-perola-texto">Equipe</h2>
+        <div className="overflow-hidden rounded-[14px] border border-perola-borda bg-white">
           <table className="w-full text-left text-sm">
-            <thead className="border-b border-stone-200 bg-stone-50 text-stone-500">
+            <thead className="border-b border-perola-divisor bg-[#FAFAF6] text-xs uppercase text-perola-texto-2">
               <tr>
                 <th className="px-4 py-3 font-medium">Nome</th>
                 <th className="px-4 py-3 font-medium">E-mail</th>
@@ -83,10 +83,10 @@ export default async function UsuariosPage() {
             </thead>
             <tbody>
               {perfis.map((p) => (
-                <tr key={p.id} className="border-b border-stone-100 last:border-0">
-                  <td className="px-4 py-3 font-medium text-stone-900">{p.nome}</td>
-                  <td className="px-4 py-3 text-stone-600">{p.email}</td>
-                  <td className="px-4 py-3 text-stone-600">{labelPapel(p.papel)}</td>
+                <tr key={p.id} className="border-b border-perola-divisor last:border-0">
+                  <td className="px-4 py-3 font-medium text-perola-texto">{p.nome}</td>
+                  <td className="px-4 py-3 text-perola-texto-2">{p.email}</td>
+                  <td className="px-4 py-3 text-perola-texto-2">{labelPapel(p.papel)}</td>
                   <td className="px-4 py-3">
                     {p.id !== perfil.id && <UsuarioRowActions usuarioId={p.id} nome={p.nome} />}
                   </td>

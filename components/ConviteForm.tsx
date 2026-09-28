@@ -16,19 +16,19 @@ export default function ConviteForm() {
   }, [state.success]);
 
   return (
-    <form ref={formRef} action={formAction} className="rounded-xl bg-oliva-100 shadow-sm p-6">
+    <form ref={formRef} action={formAction} className="rounded-[14px] border border-perola-borda bg-white p-6">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-4">
         <div>
-          <label className="mb-1 block text-sm font-medium text-stone-700">Nome</label>
-          <input name="nome" required className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm" />
+          <label className="mb-1 block text-[13px] font-semibold text-perola-texto">Nome</label>
+          <input name="nome" required className="w-full rounded-[10px] border border-[#DAD8CD] px-3.5 py-[11px] text-sm text-perola-texto focus:border-perola-verde focus:outline-none" />
         </div>
         <div>
-          <label className="mb-1 block text-sm font-medium text-stone-700">E-mail</label>
-          <input type="email" name="email" required className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm" />
+          <label className="mb-1 block text-[13px] font-semibold text-perola-texto">E-mail</label>
+          <input type="email" name="email" required className="w-full rounded-[10px] border border-[#DAD8CD] px-3.5 py-[11px] text-sm text-perola-texto focus:border-perola-verde focus:outline-none" />
         </div>
         <div>
-          <label className="mb-1 block text-sm font-medium text-stone-700">Papel</label>
-          <select name="papel" defaultValue="vendedor" className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm">
+          <label className="mb-1 block text-[13px] font-semibold text-perola-texto">Papel</label>
+          <select name="papel" defaultValue="vendedor" className="w-full rounded-[10px] border border-[#DAD8CD] px-3.5 py-[11px] text-sm text-perola-texto focus:border-perola-verde focus:outline-none">
             <option value="vendedor">Vendedor(a)</option>
             <option value="gerente">Sócio (metas, comissões e insights)</option>
             <option value="master">Master</option>
