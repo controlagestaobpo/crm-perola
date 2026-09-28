@@ -19,12 +19,12 @@ export default function Header({ nome, papel }: { nome: string; papel: Papel }) 
     <header className="flex items-center justify-between px-8 py-4 print:hidden">
       <div />
       <div className="flex items-center gap-3">
-        <div className="rounded-full bg-oliva-100 px-3 py-1.5 text-sm font-medium text-oliva-700 shadow-sm">
-          {nome} {papel === "master" && <span className="text-xs text-oliva-400">(master)</span>}
+        <div className="rounded-full border border-perola-borda bg-white px-3 py-1.5 text-sm font-medium text-perola-texto">
+          {nome} {papel === "master" && <span className="text-xs text-perola-texto-2">(master)</span>}
         </div>
         <button
           onClick={handleLogout}
-          className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm text-stone-500 hover:bg-oliva-200 hover:text-stone-900"
+          className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm text-perola-texto-2 hover:bg-white hover:text-perola-texto"
         >
           <LogOut className="h-4 w-4" />
           Sair

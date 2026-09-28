@@ -58,6 +58,7 @@ const config: Config = {
           tag: "#F1EFE7",
           "tag-pos-bg": "#EEF3E2",
           "tag-pos-texto": "#3F5A1E",
+          item: "#C4CCBA",
         },
       },
     },
