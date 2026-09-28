@@ -51,13 +51,13 @@ export default function KanbanAtendimentoModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl bg-white p-6">
+      <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-[14px] bg-white p-6">
         <div className="mb-4 flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-stone-900">{titulo}</h2>
-            <p className="text-sm text-stone-500">{clienteNome}</p>
+            <h2 className="text-lg font-semibold text-perola-texto">{titulo}</h2>
+            <p className="text-sm text-perola-texto-2">{clienteNome}</p>
           </div>
-          <button onClick={onFechar} className="text-stone-400 hover:text-stone-700">
+          <button onClick={onFechar} className="text-perola-texto-2 hover:text-perola-texto">
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -68,11 +68,11 @@ export default function KanbanAtendimentoModal({
 
           {souMaster && (
             <div className="mb-4">
-              <label className="mb-1 block text-sm font-medium text-stone-700">Consultor</label>
+              <label className="mb-1 block text-[13px] font-semibold text-perola-texto">Consultor</label>
               <select
                 name="vendedor_id"
                 defaultValue={meuId}
-                className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm"
+                className="w-full rounded-[10px] border border-[#DAD8CD] px-3.5 py-[11px] text-sm text-perola-texto focus:border-perola-verde focus:outline-none"
               >
                 {vendedores.map((v) => (
                   <option key={v.id} value={v.id}>
@@ -90,7 +90,7 @@ export default function KanbanAtendimentoModal({
             <button
               type="button"
               onClick={onFechar}
-              className="rounded-lg px-4 py-2 text-sm font-medium text-stone-500 hover:bg-stone-50"
+              className="rounded-lg border border-perola-borda px-4 py-2 text-sm font-medium text-perola-texto-2 hover:bg-perola-tag"
             >
               Cancelar
             </button>

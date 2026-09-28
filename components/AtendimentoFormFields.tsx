@@ -37,7 +37,7 @@ function ProdutoCheckbox({
         className="peer sr-only"
       />
       <span
-        className={`block rounded-lg border-2 border-stone-200 px-3 py-2 text-center text-xs font-medium text-stone-700 transition-colors peer-checked:text-white ${corCategoria(produto.categoria)}`}
+        className={`block rounded-[10px] border-2 border-perola-borda px-3 py-2 text-center text-xs font-medium text-perola-texto-2 transition-colors peer-checked:text-white ${corCategoria(produto.categoria)}`}
       >
         {produto.nome}
       </span>
@@ -62,18 +62,18 @@ const GradeProdutos = forwardRef<
   return (
     <div ref={ref} className="space-y-4">
       <div className="relative max-w-sm">
-        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -transtone-y-1/2 text-stone-400" />
+        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-perola-texto-2" />
         <input
           type="text"
           value={busca}
           onChange={(e) => setBusca(e.target.value)}
           placeholder="Pesquisar produto..."
-          className="w-full rounded-lg border border-stone-300 py-2 pl-9 pr-3 text-sm"
+          className="w-full rounded-[10px] border border-[#DAD8CD] py-2 pl-9 pr-3 text-sm text-perola-texto focus:border-perola-verde focus:outline-none"
         />
       </div>
 
       {categorias.length === 0 ? (
-        <p className="text-sm text-stone-400">Nenhum produto encontrado.</p>
+        <p className="text-sm text-perola-texto-2">Nenhum produto encontrado.</p>
       ) : (
         categorias.map((categoria) => (
           <div key={categoria}>
@@ -143,7 +143,7 @@ export default function AtendimentoFormFields({ produtos, valoresIniciais }: Ate
     <>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
-          <label className="mb-1 block text-sm font-medium text-stone-700">
+          <label className="mb-1 block text-[13px] font-semibold text-perola-texto">
             Resultado do contato
           </label>
           <select
@@ -151,7 +151,7 @@ export default function AtendimentoFormFields({ produtos, valoresIniciais }: Ate
             required
             value={resultado}
             onChange={(e) => setResultado(e.target.value)}
-            className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm"
+            className="w-full rounded-[10px] border border-[#DAD8CD] px-3.5 py-[11px] text-sm text-perola-texto focus:border-perola-verde focus:outline-none"
           >
             <option value="">-- Selecione --</option>
             <option value="compra">✓ Compra realizada</option>
@@ -165,7 +165,7 @@ export default function AtendimentoFormFields({ produtos, valoresIniciais }: Ate
 
         {mostrarValorCompra && (
           <div>
-            <label className="mb-1 block text-sm font-medium text-stone-700">
+            <label className="mb-1 block text-[13px] font-semibold text-perola-texto">
               💰 Valor da compra (R$)
             </label>
             <input
@@ -175,14 +175,14 @@ export default function AtendimentoFormFields({ produtos, valoresIniciais }: Ate
               min="0"
               required
               defaultValue={valoresIniciais?.valor ?? ""}
-              className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm"
+              className="w-full rounded-[10px] border border-[#DAD8CD] px-3.5 py-[11px] text-sm text-perola-texto focus:border-perola-verde focus:outline-none"
             />
           </div>
         )}
 
         {mostrarValorCompra && (
           <div>
-            <label className="mb-1 block text-sm font-medium text-stone-700">
+            <label className="mb-1 block text-[13px] font-semibold text-perola-texto">
               🌾 Quantidade de sacos
             </label>
             <input
@@ -191,14 +191,14 @@ export default function AtendimentoFormFields({ produtos, valoresIniciais }: Ate
               step="1"
               min="0"
               defaultValue={valoresIniciais?.quantidadeSacos ?? ""}
-              className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm"
+              className="w-full rounded-[10px] border border-[#DAD8CD] px-3.5 py-[11px] text-sm text-perola-texto focus:border-perola-verde focus:outline-none"
             />
           </div>
         )}
 
         {mostrarValorCompra && (
           <div>
-            <label className="mb-1 block text-sm font-medium text-stone-700">
+            <label className="mb-1 block text-[13px] font-semibold text-perola-texto">
               🚚 Valor do frete (R$)
             </label>
             <input
@@ -207,14 +207,14 @@ export default function AtendimentoFormFields({ produtos, valoresIniciais }: Ate
               step="0.01"
               min="0"
               defaultValue={valoresIniciais?.valorFrete ?? ""}
-              className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm"
+              className="w-full rounded-[10px] border border-[#DAD8CD] px-3.5 py-[11px] text-sm text-perola-texto focus:border-perola-verde focus:outline-none"
             />
           </div>
         )}
 
         {mostrarValorNegociacao && (
           <div>
-            <label className="mb-1 block text-sm font-medium text-stone-700">
+            <label className="mb-1 block text-[13px] font-semibold text-perola-texto">
               📊 Valor do orçamento (R$)
             </label>
             <input
@@ -222,20 +222,20 @@ export default function AtendimentoFormFields({ produtos, valoresIniciais }: Ate
               name="valor_negociacao"
               step="0.01"
               min="0"
-              className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm"
+              className="w-full rounded-[10px] border border-[#DAD8CD] px-3.5 py-[11px] text-sm text-perola-texto focus:border-perola-verde focus:outline-none"
             />
           </div>
         )}
 
         {mostrarMotivo && (
           <div>
-            <label className="mb-1 block text-sm font-medium text-stone-700">
+            <label className="mb-1 block text-[13px] font-semibold text-perola-texto">
               Motivo da não compra
             </label>
             <select
               name="motivo"
               defaultValue={valoresIniciais?.motivo ?? ""}
-              className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm"
+              className="w-full rounded-[10px] border border-[#DAD8CD] px-3.5 py-[11px] text-sm text-perola-texto focus:border-perola-verde focus:outline-none"
             >
               <option value="">-- Selecione --</option>
               {MOTIVOS.map((motivo) => (
@@ -246,20 +246,20 @@ export default function AtendimentoFormFields({ produtos, valoresIniciais }: Ate
         )}
 
         <div>
-          <label className="mb-1 block text-sm font-medium text-stone-700">
+          <label className="mb-1 block text-[13px] font-semibold text-perola-texto">
             Próximo contato (data preferencial)
           </label>
           <input
             type="date"
             name="proximo_contato"
             defaultValue={valoresIniciais?.proximoContato ?? ""}
-            className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm"
+            className="w-full rounded-[10px] border border-[#DAD8CD] px-3.5 py-[11px] text-sm text-perola-texto focus:border-perola-verde focus:outline-none"
           />
         </div>
       </div>
 
       <div className="mt-4">
-        <label className="mb-2 block text-sm font-medium text-stone-700">Produtos oferecidos</label>
+        <label className="mb-2 block text-[13px] font-semibold text-perola-texto">Produtos oferecidos</label>
         <GradeProdutos
           ref={oferecidosRef}
           produtos={produtos}
@@ -269,15 +269,15 @@ export default function AtendimentoFormFields({ produtos, valoresIniciais }: Ate
       </div>
 
       {mostrarVendidos && (
-        <div className="mt-4 rounded-xl border-2 border-emerald-300 bg-emerald-50/60 p-4">
+        <div className="mt-4 rounded-[14px] border-2 border-perola-tag-pos-texto/30 bg-perola-tag-pos-bg p-4">
           <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-            <label className="block text-sm font-bold text-emerald-800">
-              ✅ Produtos VENDIDOS — marque aqui o que o cliente realmente comprou
+            <label className="block text-sm font-bold text-perola-tag-pos-texto">
+              Produtos VENDIDOS — marque aqui o que o cliente realmente comprou
             </label>
             <button
               type="button"
               onClick={copiarOferecidosParaVendidos}
-              className="flex items-center gap-1.5 rounded-lg bg-white px-3 py-1.5 text-xs font-medium text-emerald-700 shadow-sm hover:bg-emerald-100"
+              className="flex items-center gap-1.5 rounded-lg border border-perola-borda bg-white px-3 py-1.5 text-xs font-medium text-perola-tag-pos-texto hover:bg-perola-tag-pos-bg"
             >
               <Copy className="h-3.5 w-3.5" />
               Usar os mesmos produtos oferecidos
@@ -293,13 +293,13 @@ export default function AtendimentoFormFields({ produtos, valoresIniciais }: Ate
       )}
 
       <div className="mt-4">
-        <label className="mb-1 block text-sm font-medium text-stone-700">Observações</label>
+        <label className="mb-1 block text-[13px] font-semibold text-perola-texto">Observações</label>
         <textarea
           name="observacoes"
           rows={3}
           defaultValue={valoresIniciais?.observacoes ?? ""}
           placeholder="Notas sobre a ligação, feedback do cliente, contexto para próximo contato..."
-          className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm"
+          className="w-full rounded-[10px] border border-[#DAD8CD] px-3.5 py-[11px] text-sm text-perola-texto focus:border-perola-verde focus:outline-none"
         />
       </div>
     </>

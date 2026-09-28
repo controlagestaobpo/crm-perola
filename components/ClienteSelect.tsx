@@ -32,7 +32,7 @@ export default function ClienteSelect({ clientes, name = "cliente_id", defaultVa
     <div className="relative">
       <input type="hidden" name={name} value={selecionadoId} />
       <div className="relative">
-        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400" />
+        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-perola-texto-2" />
         <input
           type="text"
           value={busca}
@@ -45,21 +45,21 @@ export default function ClienteSelect({ clientes, name = "cliente_id", defaultVa
           onBlur={() => setTimeout(() => setAberto(false), 150)}
           placeholder="Digite o nome do cliente..."
           autoComplete="off"
-          className="w-full rounded-lg border border-stone-300 py-2 pl-9 pr-3 text-sm"
+          className="w-full rounded-[10px] border border-[#DAD8CD] py-[11px] pl-9 pr-3 text-sm text-perola-texto focus:border-perola-verde focus:outline-none"
         />
       </div>
       {aberto && (
-        <div className="absolute z-20 mt-1 max-h-56 w-full overflow-y-auto rounded-lg border border-stone-200 bg-white shadow-lg">
+        <div className="absolute z-20 mt-1 max-h-56 w-full overflow-y-auto rounded-[10px] border border-perola-borda bg-white shadow-lg">
           {filtrados.length === 0 ? (
-            <p className="px-3 py-2 text-sm text-stone-400">Nenhum cliente encontrado.</p>
+            <p className="px-3 py-2 text-sm text-perola-texto-2">Nenhum cliente encontrado.</p>
           ) : (
             filtrados.map((c) => (
               <button
                 type="button"
                 key={c.id}
                 onClick={() => selecionar(c)}
-                className={`block w-full px-3 py-2 text-left text-sm hover:bg-oliva-50 ${
-                  c.id === selecionadoId ? "bg-oliva-50 font-medium text-oliva-700" : "text-stone-700"
+                className={`block w-full px-3 py-2 text-left text-sm hover:bg-perola-tag ${
+                  c.id === selecionadoId ? "bg-perola-tag-pos-bg font-medium text-perola-tag-pos-texto" : "text-perola-texto"
                 }`}
               >
                 {c.nome}

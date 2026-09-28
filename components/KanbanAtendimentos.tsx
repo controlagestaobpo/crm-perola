@@ -12,11 +12,11 @@ import type { ClienteComHistorico } from "@/lib/clientes";
 import type { Estagio, Perfil, Produto, ResultadoAtendimento } from "@/types/database";
 
 const COLUNAS: { estagio: Estagio; titulo: string }[] = [
-  { estagio: "prospectar", titulo: "📞 A Prospectar" },
-  { estagio: "contatado", titulo: "☎️ Contatado" },
-  { estagio: "negociacao", titulo: "⭐ Orçamento" },
-  { estagio: "vendido", titulo: "✅ Vendido" },
-  { estagio: "recusado", titulo: "❌ Sem Interesse" },
+  { estagio: "prospectar", titulo: "A Prospectar" },
+  { estagio: "contatado", titulo: "Contatado" },
+  { estagio: "negociacao", titulo: "Orçamento" },
+  { estagio: "vendido", titulo: "Vendido" },
+  { estagio: "recusado", titulo: "Sem Interesse" },
 ];
 
 const ESTAGIOS_COM_REGISTRO: Partial<Record<Estagio, "compra" | "negociacao">> = {
@@ -83,7 +83,7 @@ export default function KanbanAtendimentos({
         <button
           type="button"
           onClick={() => setMostrarNovoCliente(true)}
-          className="flex items-center gap-1.5 rounded-lg bg-oliva-100 px-4 py-2 text-sm font-medium text-oliva-700 shadow-sm hover:bg-oliva-200"
+          className="flex items-center gap-1.5 rounded-lg border border-perola-borda bg-white px-4 py-2 text-sm font-medium text-perola-texto hover:bg-perola-tag"
         >
           <Plus className="h-4 w-4" />
           Novo cliente
@@ -91,7 +91,7 @@ export default function KanbanAtendimentos({
         <button
           type="button"
           onClick={() => setMostrarNovo(true)}
-          className="flex items-center gap-1.5 rounded-lg bg-oliva-600 px-4 py-2 text-sm font-medium text-white hover:bg-oliva-700"
+          className="flex items-center gap-1.5 rounded-lg bg-perola-lima px-4 py-2 text-sm font-semibold text-perola-texto hover:brightness-95"
         >
           <Plus className="h-4 w-4" />
           Novo atendimento
@@ -108,10 +108,10 @@ export default function KanbanAtendimentos({
                   <div
                     ref={provided.innerRef}
                     {...provided.droppableProps}
-                    className="min-h-[300px] rounded-xl bg-stone-100 p-3"
+                    className="min-h-[300px] rounded-[14px] border border-perola-borda bg-perola-tag/50 p-3"
                   >
-                    <p className="mb-3 border-b border-stone-200 pb-2 text-sm font-semibold text-stone-700">
-                      {coluna.titulo} <span className="text-stone-400">({itens.length})</span>
+                    <p className="mb-3 border-b border-perola-divisor pb-2 text-sm font-semibold text-perola-texto">
+                      {coluna.titulo} <span className="text-perola-texto-2">({itens.length})</span>
                     </p>
                     <div className="space-y-2">
                       {itens.map((cliente, index) => (
@@ -121,10 +121,10 @@ export default function KanbanAtendimentos({
                               ref={provided.innerRef}
                               {...provided.draggableProps}
                               {...provided.dragHandleProps}
-                              className="rounded-lg border-l-4 border-oliva-500 bg-oliva-100 p-3 shadow-sm"
+                              className="rounded-[10px] border border-perola-borda bg-white p-3"
                             >
-                              <p className="text-sm font-semibold text-stone-900">{cliente.nome}</p>
-                              <p className="text-xs text-stone-500">
+                              <p className="text-sm font-semibold text-perola-texto">{cliente.nome}</p>
+                              <p className="text-xs text-perola-texto-2">
                                 {cliente.ultimaCompra
                                   ? `Última compra: ${new Date(cliente.ultimaCompra + "T00:00:00").toLocaleDateString("pt-BR")}`
                                   : "Ainda sem compras"}

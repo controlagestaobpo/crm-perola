@@ -50,26 +50,26 @@ export default function AtendimentoForm({
   }, [state.success, atendimentoParaEditar, onSalvo]);
 
   return (
-    <form ref={formRef} action={formAction} className="rounded-xl bg-oliva-100 shadow-sm p-6">
+    <form ref={formRef} action={formAction} className="rounded-[14px] border border-perola-borda bg-white p-6">
       <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div>
-          <label className="mb-1 block text-sm font-medium text-stone-700">Data do contato</label>
+          <label className="mb-1 block text-[13px] font-semibold text-perola-texto">Data do contato</label>
           <input
             type="date"
             name="data"
             defaultValue={atendimentoParaEditar?.data ?? hojeISOBrasil()}
             required
-            className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm"
+            className="w-full rounded-[10px] border border-[#DAD8CD] px-3.5 py-[11px] text-sm text-perola-texto focus:border-perola-verde focus:outline-none"
           />
         </div>
 
         {souMaster && !atendimentoParaEditar && (
           <div>
-            <label className="mb-1 block text-sm font-medium text-stone-700">Consultor</label>
+            <label className="mb-1 block text-[13px] font-semibold text-perola-texto">Consultor</label>
             <select
               name="vendedor_id"
               defaultValue={meuId}
-              className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm"
+              className="w-full rounded-[10px] border border-[#DAD8CD] px-3.5 py-[11px] text-sm text-perola-texto focus:border-perola-verde focus:outline-none"
             >
               {vendedores.map((v) => (
                 <option key={v.id} value={v.id}>
@@ -81,7 +81,7 @@ export default function AtendimentoForm({
         )}
 
         <div>
-          <label className="mb-1 block text-sm font-medium text-stone-700">Cliente</label>
+          <label className="mb-1 block text-[13px] font-semibold text-perola-texto">Cliente</label>
           <ClienteSelect
             clientes={clientes}
             defaultValue={atendimentoParaEditar?.cliente_id ?? clienteIdInicial ?? ""}
@@ -110,7 +110,7 @@ export default function AtendimentoForm({
 
       <div className="mt-6 flex items-center gap-3">
         <SubmitButton>
-          {atendimentoParaEditar ? "💾 Salvar alterações" : "💾 Salvar atendimento"}
+          {atendimentoParaEditar ? "Salvar alterações" : "Salvar atendimento"}
         </SubmitButton>
         <FormMessage state={state} />
       </div>

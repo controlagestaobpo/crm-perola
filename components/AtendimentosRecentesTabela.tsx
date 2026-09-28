@@ -22,14 +22,14 @@ export default function AtendimentosRecentesTabela({
   const restantes = atendimentos.length - QTD_INICIAL;
 
   return (
-    <div className="overflow-x-auto rounded-xl bg-oliva-100 shadow-sm">
+    <div className="overflow-x-auto rounded-[14px] border border-perola-borda bg-white">
       <table className="w-full text-left text-sm">
-        <thead className="border-b border-stone-200 bg-stone-50 text-stone-500">
+        <thead className="border-b border-perola-divisor bg-[#FAFAF6] text-xs uppercase text-perola-texto-2">
           <tr>
             <th className="px-4 py-3 font-medium">Data</th>
             <th className="px-4 py-3 font-medium">Cliente</th>
             <th className="px-4 py-3 font-medium">Resultado</th>
-            <th className="px-4 py-3 font-medium">Valor</th>
+            <th className="px-4 py-3 text-right font-medium">Valor</th>
             <th className="px-4 py-3 font-medium">Próx. contato</th>
             <th className="px-4 py-3 font-medium">Ações</th>
           </tr>
@@ -37,20 +37,20 @@ export default function AtendimentosRecentesTabela({
         <tbody>
           {visiveis.length === 0 ? (
             <tr>
-              <td colSpan={6} className="px-4 py-6 text-center text-stone-400">
+              <td colSpan={6} className="px-4 py-6 text-center text-perola-texto-2">
                 {mensagemVazio}
               </td>
             </tr>
           ) : (
             visiveis.map((a) => (
-              <tr key={a.id} className="border-b border-stone-100 last:border-0">
-                <td className="px-4 py-3 text-stone-600">
+              <tr key={a.id} className="border-b border-perola-divisor last:border-0">
+                <td className="px-4 py-3 text-perola-texto-2">
                   {new Date(a.data + "T00:00:00").toLocaleDateString("pt-BR")}
                 </td>
-                <td className="px-4 py-3 font-medium text-stone-900">{a.clientes?.nome ?? "—"}</td>
-                <td className="px-4 py-3 text-stone-600">{labelResultado(a.resultado)}</td>
-                <td className="px-4 py-3 text-stone-600">{a.valor ? formatBRL(Number(a.valor)) : "—"}</td>
-                <td className="px-4 py-3 text-stone-600">
+                <td className="px-4 py-3 font-medium text-perola-texto">{a.clientes?.nome ?? "—"}</td>
+                <td className="px-4 py-3 text-perola-texto-2">{labelResultado(a.resultado)}</td>
+                <td className="px-4 py-3 text-right text-perola-texto-2">{a.valor ? formatBRL(Number(a.valor)) : "—"}</td>
+                <td className="px-4 py-3 text-perola-texto-2">
                   {a.proximo_contato
                     ? new Date(a.proximo_contato + "T00:00:00").toLocaleDateString("pt-BR")
                     : "—"}
@@ -65,11 +65,11 @@ export default function AtendimentosRecentesTabela({
       </table>
 
       {restantes > 0 && (
-        <div className="border-t border-stone-100 p-2 text-center">
+        <div className="border-t border-perola-divisor p-2 text-center">
           <button
             type="button"
             onClick={() => setExpandido((v) => !v)}
-            className="flex w-full items-center justify-center gap-1 rounded-lg py-1.5 text-sm font-medium text-oliva-700 hover:bg-oliva-50"
+            className="flex w-full items-center justify-center gap-1 rounded-lg py-1.5 text-sm font-medium text-perola-tag-pos-texto hover:bg-perola-tag"
           >
             {expandido ? (
               <>

@@ -68,14 +68,14 @@ export default async function AtendimentosPage({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-stone-900">Atendimentos</h1>
-          <p className="text-sm text-stone-500">Registre contatos e acompanhe o funil</p>
+          <h1 className="text-2xl font-semibold text-perola-texto">Atendimentos</h1>
+          <p className="text-sm text-perola-texto-2">Registre contatos e acompanhe o funil</p>
         </div>
-        <div className="flex rounded-lg bg-oliva-100 shadow-sm p-1">
+        <div className="flex rounded-lg border border-perola-borda bg-white p-1">
           <Link
             href="/atendimentos?view=form"
             className={`rounded-md px-4 py-1.5 text-sm font-medium ${
-              view === "form" ? "bg-oliva-600 text-white" : "text-stone-600"
+              view === "form" ? "bg-perola-verde text-white" : "text-perola-texto-2"
             }`}
           >
             Formulário
@@ -83,7 +83,7 @@ export default async function AtendimentosPage({
           <Link
             href="/atendimentos?view=kanban"
             className={`rounded-md px-4 py-1.5 text-sm font-medium ${
-              view === "kanban" ? "bg-oliva-600 text-white" : "text-stone-600"
+              view === "kanban" ? "bg-perola-verde text-white" : "text-perola-texto-2"
             }`}
           >
             Kanban
@@ -101,8 +101,8 @@ export default async function AtendimentosPage({
         />
       ) : (
         <>
-          <details className="rounded-xl bg-oliva-100 shadow-sm p-4">
-            <summary className="cursor-pointer text-sm font-medium text-oliva-700">
+          <details className="group rounded-[14px] border border-perola-borda bg-white p-4">
+            <summary className="cursor-pointer list-none text-sm font-semibold text-perola-tag-pos-texto [&::-webkit-details-marker]:hidden">
               + Novo cliente
             </summary>
             <ClienteForm />
@@ -119,7 +119,7 @@ export default async function AtendimentosPage({
 
           <div>
             <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-              <h2 className="text-base font-semibold text-stone-900">
+              <h2 className="text-base font-semibold text-perola-texto">
                 {filtroResultado ? "Atendimentos filtrados" : "Últimos atendimentos"}
               </h2>
               <form method="get" className="flex items-center gap-2">
@@ -127,7 +127,7 @@ export default async function AtendimentosPage({
                 <select
                   name="resultado"
                   defaultValue={filtroResultado}
-                  className="rounded-lg border border-stone-300 px-3 py-1.5 text-sm"
+                  className="rounded-[10px] border border-[#DAD8CD] bg-white px-3 py-1.5 text-sm text-perola-texto focus:border-perola-verde focus:outline-none"
                 >
                   {OPCOES_RESULTADO.map((opcao) => (
                     <option key={opcao.valor} value={opcao.valor}>
@@ -137,7 +137,7 @@ export default async function AtendimentosPage({
                 </select>
                 <button
                   type="submit"
-                  className="rounded-lg bg-stone-200 px-3 py-1.5 text-sm font-medium text-stone-700 hover:bg-stone-300"
+                  className="rounded-[10px] bg-perola-tag px-3 py-1.5 text-sm font-medium text-perola-texto hover:brightness-95"
                 >
                   Filtrar
                 </button>
