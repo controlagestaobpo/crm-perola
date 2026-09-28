@@ -188,7 +188,7 @@ export default async function MetasPage({
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <StatCard label="Comissão ganha (total)" value={formatBRL(comissaoTotal)} icon={Wallet} cor="text-emerald-600" />
-        <div className="rounded-2xl bg-white/80 backdrop-blur-sm p-5 shadow-sm">
+        <div className="rounded-2xl bg-oliva-100 p-5 shadow-sm">
           <div className="mb-2 flex items-center gap-1.5 text-stone-400">
             <Gauge className="h-3.5 w-3.5" />
             <p className="text-xs font-medium uppercase tracking-wide">Ritmo de contatos</p>
@@ -217,7 +217,7 @@ export default async function MetasPage({
 
       <div>
         <h2 className="mb-3 text-base font-semibold text-stone-900">🏆 Ranking do período</h2>
-        <div className="overflow-hidden rounded-xl bg-white/80 backdrop-blur-sm shadow-sm">
+        <div className="overflow-hidden rounded-xl bg-oliva-100 shadow-sm">
           <table className="w-full text-left text-sm">
             <thead className="border-b border-stone-200 bg-stone-50 text-stone-500">
               <tr>
@@ -284,7 +284,7 @@ export default async function MetasPage({
       </div>
 
       {(perfil.papel === "master" || perfil.papel === "gerente") && (
-        <div className="rounded-xl bg-white/80 backdrop-blur-sm shadow-sm p-6">
+        <div className="rounded-xl bg-oliva-100 shadow-sm p-6">
           <h2 className="mb-4 text-base font-semibold text-stone-900">⚙️ Configurar meta</h2>
           <MetaForm vendedores={vendedores} ano={ano} mes={mes} />
         </div>

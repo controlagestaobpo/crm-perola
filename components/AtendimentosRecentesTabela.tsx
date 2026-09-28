@@ -22,7 +22,7 @@ export default function AtendimentosRecentesTabela({
   const restantes = atendimentos.length - QTD_INICIAL;
 
   return (
-    <div className="overflow-x-auto rounded-xl bg-white/80 backdrop-blur-sm shadow-sm">
+    <div className="overflow-x-auto rounded-xl bg-oliva-100 shadow-sm">
       <table className="w-full text-left text-sm">
         <thead className="border-b border-stone-200 bg-stone-50 text-stone-500">
           <tr>

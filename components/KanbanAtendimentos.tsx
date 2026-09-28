@@ -83,7 +83,7 @@ export default function KanbanAtendimentos({
         <button
           type="button"
           onClick={() => setMostrarNovoCliente(true)}
-          className="flex items-center gap-1.5 rounded-lg bg-white px-4 py-2 text-sm font-medium text-oliva-700 shadow-sm hover:bg-oliva-50"
+          className="flex items-center gap-1.5 rounded-lg bg-oliva-100 px-4 py-2 text-sm font-medium text-oliva-700 shadow-sm hover:bg-oliva-200"
         >
           <Plus className="h-4 w-4" />
           Novo cliente
@@ -121,7 +121,7 @@ export default function KanbanAtendimentos({
                               ref={provided.innerRef}
                               {...provided.draggableProps}
                               {...provided.dragHandleProps}
-                              className="rounded-lg border-l-4 border-oliva-500 bg-white/80 p-3 shadow-sm backdrop-blur-sm"
+                              className="rounded-lg border-l-4 border-oliva-500 bg-oliva-100 p-3 shadow-sm"
                             >
                               <p className="text-sm font-semibold text-stone-900">{cliente.nome}</p>
                               <p className="text-xs text-stone-500">

@@ -205,7 +205,7 @@ export default async function RelatoriosPage({
               ["Comissão total (equipe)", formatBRL(comissaoTotal)],
             ];
             return itens.map(([label, value], index) => (
-              <div key={label} className="rounded-2xl bg-white/80 backdrop-blur-sm p-4 shadow-sm">
+              <div key={label} className="rounded-2xl bg-oliva-100 p-4 shadow-sm">
                 <p className="text-xs uppercase tracking-wide text-stone-400">{label}</p>
                 <p className={`text-xl font-bold ${cores[index % cores.length]}`}>{value}</p>
               </div>
@@ -217,7 +217,7 @@ export default async function RelatoriosPage({
       {/* DESEMPENHO POR VENDEDOR */}
       <section className="break-inside-avoid">
         <h2 className="mb-3 text-lg font-semibold text-stone-900">2. Desempenho por vendedor</h2>
-        <div className="overflow-x-auto rounded-xl bg-white/80 backdrop-blur-sm shadow-sm">
+        <div className="overflow-x-auto rounded-xl bg-oliva-100 shadow-sm">
           <table className="w-full text-left text-sm">
             <thead className="border-b border-stone-200 bg-stone-50 text-stone-500">
               <tr>
@@ -253,7 +253,7 @@ export default async function RelatoriosPage({
 
       {/* FECHAMENTO DE COMISSÃO */}
       <section className="break-inside-avoid">
-        <div className="rounded-2xl border-2 border-oliva-200 bg-white/80 backdrop-blur-sm p-5 shadow-sm">
+        <div className="rounded-2xl border-2 border-oliva-200 bg-oliva-100 p-5 shadow-sm">
           <h2 className="mb-3 text-base font-semibold text-stone-900">💰 Fechamento de comissão do período</h2>
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
@@ -301,7 +301,7 @@ export default async function RelatoriosPage({
         <h2 className="mb-3 text-lg font-semibold text-stone-900">3. Distribuição de resultados</h2>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
           {resultadosDistribuicao.map((r) => (
-            <div key={r.nome} className="rounded-2xl bg-white/80 backdrop-blur-sm p-4 shadow-sm">
+            <div key={r.nome} className="rounded-2xl bg-oliva-100 p-4 shadow-sm">
               <p className="text-xs uppercase tracking-wide text-stone-400">{r.nome}</p>
               <p className={`text-2xl font-bold ${CORES_RESULTADO[r.nome] ?? "text-stone-700"}`}>{r.quantidade}</p>
             </div>
@@ -312,7 +312,7 @@ export default async function RelatoriosPage({
       {/* PRODUTOS */}
       <section className="break-inside-avoid">
         <h2 className="mb-3 text-lg font-semibold text-stone-900">4. Produtos — oferecidos vs. vendidos</h2>
-        <div className="overflow-x-auto rounded-xl bg-white/80 backdrop-blur-sm shadow-sm">
+        <div className="overflow-x-auto rounded-xl bg-oliva-100 shadow-sm">
           <ProdutosTabela dados={produtosCompletos} />
         </div>
       </section>
@@ -321,7 +321,7 @@ export default async function RelatoriosPage({
       <section className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div className="break-inside-avoid">
           <h2 className="mb-3 text-lg font-semibold text-stone-900">5. Top 10 clientes (histórico)</h2>
-          <div className="overflow-x-auto rounded-xl bg-white/80 backdrop-blur-sm shadow-sm">
+          <div className="overflow-x-auto rounded-xl bg-oliva-100 shadow-sm">
             <table className="w-full text-left text-sm">
               <tbody>
                 {topClientes.length === 0 ? (
@@ -342,7 +342,7 @@ export default async function RelatoriosPage({
 
         <div className="break-inside-avoid">
           <h2 className="mb-3 text-lg font-semibold text-stone-900">6. Clientes inativos (30+ dias)</h2>
-          <div className="max-h-80 overflow-y-auto rounded-xl bg-white/80 backdrop-blur-sm shadow-sm">
+          <div className="max-h-80 overflow-y-auto rounded-xl bg-oliva-100 shadow-sm">
             <table className="w-full text-left text-sm">
               <tbody>
                 {clientesInativos.length === 0 ? (
@@ -367,7 +367,7 @@ export default async function RelatoriosPage({
       <section className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div className="break-inside-avoid">
           <h2 className="mb-3 text-lg font-semibold text-stone-900">7. Clientes por cidade</h2>
-          <div className="max-h-80 overflow-y-auto rounded-xl bg-white/80 backdrop-blur-sm shadow-sm">
+          <div className="max-h-80 overflow-y-auto rounded-xl bg-oliva-100 shadow-sm">
             <table className="w-full text-left text-sm">
               <thead className="border-b border-stone-200 bg-stone-50 text-stone-500">
                 <tr>
@@ -391,7 +391,7 @@ export default async function RelatoriosPage({
 
         <div className="break-inside-avoid">
           <h2 className="mb-3 text-lg font-semibold text-stone-900">8. Clientes sem nenhuma venda</h2>
-          <div className="max-h-80 overflow-y-auto rounded-xl bg-white/80 backdrop-blur-sm shadow-sm">
+          <div className="max-h-80 overflow-y-auto rounded-xl bg-oliva-100 shadow-sm">
             <table className="w-full text-left text-sm">
               <tbody>
                 {clientesSemVendas.length === 0 ? (
@@ -419,7 +419,7 @@ export default async function RelatoriosPage({
         ) : (
           <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             {razoesNaoVenda.map((r) => (
-              <li key={r.motivo} className="rounded-lg bg-white/80 backdrop-blur-sm shadow-sm px-4 py-2 text-sm text-stone-700">
+              <li key={r.motivo} className="rounded-lg bg-oliva-100 shadow-sm px-4 py-2 text-sm text-stone-700">
                 <strong>{r.motivo}</strong> — {r.quantidade}x
               </li>
             ))}
@@ -433,7 +433,7 @@ export default async function RelatoriosPage({
         {pipelineAberto.length === 0 ? (
           <p className="text-sm text-stone-400">Nenhum orçamento em aberto.</p>
         ) : (
-          <div className="overflow-x-auto rounded-xl bg-white/80 backdrop-blur-sm shadow-sm">
+          <div className="overflow-x-auto rounded-xl bg-oliva-100 shadow-sm">
             <table className="w-full text-left text-sm">
               <thead className="border-b border-stone-200 bg-stone-50 text-stone-500">
                 <tr>
@@ -462,7 +462,7 @@ export default async function RelatoriosPage({
         {observacoesCompiladas.length === 0 ? (
           <p className="text-sm text-stone-400">Nenhuma observação registrada no período.</p>
         ) : (
-          <div className="max-h-96 overflow-y-auto rounded-xl bg-white/80 backdrop-blur-sm shadow-sm">
+          <div className="max-h-96 overflow-y-auto rounded-xl bg-oliva-100 shadow-sm">
             <table className="w-full text-left text-sm">
               <thead className="sticky top-0 border-b border-stone-200 bg-stone-50 text-stone-500">
                 <tr>

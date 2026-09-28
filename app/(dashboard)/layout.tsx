@@ -19,7 +19,7 @@ export default async function DashboardLayout({
       <Sidebar papel={perfil.papel} />
       <div className="flex flex-1 flex-col overflow-hidden print:overflow-visible">
         <Header nome={perfil.nome} papel={perfil.papel} />
-        <main className="flex-1 overflow-y-auto bg-gradient-to-br from-lime-100 via-lime-50 to-stone-200 p-6 sm:p-8 print:overflow-visible print:p-0">
+        <main className="flex-1 overflow-y-auto bg-gradient-to-br from-oliva-200 to-oliva-100 p-6 sm:p-8 print:overflow-visible print:p-0">
           <div className="mx-auto max-w-6xl print:max-w-none">{children}</div>
         </main>
       </div>

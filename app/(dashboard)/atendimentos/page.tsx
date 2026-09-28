@@ -71,7 +71,7 @@ export default async function AtendimentosPage({
           <h1 className="text-2xl font-semibold text-stone-900">Atendimentos</h1>
           <p className="text-sm text-stone-500">Registre contatos e acompanhe o funil</p>
         </div>
-        <div className="flex rounded-lg bg-white/80 backdrop-blur-sm shadow-sm p-1">
+        <div className="flex rounded-lg bg-oliva-100 shadow-sm p-1">
           <Link
             href="/atendimentos?view=form"
             className={`rounded-md px-4 py-1.5 text-sm font-medium ${
@@ -101,7 +101,7 @@ export default async function AtendimentosPage({
         />
       ) : (
         <>
-          <details className="rounded-xl bg-white/80 backdrop-blur-sm shadow-sm p-4">
+          <details className="rounded-xl bg-oliva-100 shadow-sm p-4">
             <summary className="cursor-pointer text-sm font-medium text-oliva-700">
               + Novo cliente
             </summary>

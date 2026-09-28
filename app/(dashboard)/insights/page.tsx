@@ -129,7 +129,7 @@ export default async function InsightsPage() {
           data={razoesNaoVenda.map((r) => ({ nome: r.motivo, quantidade: r.quantidade }))}
         />
 
-        <div className="rounded-xl bg-white/80 backdrop-blur-sm p-5 shadow-sm">
+        <div className="rounded-xl bg-oliva-100 p-5 shadow-sm">
           <p className="mb-4 text-sm font-medium text-stone-700">⭐ Oportunidades rápidas</p>
           {oportunidadesComUrgencia.length === 0 ? (
             <p className="text-sm text-stone-400">Nenhum orçamento em aberto.</p>
@@ -179,7 +179,7 @@ export default async function InsightsPage() {
           cor="#3b82f6"
         />
 
-        <div className="rounded-2xl bg-white/80 backdrop-blur-sm p-5 shadow-sm">
+        <div className="rounded-2xl bg-oliva-100 p-5 shadow-sm">
           <p className="mb-4 text-sm font-medium text-stone-700">Detalhe: atendimento por horário</p>
           {horarios.length === 0 ? (
             <p className="text-sm text-stone-400">Sem dados neste mês ainda.</p>
@@ -213,7 +213,7 @@ export default async function InsightsPage() {
           cor="#84cc16"
         />
 
-        <div className="rounded-xl bg-white/80 backdrop-blur-sm p-5 shadow-sm">
+        <div className="rounded-xl bg-oliva-100 p-5 shadow-sm">
           <p className="mb-4 text-sm font-medium text-stone-700">Detalhe: oferecido x vendido</p>
           {potencialProdutos.length === 0 ? (
             <p className="text-sm text-stone-400">Sem dados neste mês ainda.</p>
