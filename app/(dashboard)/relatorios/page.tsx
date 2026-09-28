@@ -17,12 +17,12 @@ import ProdutosTabela from "@/components/ProdutosTabela";
 import type { Atendimento, Meta, Perfil } from "@/types/database";
 
 const CORES_RESULTADO: Record<string, string> = {
-  Compra: "text-emerald-600",
-  Orçamento: "text-blue-600",
-  Interessado: "text-purple-600",
-  "Sem interesse": "text-orange-500",
-  "Não atendeu": "text-stone-500",
-  Indisponível: "text-amber-500",
+  Compra: "text-perola-verde",
+  Orçamento: "text-perola-verde-medio",
+  Interessado: "text-perola-alerta",
+  "Sem interesse": "text-perola-texto-2",
+  "Não atendeu": "text-perola-texto-2",
+  Indisponível: "text-perola-erro",
 };
 
 export const dynamic = "force-dynamic";
@@ -156,22 +156,22 @@ export default async function RelatoriosPage({
     <div className="space-y-8 print:space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3 print:hidden">
         <div>
-          <h1 className="text-2xl font-semibold text-stone-900">Relatório completo</h1>
-          <p className="text-sm text-stone-500">Todos os dados do período, prontos para análise</p>
+          <h1 className="text-2xl font-semibold text-perola-texto">Relatório completo</h1>
+          <p className="text-sm text-perola-texto-2">Todos os dados do período, prontos para análise</p>
         </div>
         <div className="flex items-center gap-2">
           <form className="flex items-center gap-2" method="get">
-            <select name="ano" defaultValue={ano} className="rounded-lg border border-stone-300 px-3 py-1.5 text-sm">
+            <select name="ano" defaultValue={ano} className="rounded-[10px] border border-[#DAD8CD] bg-white px-3 py-1.5 text-sm text-perola-texto focus:border-perola-verde focus:outline-none">
               {[ano - 1, ano, ano + 1].map((a) => (
                 <option key={a} value={a}>{a}</option>
               ))}
             </select>
-            <select name="mes" defaultValue={mes} className="rounded-lg border border-stone-300 px-3 py-1.5 text-sm">
+            <select name="mes" defaultValue={mes} className="rounded-[10px] border border-[#DAD8CD] bg-white px-3 py-1.5 text-sm text-perola-texto focus:border-perola-verde focus:outline-none">
               {MESES.map((nome, index) => (
                 <option key={nome} value={index + 1}>{nome}</option>
               ))}
             </select>
-            <button type="submit" className="rounded-lg bg-stone-200 px-3 py-1.5 text-sm font-medium text-stone-700 hover:bg-stone-300">
+            <button type="submit" className="rounded-[10px] bg-perola-tag px-3 py-1.5 text-sm font-medium text-perola-texto hover:brightness-95">
               Filtrar
             </button>
           </form>
@@ -180,16 +180,15 @@ export default async function RelatoriosPage({
       </div>
 
       <div className="hidden print:block">
-        <h1 className="text-2xl font-bold text-stone-900">CRM Pérola — Relatório de {MESES[mes - 1]} de {ano}</h1>
-        <p className="text-sm text-stone-500">Gerado em {hoje.toLocaleDateString("pt-BR", { timeZone: "UTC" })}</p>
+        <h1 className="text-2xl font-bold text-perola-texto">CRM Pérola — Relatório de {MESES[mes - 1]} de {ano}</h1>
+        <p className="text-sm text-perola-texto-2">Gerado em {hoje.toLocaleDateString("pt-BR", { timeZone: "UTC" })}</p>
       </div>
 
       {/* RESUMO GERAL */}
       <section className="break-inside-avoid">
-        <h2 className="mb-3 text-lg font-semibold text-stone-900">1. Resumo geral</h2>
+        <h2 className="mb-3 text-lg font-semibold text-perola-texto">1. Resumo geral</h2>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {(() => {
-            const cores = ["text-blue-600", "text-amber-500", "text-emerald-600", "text-orange-500"];
             const itens: [string, string][] = [
               ["Atendimentos", String(totalAtendimentos)],
               ["Clientes atendidos", String(clientesAtendidos)],
@@ -204,10 +203,10 @@ export default async function RelatoriosPage({
               ["Orçamentos abertos", String(pipelineAberto.length)],
               ["Comissão total (equipe)", formatBRL(comissaoTotal)],
             ];
-            return itens.map(([label, value], index) => (
-              <div key={label} className="rounded-2xl bg-oliva-100 p-4 shadow-sm">
-                <p className="text-xs uppercase tracking-wide text-stone-400">{label}</p>
-                <p className={`text-xl font-bold ${cores[index % cores.length]}`}>{value}</p>
+            return itens.map(([label, value]) => (
+              <div key={label} className="rounded-[14px] border border-perola-borda bg-white p-4">
+                <p className="text-xs uppercase tracking-wide text-perola-texto-2">{label}</p>
+                <p className="text-xl font-semibold text-perola-texto">{value}</p>
               </div>
             ));
           })()}
@@ -216,10 +215,10 @@ export default async function RelatoriosPage({
 
       {/* DESEMPENHO POR VENDEDOR */}
       <section className="break-inside-avoid">
-        <h2 className="mb-3 text-lg font-semibold text-stone-900">2. Desempenho por vendedor</h2>
-        <div className="overflow-x-auto rounded-xl bg-oliva-100 shadow-sm">
+        <h2 className="mb-3 text-lg font-semibold text-perola-texto">2. Desempenho por vendedor</h2>
+        <div className="overflow-x-auto rounded-[14px] border border-perola-borda bg-white">
           <table className="w-full text-left text-sm">
-            <thead className="border-b border-stone-200 bg-stone-50 text-stone-500">
+            <thead className="border-b border-perola-divisor bg-[#FAFAF6] text-perola-texto-2">
               <tr>
                 <th className="px-3 py-2 font-medium">Vendedor</th>
                 <th className="px-3 py-2 font-medium">Atendimentos</th>
@@ -234,16 +233,16 @@ export default async function RelatoriosPage({
             </thead>
             <tbody>
               {porVendedor.map((d) => (
-                <tr key={d.vendedor.id} className="border-b border-stone-100 last:border-0">
-                  <td className="px-3 py-2 font-medium text-stone-900">{d.vendedor.nome}</td>
-                  <td className="px-3 py-2 text-stone-600">{d.atendimentos}</td>
-                  <td className="px-3 py-2 text-stone-600">{d.vendas}</td>
-                  <td className="px-3 py-2 text-stone-600">{d.conversao.toFixed(1)}%</td>
-                  <td className="px-3 py-2 text-stone-600">{formatBRL(d.receita)}</td>
-                  <td className="px-3 py-2 text-stone-600">{d.sacosVendidos} sacos</td>
-                  <td className="px-3 py-2 text-stone-600">{formatBRL(d.meta)}</td>
-                  <td className="px-3 py-2 text-stone-600">{d.percentualMeta.toFixed(0)}%</td>
-                  <td className="px-3 py-2 text-stone-600">{formatBRL(d.comissao)}</td>
+                <tr key={d.vendedor.id} className="border-b border-perola-divisor last:border-0">
+                  <td className="px-3 py-2 font-medium text-perola-texto">{d.vendedor.nome}</td>
+                  <td className="px-3 py-2 text-perola-texto-2">{d.atendimentos}</td>
+                  <td className="px-3 py-2 text-perola-texto-2">{d.vendas}</td>
+                  <td className="px-3 py-2 text-perola-texto-2">{d.conversao.toFixed(1)}%</td>
+                  <td className="px-3 py-2 text-perola-texto-2">{formatBRL(d.receita)}</td>
+                  <td className="px-3 py-2 text-perola-texto-2">{d.sacosVendidos} sacos</td>
+                  <td className="px-3 py-2 text-perola-texto-2">{formatBRL(d.meta)}</td>
+                  <td className="px-3 py-2 text-perola-texto-2">{d.percentualMeta.toFixed(0)}%</td>
+                  <td className="px-3 py-2 text-perola-texto-2">{formatBRL(d.comissao)}</td>
                 </tr>
               ))}
             </tbody>
@@ -253,11 +252,11 @@ export default async function RelatoriosPage({
 
       {/* FECHAMENTO DE COMISSÃO */}
       <section className="break-inside-avoid">
-        <div className="rounded-2xl border-2 border-oliva-200 bg-oliva-100 p-5 shadow-sm">
-          <h2 className="mb-3 text-base font-semibold text-stone-900">💰 Fechamento de comissão do período</h2>
+        <div className="rounded-[14px] border-2 border-perola-tag-pos-texto/25 bg-white p-5">
+          <h2 className="mb-3 text-base font-semibold text-perola-texto">Fechamento de comissão do período</h2>
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
-              <thead className="border-b border-stone-200 text-stone-500">
+              <thead className="border-b border-perola-divisor text-perola-texto-2">
                 <tr>
                   <th className="px-3 py-2 font-medium">Vendedor</th>
                   <th className="px-3 py-2 font-medium">Vendas (R$)</th>
@@ -269,26 +268,26 @@ export default async function RelatoriosPage({
               </thead>
               <tbody>
                 {porVendedor.map((d) => (
-                  <tr key={d.vendedor.id} className="border-b border-stone-100 last:border-0">
-                    <td className="px-3 py-2 font-medium text-stone-900">{d.vendedor.nome}</td>
-                    <td className="px-3 py-2 text-stone-600">{formatBRL(d.receita)}</td>
-                    <td className="px-3 py-2 text-stone-600">{formatBRL(d.freteVendedor)}</td>
-                    <td className="px-3 py-2 text-stone-600">{formatBRL(d.baseComissao)}</td>
-                    <td className="px-3 py-2 text-stone-600">{d.comissaoPercentual}%</td>
-                    <td className="px-3 py-2 font-semibold text-oliva-700">{formatBRL(d.comissao)}</td>
+                  <tr key={d.vendedor.id} className="border-b border-perola-divisor last:border-0">
+                    <td className="px-3 py-2 font-medium text-perola-texto">{d.vendedor.nome}</td>
+                    <td className="px-3 py-2 text-perola-texto-2">{formatBRL(d.receita)}</td>
+                    <td className="px-3 py-2 text-perola-texto-2">{formatBRL(d.freteVendedor)}</td>
+                    <td className="px-3 py-2 text-perola-texto-2">{formatBRL(d.baseComissao)}</td>
+                    <td className="px-3 py-2 text-perola-texto-2">{d.comissaoPercentual}%</td>
+                    <td className="px-3 py-2 font-semibold text-perola-tag-pos-texto">{formatBRL(d.comissao)}</td>
                   </tr>
                 ))}
               </tbody>
               <tfoot>
-                <tr className="border-t-2 border-oliva-200">
-                  <td className="px-3 py-2 font-semibold text-stone-900">Total</td>
-                  <td className="px-3 py-2 font-semibold text-stone-900">{formatBRL(receita)}</td>
-                  <td className="px-3 py-2 font-semibold text-stone-900">{formatBRL(freteTotal)}</td>
-                  <td className="px-3 py-2 font-semibold text-stone-900">
+                <tr className="border-t-2 border-perola-divisor">
+                  <td className="px-3 py-2 font-semibold text-perola-texto">Total</td>
+                  <td className="px-3 py-2 font-semibold text-perola-texto">{formatBRL(receita)}</td>
+                  <td className="px-3 py-2 font-semibold text-perola-texto">{formatBRL(freteTotal)}</td>
+                  <td className="px-3 py-2 font-semibold text-perola-texto">
                     {formatBRL(porVendedor.reduce((soma, d) => soma + d.baseComissao, 0))}
                   </td>
                   <td className="px-3 py-2"></td>
-                  <td className="px-3 py-2 font-bold text-oliva-700">{formatBRL(comissaoTotal)}</td>
+                  <td className="px-3 py-2 font-bold text-perola-tag-pos-texto">{formatBRL(comissaoTotal)}</td>
                 </tr>
               </tfoot>
             </table>
@@ -298,12 +297,12 @@ export default async function RelatoriosPage({
 
       {/* RESULTADOS */}
       <section className="break-inside-avoid">
-        <h2 className="mb-3 text-lg font-semibold text-stone-900">3. Distribuição de resultados</h2>
+        <h2 className="mb-3 text-lg font-semibold text-perola-texto">3. Distribuição de resultados</h2>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
           {resultadosDistribuicao.map((r) => (
-            <div key={r.nome} className="rounded-2xl bg-oliva-100 p-4 shadow-sm">
-              <p className="text-xs uppercase tracking-wide text-stone-400">{r.nome}</p>
-              <p className={`text-2xl font-bold ${CORES_RESULTADO[r.nome] ?? "text-stone-700"}`}>{r.quantidade}</p>
+            <div key={r.nome} className="rounded-[14px] border border-perola-borda bg-white p-4">
+              <p className="text-xs uppercase tracking-wide text-perola-texto-2">{r.nome}</p>
+              <p className={`text-2xl font-semibold ${CORES_RESULTADO[r.nome] ?? "text-perola-texto"}`}>{r.quantidade}</p>
             </div>
           ))}
         </div>
@@ -311,8 +310,8 @@ export default async function RelatoriosPage({
 
       {/* PRODUTOS */}
       <section className="break-inside-avoid">
-        <h2 className="mb-3 text-lg font-semibold text-stone-900">4. Produtos — oferecidos vs. vendidos</h2>
-        <div className="overflow-x-auto rounded-xl bg-oliva-100 shadow-sm">
+        <h2 className="mb-3 text-lg font-semibold text-perola-texto">4. Produtos — oferecidos vs. vendidos</h2>
+        <div className="overflow-x-auto rounded-[14px] border border-perola-borda bg-white">
           <ProdutosTabela dados={produtosCompletos} />
         </div>
       </section>
@@ -320,18 +319,18 @@ export default async function RelatoriosPage({
       {/* CLIENTES */}
       <section className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div className="break-inside-avoid">
-          <h2 className="mb-3 text-lg font-semibold text-stone-900">5. Top 10 clientes (histórico)</h2>
-          <div className="overflow-x-auto rounded-xl bg-oliva-100 shadow-sm">
+          <h2 className="mb-3 text-lg font-semibold text-perola-texto">5. Top 10 clientes (histórico)</h2>
+          <div className="overflow-x-auto rounded-[14px] border border-perola-borda bg-white">
             <table className="w-full text-left text-sm">
               <tbody>
                 {topClientes.length === 0 ? (
-                  <tr><td className="px-3 py-4 text-center text-stone-400">Sem compras registradas.</td></tr>
+                  <tr><td className="px-3 py-4 text-center text-perola-texto-2">Sem compras registradas.</td></tr>
                 ) : (
                   topClientes.map((c) => (
-                    <tr key={c.id} className="border-b border-stone-100 last:border-0">
-                      <td className="px-3 py-2 font-medium text-stone-900">{c.nome}</td>
-                      <td className="px-3 py-2 text-stone-600">{formatBRL(c.valorTotal)}</td>
-                      <td className="px-3 py-2 text-stone-600">{c.totalCompras} compras</td>
+                    <tr key={c.id} className="border-b border-perola-divisor last:border-0">
+                      <td className="px-3 py-2 font-medium text-perola-texto">{c.nome}</td>
+                      <td className="px-3 py-2 text-perola-texto-2">{formatBRL(c.valorTotal)}</td>
+                      <td className="px-3 py-2 text-perola-texto-2">{c.totalCompras} compras</td>
                     </tr>
                   ))
                 )}
@@ -341,17 +340,17 @@ export default async function RelatoriosPage({
         </div>
 
         <div className="break-inside-avoid">
-          <h2 className="mb-3 text-lg font-semibold text-stone-900">6. Clientes inativos (30+ dias)</h2>
-          <div className="max-h-80 overflow-y-auto rounded-xl bg-oliva-100 shadow-sm">
+          <h2 className="mb-3 text-lg font-semibold text-perola-texto">6. Clientes inativos (30+ dias)</h2>
+          <div className="max-h-80 overflow-y-auto rounded-[14px] border border-perola-borda bg-white">
             <table className="w-full text-left text-sm">
               <tbody>
                 {clientesInativos.length === 0 ? (
-                  <tr><td className="px-3 py-4 text-center text-stone-400">Nenhum cliente inativo.</td></tr>
+                  <tr><td className="px-3 py-4 text-center text-perola-texto-2">Nenhum cliente inativo.</td></tr>
                 ) : (
                   clientesInativos.map((c) => (
-                    <tr key={c.id} className="border-b border-stone-100 last:border-0">
-                      <td className="px-3 py-2 font-medium text-stone-900">{c.nome}</td>
-                      <td className="px-3 py-2 text-stone-600">
+                    <tr key={c.id} className="border-b border-perola-divisor last:border-0">
+                      <td className="px-3 py-2 font-medium text-perola-texto">{c.nome}</td>
+                      <td className="px-3 py-2 text-perola-texto-2">
                         {c.diasSemComprar ? `${c.diasSemComprar} dias` : "Nunca comprou"}
                       </td>
                     </tr>
@@ -366,10 +365,10 @@ export default async function RelatoriosPage({
       {/* CLIENTES POR CIDADE E SEM VENDAS */}
       <section className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div className="break-inside-avoid">
-          <h2 className="mb-3 text-lg font-semibold text-stone-900">7. Clientes por cidade</h2>
-          <div className="max-h-80 overflow-y-auto rounded-xl bg-oliva-100 shadow-sm">
+          <h2 className="mb-3 text-lg font-semibold text-perola-texto">7. Clientes por cidade</h2>
+          <div className="max-h-80 overflow-y-auto rounded-[14px] border border-perola-borda bg-white">
             <table className="w-full text-left text-sm">
-              <thead className="border-b border-stone-200 bg-stone-50 text-stone-500">
+              <thead className="border-b border-perola-divisor bg-[#FAFAF6] text-perola-texto-2">
                 <tr>
                   <th className="px-3 py-2 font-medium">Cidade</th>
                   <th className="px-3 py-2 font-medium">Clientes</th>
@@ -378,10 +377,10 @@ export default async function RelatoriosPage({
               </thead>
               <tbody>
                 {clientesPorCidade.map((c) => (
-                  <tr key={c.cidade} className="border-b border-stone-100 last:border-0">
-                    <td className="px-3 py-2 font-medium text-stone-900">{c.cidade}</td>
-                    <td className="px-3 py-2 text-stone-600">{c.quantidade}</td>
-                    <td className="px-3 py-2 text-stone-600">{formatBRL(c.valorTotal)}</td>
+                  <tr key={c.cidade} className="border-b border-perola-divisor last:border-0">
+                    <td className="px-3 py-2 font-medium text-perola-texto">{c.cidade}</td>
+                    <td className="px-3 py-2 text-perola-texto-2">{c.quantidade}</td>
+                    <td className="px-3 py-2 text-perola-texto-2">{formatBRL(c.valorTotal)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -390,18 +389,18 @@ export default async function RelatoriosPage({
         </div>
 
         <div className="break-inside-avoid">
-          <h2 className="mb-3 text-lg font-semibold text-stone-900">8. Clientes sem nenhuma venda</h2>
-          <div className="max-h-80 overflow-y-auto rounded-xl bg-oliva-100 shadow-sm">
+          <h2 className="mb-3 text-lg font-semibold text-perola-texto">8. Clientes sem nenhuma venda</h2>
+          <div className="max-h-80 overflow-y-auto rounded-[14px] border border-perola-borda bg-white">
             <table className="w-full text-left text-sm">
               <tbody>
                 {clientesSemVendas.length === 0 ? (
-                  <tr><td className="px-3 py-4 text-center text-stone-400">Todos os clientes já compraram alguma vez.</td></tr>
+                  <tr><td className="px-3 py-4 text-center text-perola-texto-2">Todos os clientes já compraram alguma vez.</td></tr>
                 ) : (
                   clientesSemVendas.map((c) => (
-                    <tr key={c.id} className="border-b border-stone-100 last:border-0">
-                      <td className="px-3 py-2 font-medium text-stone-900">{c.nome}</td>
-                      <td className="px-3 py-2 text-stone-600">{c.cidade ?? "—"}</td>
-                      <td className="px-3 py-2 text-stone-600">{c.telefone ?? "—"}</td>
+                    <tr key={c.id} className="border-b border-perola-divisor last:border-0">
+                      <td className="px-3 py-2 font-medium text-perola-texto">{c.nome}</td>
+                      <td className="px-3 py-2 text-perola-texto-2">{c.cidade ?? "—"}</td>
+                      <td className="px-3 py-2 text-perola-texto-2">{c.telefone ?? "—"}</td>
                     </tr>
                   ))
                 )}
@@ -413,13 +412,13 @@ export default async function RelatoriosPage({
 
       {/* MOTIVOS DE NAO VENDA */}
       <section className="break-inside-avoid">
-        <h2 className="mb-3 text-lg font-semibold text-stone-900">9. Motivos de não-venda</h2>
+        <h2 className="mb-3 text-lg font-semibold text-perola-texto">9. Motivos de não-venda</h2>
         {razoesNaoVenda.length === 0 ? (
-          <p className="text-sm text-stone-400">Sem registros no período.</p>
+          <p className="text-sm text-perola-texto-2">Sem registros no período.</p>
         ) : (
           <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             {razoesNaoVenda.map((r) => (
-              <li key={r.motivo} className="rounded-lg bg-oliva-100 shadow-sm px-4 py-2 text-sm text-stone-700">
+              <li key={r.motivo} className="rounded-lg border border-perola-borda bg-white px-4 py-2 text-sm text-perola-texto">
                 <strong>{r.motivo}</strong> — {r.quantidade}x
               </li>
             ))}
@@ -429,13 +428,13 @@ export default async function RelatoriosPage({
 
       {/* PIPELINE ABERTO */}
       <section className="break-inside-avoid">
-        <h2 className="mb-3 text-lg font-semibold text-stone-900">10. Orçamentos em aberto</h2>
+        <h2 className="mb-3 text-lg font-semibold text-perola-texto">10. Orçamentos em aberto</h2>
         {pipelineAberto.length === 0 ? (
-          <p className="text-sm text-stone-400">Nenhum orçamento em aberto.</p>
+          <p className="text-sm text-perola-texto-2">Nenhum orçamento em aberto.</p>
         ) : (
-          <div className="overflow-x-auto rounded-xl bg-oliva-100 shadow-sm">
+          <div className="overflow-x-auto rounded-[14px] border border-perola-borda bg-white">
             <table className="w-full text-left text-sm">
-              <thead className="border-b border-stone-200 bg-stone-50 text-stone-500">
+              <thead className="border-b border-perola-divisor bg-[#FAFAF6] text-perola-texto-2">
                 <tr>
                   <th className="px-3 py-2 font-medium">Data</th>
                   <th className="px-3 py-2 font-medium">Resultado</th>
@@ -444,10 +443,10 @@ export default async function RelatoriosPage({
               </thead>
               <tbody>
                 {pipelineAberto.map((a) => (
-                  <tr key={a.id} className="border-b border-stone-100 last:border-0">
-                    <td className="px-3 py-2 text-stone-600">{new Date(a.data + "T00:00:00").toLocaleDateString("pt-BR")}</td>
-                    <td className="px-3 py-2 text-stone-600">{labelResultado(a.resultado)}</td>
-                    <td className="px-3 py-2 text-stone-600">{formatBRL(Number(a.valor_negociacao ?? 0))}</td>
+                  <tr key={a.id} className="border-b border-perola-divisor last:border-0">
+                    <td className="px-3 py-2 text-perola-texto-2">{new Date(a.data + "T00:00:00").toLocaleDateString("pt-BR")}</td>
+                    <td className="px-3 py-2 text-perola-texto-2">{labelResultado(a.resultado)}</td>
+                    <td className="px-3 py-2 text-perola-texto-2">{formatBRL(Number(a.valor_negociacao ?? 0))}</td>
                   </tr>
                 ))}
               </tbody>
@@ -458,13 +457,13 @@ export default async function RelatoriosPage({
 
       {/* OBSERVACOES COMPILADAS */}
       <section className="break-inside-avoid">
-        <h2 className="mb-3 text-lg font-semibold text-stone-900">11. Observações dos atendimentos</h2>
+        <h2 className="mb-3 text-lg font-semibold text-perola-texto">11. Observações dos atendimentos</h2>
         {observacoesCompiladas.length === 0 ? (
-          <p className="text-sm text-stone-400">Nenhuma observação registrada no período.</p>
+          <p className="text-sm text-perola-texto-2">Nenhuma observação registrada no período.</p>
         ) : (
-          <div className="max-h-96 overflow-y-auto rounded-xl bg-oliva-100 shadow-sm">
+          <div className="max-h-96 overflow-y-auto rounded-[14px] border border-perola-borda bg-white">
             <table className="w-full text-left text-sm">
-              <thead className="sticky top-0 border-b border-stone-200 bg-stone-50 text-stone-500">
+              <thead className="sticky top-0 border-b border-perola-divisor bg-[#FAFAF6] text-perola-texto-2">
                 <tr>
                   <th className="px-3 py-2 font-medium">Data</th>
                   <th className="px-3 py-2 font-medium">Cliente</th>
@@ -473,12 +472,12 @@ export default async function RelatoriosPage({
               </thead>
               <tbody>
                 {observacoesCompiladas.map((a) => (
-                  <tr key={a.id} className="border-b border-stone-100 last:border-0">
-                    <td className="px-3 py-2 whitespace-nowrap text-stone-600">
+                  <tr key={a.id} className="border-b border-perola-divisor last:border-0">
+                    <td className="px-3 py-2 whitespace-nowrap text-perola-texto-2">
                       {new Date(a.data + "T00:00:00").toLocaleDateString("pt-BR")}
                     </td>
-                    <td className="px-3 py-2 font-medium text-stone-900">{a.clientes?.nome ?? "—"}</td>
-                    <td className="px-3 py-2 text-stone-600">{a.observacoes}</td>
+                    <td className="px-3 py-2 font-medium text-perola-texto">{a.clientes?.nome ?? "—"}</td>
+                    <td className="px-3 py-2 text-perola-texto-2">{a.observacoes}</td>
                   </tr>
                 ))}
               </tbody>
