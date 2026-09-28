@@ -54,30 +54,32 @@ function ThOrdenavel({
   colunaAtiva,
   ordem,
   onOrdenar,
+  alinharDireita,
 }: {
   coluna: Coluna;
   label: string;
   colunaAtiva: Coluna | null;
   ordem: Ordem;
   onOrdenar: (coluna: Coluna) => void;
+  alinharDireita?: boolean;
 }) {
   const ativa = colunaAtiva === coluna;
   return (
-    <th className="px-4 py-3 font-medium">
+    <th className={`px-4 py-3 font-medium ${alinharDireita ? "text-right" : ""}`}>
       <button
         type="button"
         onClick={() => onOrdenar(coluna)}
-        className="flex items-center gap-1 hover:text-stone-800"
+        className={`flex items-center gap-1 hover:text-perola-texto ${alinharDireita ? "ml-auto" : ""}`}
       >
         {label}
         {ativa ? (
           ordem === "asc" ? (
-            <ArrowUp className="h-3 w-3 text-oliva-600" />
+            <ArrowUp className="h-3 w-3 text-perola-verde-medio" />
           ) : (
-            <ArrowDown className="h-3 w-3 text-oliva-600" />
+            <ArrowDown className="h-3 w-3 text-perola-verde-medio" />
           )
         ) : (
-          <ArrowUpDown className="h-3 w-3 text-stone-300" />
+          <ArrowUpDown className="h-3 w-3 text-perola-texto-2/50" />
         )}
       </button>
     </th>
@@ -105,17 +107,17 @@ export default function ClientesTabela({ clientes }: { clientes: ClienteComHisto
 
   return (
     <>
-      <div className="overflow-x-auto rounded-xl bg-oliva-100 shadow-sm">
+      <div className="overflow-x-auto rounded-[14px] border border-perola-borda bg-white">
         <table className="w-full text-left text-sm">
-          <thead className="border-b border-stone-200 bg-stone-50 text-stone-500">
+          <thead className="border-b border-perola-divisor bg-[#FAFAF6] text-xs uppercase text-perola-texto-2">
             <tr>
               <ThOrdenavel coluna="nome" label="Nome" colunaAtiva={coluna} ordem={ordem} onOrdenar={ordenarPor} />
               <ThOrdenavel coluna="telefone" label="Telefone" colunaAtiva={coluna} ordem={ordem} onOrdenar={ordenarPor} />
               <ThOrdenavel coluna="cidade" label="Cidade" colunaAtiva={coluna} ordem={ordem} onOrdenar={ordenarPor} />
               <ThOrdenavel coluna="estagio" label="Estágio" colunaAtiva={coluna} ordem={ordem} onOrdenar={ordenarPor} />
               <ThOrdenavel coluna="ultimaCompra" label="Última compra" colunaAtiva={coluna} ordem={ordem} onOrdenar={ordenarPor} />
-              <ThOrdenavel coluna="valorTotal" label="Total gasto" colunaAtiva={coluna} ordem={ordem} onOrdenar={ordenarPor} />
-              <ThOrdenavel coluna="totalCompras" label="Compras" colunaAtiva={coluna} ordem={ordem} onOrdenar={ordenarPor} />
+              <ThOrdenavel coluna="valorTotal" label="Total gasto" colunaAtiva={coluna} ordem={ordem} onOrdenar={ordenarPor} alinharDireita />
+              <ThOrdenavel coluna="totalCompras" label="Compras" colunaAtiva={coluna} ordem={ordem} onOrdenar={ordenarPor} alinharDireita />
               <ThOrdenavel coluna="proximo_contato" label="Próx. contato" colunaAtiva={coluna} ordem={ordem} onOrdenar={ordenarPor} />
               <th className="px-4 py-3 font-medium"></th>
             </tr>
@@ -123,29 +125,29 @@ export default function ClientesTabela({ clientes }: { clientes: ClienteComHisto
           <tbody>
             {clientesOrdenados.length === 0 ? (
               <tr>
-                <td colSpan={9} className="px-4 py-6 text-center text-stone-400">
+                <td colSpan={9} className="px-4 py-6 text-center text-perola-texto-2">
                   Nenhum cliente cadastrado ainda.
                 </td>
               </tr>
             ) : (
               clientesOrdenados.map((c) => (
-                <tr key={c.id} className="border-b border-stone-100 last:border-0">
-                  <td className="px-4 py-3 font-medium text-stone-900">{c.nome}</td>
-                  <td className="px-4 py-3 text-stone-600">{c.telefone ?? "—"}</td>
-                  <td className="px-4 py-3 text-stone-600">{c.cidade ?? "—"}</td>
-                  <td className="px-4 py-3 text-stone-600">{labelEstagio(c.estagio)}</td>
-                  <td className="px-4 py-3 text-stone-600">
+                <tr key={c.id} className="border-b border-perola-divisor last:border-0">
+                  <td className="px-4 py-3 font-medium text-perola-texto">{c.nome}</td>
+                  <td className="px-4 py-3 text-perola-texto-2">{c.telefone ?? "—"}</td>
+                  <td className="px-4 py-3 text-perola-texto-2">{c.cidade ?? "—"}</td>
+                  <td className="px-4 py-3 text-perola-texto-2">{labelEstagio(c.estagio)}</td>
+                  <td className="px-4 py-3 text-perola-texto-2">
                     {c.ultimaCompra ? new Date(c.ultimaCompra + "T00:00:00").toLocaleDateString("pt-BR") : "—"}
                   </td>
-                  <td className="px-4 py-3 text-stone-600">{formatBRL(c.valorTotal)}</td>
-                  <td className="px-4 py-3 text-stone-600">{c.totalCompras}</td>
-                  <td className="px-4 py-3 text-stone-600">
+                  <td className="px-4 py-3 text-right text-perola-texto-2">{formatBRL(c.valorTotal)}</td>
+                  <td className="px-4 py-3 text-right text-perola-texto-2">{c.totalCompras}</td>
+                  <td className="px-4 py-3 text-perola-texto-2">
                     {c.proximo_contato ? new Date(c.proximo_contato + "T00:00:00").toLocaleDateString("pt-BR") : "—"}
                   </td>
                   <td className="px-4 py-3">
                     <button
                       onClick={() => setEditando(c)}
-                      className="text-stone-400 hover:text-oliva-600"
+                      className="text-perola-texto-2 hover:text-perola-verde"
                       title="Editar"
                     >
                       <Pencil className="h-4 w-4" />

@@ -30,32 +30,34 @@ export default async function ClientesPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-stone-900">Clientes</h1>
-        <p className="text-sm text-stone-500">Sua carteira de clientes</p>
+        <h1 className="text-2xl font-semibold text-perola-texto">Clientes</h1>
+        <p className="text-sm text-perola-texto-2">Sua carteira de clientes</p>
       </div>
 
-      <details className="rounded-xl bg-oliva-100 shadow-sm p-4">
-        <summary className="cursor-pointer text-sm font-medium text-oliva-700">+ Novo cliente</summary>
+      <details className="rounded-[14px] border border-perola-borda bg-white p-4">
+        <summary className="cursor-pointer list-none text-sm font-semibold text-perola-tag-pos-texto [&::-webkit-details-marker]:hidden">
+          + Novo cliente
+        </summary>
         <ClienteForm />
       </details>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Total de clientes" value={String(totalClientes)} icon={Users} cor="text-blue-600" />
-        <StatCard label="Clientes ativos (30d)" value={String(clientesAtivos)} icon={UserCheck} cor="text-amber-500" />
-        <StatCard label="Valor total da carteira" value={formatBRL(valorTotalCarteira)} icon={Wallet} cor="text-emerald-600" />
-        <StatCard label="Ticket médio" value={formatBRL(ticketMedio)} icon={Receipt} cor="text-orange-500" />
+        <StatCard label="Total de clientes" value={String(totalClientes)} icon={Users} />
+        <StatCard label="Clientes ativos (30d)" value={String(clientesAtivos)} icon={UserCheck} />
+        <StatCard label="Valor total da carteira" value={formatBRL(valorTotalCarteira)} icon={Wallet} />
+        <StatCard label="Ticket médio" value={formatBRL(ticketMedio)} icon={Receipt} />
       </div>
 
       {topClientes.length > 0 && (
         <div>
-          <h2 className="mb-3 text-base font-semibold text-stone-900">🏆 Top clientes</h2>
+          <h2 className="mb-3 text-base font-semibold text-perola-texto">Top clientes</h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 lg:grid-cols-5">
             {topClientes.map((cliente, index) => (
-              <div key={cliente.id} className="rounded-xl bg-oliva-100 shadow-sm p-5 text-center">
+              <div key={cliente.id} className="rounded-[14px] border border-perola-borda bg-white p-5 text-center">
                 <div className="mb-2 text-3xl">{MEDALHAS[index]}</div>
-                <p className="text-sm font-semibold text-stone-900">{cliente.nome}</p>
-                <p className="mt-1 text-lg font-bold text-oliva-600">{formatBRL(cliente.valorTotal)}</p>
-                <p className="mt-1 text-xs text-stone-500">{cliente.totalCompras} compras</p>
+                <p className="text-sm font-semibold text-perola-texto">{cliente.nome}</p>
+                <p className="mt-1 text-lg font-semibold text-perola-texto">{formatBRL(cliente.valorTotal)}</p>
+                <p className="mt-1 text-xs text-perola-texto-2">{cliente.totalCompras} compras</p>
               </div>
             ))}
           </div>
