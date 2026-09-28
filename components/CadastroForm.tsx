@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Wheat } from "lucide-react";
+import { Beef } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 export default function CadastroForm() {
@@ -63,14 +63,14 @@ export default function CadastroForm() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-oliva-900 via-oliva-800 to-oliva-950 px-4">
-      <div className="w-full max-w-sm rounded-xl bg-white shadow-sm p-8">
+    <div className="flex min-h-screen items-center justify-center bg-perola-verde px-4">
+      <div className="w-full max-w-sm rounded-[14px] border border-perola-borda bg-white p-8">
         <div className="mb-8 flex items-center justify-center gap-2">
-          <Wheat className="h-6 w-6 text-oliva-600" />
-          <span className="text-lg font-semibold text-stone-900">CRM Pérola</span>
+          <Beef className="h-6 w-6 text-perola-verde-medio" />
+          <span className="text-lg font-semibold text-perola-texto">CRM Pérola</span>
         </div>
 
-        <h1 className="mb-6 text-center text-sm text-stone-500">
+        <h1 className="mb-6 text-center text-sm text-perola-texto-2">
           {ehConvite
             ? "Complete seu cadastro para entrar na equipe"
             : "Crie sua empresa e sua conta de administrador (master)"}
@@ -78,19 +78,19 @@ export default function CadastroForm() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="mb-1 block text-sm font-medium text-stone-700">Seu nome</label>
+            <label className="mb-1 block text-[13px] font-semibold text-perola-texto">Seu nome</label>
             <input
               type="text"
               required
               value={nome}
               onChange={(e) => setNome(e.target.value)}
-              className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm focus:border-oliva-500 focus:outline-none focus:ring-1 focus:ring-oliva-500"
+              className="w-full rounded-[10px] border border-[#DAD8CD] px-3.5 py-[11px] text-sm text-perola-texto focus:border-perola-verde focus:outline-none"
             />
           </div>
 
           {!ehConvite && (
             <div>
-              <label className="mb-1 block text-sm font-medium text-stone-700">
+              <label className="mb-1 block text-[13px] font-semibold text-perola-texto">
                 Nome da empresa
               </label>
               <input
@@ -98,50 +98,50 @@ export default function CadastroForm() {
                 required
                 value={nomeEmpresa}
                 onChange={(e) => setNomeEmpresa(e.target.value)}
-                className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm focus:border-oliva-500 focus:outline-none focus:ring-1 focus:ring-oliva-500"
+                className="w-full rounded-[10px] border border-[#DAD8CD] px-3.5 py-[11px] text-sm text-perola-texto focus:border-perola-verde focus:outline-none"
               />
             </div>
           )}
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-stone-700">E-mail</label>
+            <label className="mb-1 block text-[13px] font-semibold text-perola-texto">E-mail</label>
             <input
               type="email"
               required
               readOnly={ehConvite}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm focus:border-oliva-500 focus:outline-none focus:ring-1 focus:ring-oliva-500 read-only:bg-stone-100"
+              className="w-full rounded-[10px] border border-[#DAD8CD] px-3.5 py-[11px] text-sm text-perola-texto focus:border-perola-verde focus:outline-none read-only:bg-perola-tag"
             />
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-stone-700">Senha</label>
+            <label className="mb-1 block text-[13px] font-semibold text-perola-texto">Senha</label>
             <input
               type="password"
               required
               minLength={6}
               value={senha}
               onChange={(e) => setSenha(e.target.value)}
-              className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm focus:border-oliva-500 focus:outline-none focus:ring-1 focus:ring-oliva-500"
+              className="w-full rounded-[10px] border border-[#DAD8CD] px-3.5 py-[11px] text-sm text-perola-texto focus:border-perola-verde focus:outline-none"
             />
           </div>
 
-          {erro && <p className="text-sm text-red-600">{erro}</p>}
-          {aviso && <p className="text-sm text-amber-600">{aviso}</p>}
+          {erro && <p className="text-sm text-perola-erro">{erro}</p>}
+          {aviso && <p className="text-sm text-perola-alerta">{aviso}</p>}
 
           <button
             type="submit"
             disabled={carregando}
-            className="w-full rounded-lg bg-oliva-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-oliva-700 disabled:opacity-60"
+            className="w-full rounded-lg bg-perola-lima px-4 py-2 text-sm font-semibold text-perola-texto transition-colors hover:brightness-95 disabled:opacity-60"
           >
             {carregando ? "Criando..." : "Criar conta"}
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-stone-500">
+        <p className="mt-6 text-center text-sm text-perola-texto-2">
           Já tem conta?{" "}
-          <Link href="/login" className="font-medium text-oliva-600 hover:underline">
+          <Link href="/login" className="font-medium text-perola-tag-pos-texto hover:underline">
             Entrar
           </Link>
         </p>
