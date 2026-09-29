@@ -367,6 +367,27 @@ export async function removerProduto(produtoId: string) {
   revalidatePath("/produtos");
 }
 
+export async function editarUsuario(
+  usuarioId: string,
+  _prevState: ActionState,
+  formData: FormData
+): Promise<ActionState> {
+  const perfil = await getPerfilAtual();
+  if (!perfil || perfil.papel !== "master") return { error: "Apenas o master edita usuários." };
+
+  const supabase = createClient();
+  const nome = String(formData.get("nome") ?? "").trim();
+
+  if (!nome) return { error: "Informe o nome." };
+
+  const { error } = await supabase.from("perfis").update({ nome }).eq("id", usuarioId);
+  if (error) return { error: error.message };
+
+  revalidatePath("/usuarios");
+  revalidatePath("/");
+  return { success: "Usuário atualizado com sucesso." };
+}
+
 export async function removerUsuario(usuarioId: string) {
   const perfil = await getPerfilAtual();
   if (!perfil || perfil.papel !== "master") throw new Error("Apenas o master remove usuários");

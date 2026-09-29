@@ -88,7 +88,7 @@ export default async function UsuariosPage() {
                   <td className="px-4 py-3 text-perola-texto-2">{p.email}</td>
                   <td className="px-4 py-3 text-perola-texto-2">{labelPapel(p.papel)}</td>
                   <td className="px-4 py-3">
-                    {p.id !== perfil.id && <UsuarioRowActions usuarioId={p.id} nome={p.nome} />}
+                    <UsuarioRowActions usuarioId={p.id} nome={p.nome} podeRemover={p.id !== perfil.id} />
                   </td>
                 </tr>
               ))}
