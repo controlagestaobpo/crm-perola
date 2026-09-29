@@ -37,7 +37,7 @@ function ProdutoCheckbox({
         className="peer sr-only"
       />
       <span
-        className={`block select-none rounded-[10px] border-2 border-perola-borda px-3 py-2 text-center text-xs font-medium text-perola-texto-2 transition-colors peer-checked:text-white ${corCategoria(produto.categoria)}`}
+        className={`block select-none rounded-[10px] border-2 border-perola-borda px-3 py-2 text-center text-xs font-medium text-perola-texto-2 peer-checked:text-white ${corCategoria(produto.categoria)}`}
       >
         {produto.nome}
       </span>
