@@ -1,8 +1,10 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useFormState } from "react-dom";
-import { criarAtendimento, editarAtendimento } from "@/lib/actions";
+import { useRouter } from "next/navigation";
+import { Trash2 } from "lucide-react";
+import { criarAtendimento, editarAtendimento, excluirAtendimento } from "@/lib/actions";
 import { ESTADO_INICIAL } from "@/lib/form-state";
 import { hojeISOBrasil } from "@/lib/metrics";
 import AtendimentoFormFields from "@/components/AtendimentoFormFields";
@@ -37,6 +39,23 @@ export default function AtendimentoForm({
 
   const [state, formAction] = useFormState(action, ESTADO_INICIAL);
   const formRef = useRef<HTMLFormElement>(null);
+  const router = useRouter();
+  const [excluindo, startExcluir] = useTransition();
+  const [erroExcluir, setErroExcluir] = useState<string | null>(null);
+
+  function handleExcluir() {
+    if (!atendimentoParaEditar) return;
+    if (!confirm("Excluir este atendimento? Essa ação não pode ser desfeita.")) return;
+    setErroExcluir(null);
+    startExcluir(async () => {
+      try {
+        await excluirAtendimento(atendimentoParaEditar.id);
+        router.push("/atendimentos");
+      } catch {
+        setErroExcluir("Não foi possível excluir o atendimento.");
+      }
+    });
+  }
 
   useEffect(() => {
     if (state.success) {
@@ -116,7 +135,19 @@ export default function AtendimentoForm({
           {atendimentoParaEditar ? "Salvar alterações" : "Salvar atendimento"}
         </SubmitButton>
         <FormMessage state={state} />
+        {atendimentoParaEditar && (
+          <button
+            type="button"
+            onClick={handleExcluir}
+            disabled={excluindo}
+            className="ml-auto flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-perola-erro hover:bg-perola-erro/10 disabled:opacity-50"
+          >
+            <Trash2 className="h-4 w-4" />
+            {excluindo ? "Excluindo..." : "Excluir atendimento"}
+          </button>
+        )}
       </div>
+      {erroExcluir && <p className="mt-2 text-right text-sm text-perola-erro">{erroExcluir}</p>}
     </form>
   );
 }
