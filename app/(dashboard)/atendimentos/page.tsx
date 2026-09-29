@@ -53,7 +53,7 @@ export default async function AtendimentosPage({
       supabase.from("clientes").select("*").order("nome"),
       supabase.from("produtos").select("*").eq("ativo", true).order("categoria"),
       perfil.papel === "master"
-        ? supabase.from("perfis").select("*").order("nome")
+        ? supabase.from("perfis").select("*").neq("papel", "master").order("nome")
         : Promise.resolve({ data: [perfil] }),
       consultaAtendimentos,
       getClientesComHistorico(supabase, meusClienteIds),

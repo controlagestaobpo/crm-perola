@@ -61,7 +61,7 @@ export default async function MetasPage({
   // campos pesados (observações, listas de produtos) que não fazem falta aqui.
   const [{ data: vendedoresData }, { data: metasData }, { data: atendimentosData }, { data: metasTendenciaData }, { data: atendimentosTendenciaData }] =
     await Promise.all([
-      supabase.from("perfis").select("*").order("nome"),
+      supabase.from("perfis").select("*").neq("papel", "master").order("nome"),
       supabase.from("metas").select("*").eq("ano", ano).eq("mes", mes),
       supabase.from("atendimentos").select("vendedor_id, resultado, valor, valor_frete, quantidade_sacos").gte("data", inicio).lte("data", fim),
       supabase.from("metas").select("ano, mes, meta_valor").gte("ano", periodoTendencia[0].ano),

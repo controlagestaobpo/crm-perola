@@ -30,7 +30,6 @@ export default function KanbanAtendimentoModal({
   resultado,
   vendedores,
   souMaster,
-  meuId,
   produtos,
   onFechar,
   onSalvo,
@@ -71,9 +70,13 @@ export default function KanbanAtendimentoModal({
               <label className="mb-1 block text-[13px] font-semibold text-perola-texto">Consultor</label>
               <select
                 name="vendedor_id"
-                defaultValue={meuId}
+                required
+                defaultValue=""
                 className="w-full rounded-[10px] border border-[#DAD8CD] px-3.5 py-[11px] text-sm text-perola-texto focus:border-perola-verde focus:outline-none"
               >
+                <option value="" disabled>
+                  -- Selecione --
+                </option>
                 {vendedores.map((v) => (
                   <option key={v.id} value={v.id}>
                     {v.nome}

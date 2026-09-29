@@ -58,7 +58,7 @@ export default async function RelatoriosPage({
   const [{ data: atendimentosData }, { data: vendedoresData }, { data: metasData }, clientesHistorico] =
     await Promise.all([
       supabase.from("atendimentos").select("*, clientes(nome)").gte("data", inicio).lte("data", fim),
-      supabase.from("perfis").select("*").order("nome"),
+      supabase.from("perfis").select("*").neq("papel", "master").order("nome"),
       supabase.from("metas").select("*").eq("ano", ano).eq("mes", mes),
       getClientesComHistorico(supabase),
     ]);
