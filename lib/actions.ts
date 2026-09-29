@@ -87,6 +87,22 @@ export async function editarCliente(
   return { success: "Cliente atualizado com sucesso." };
 }
 
+export async function excluirCliente(clienteId: string) {
+  const perfil = await getPerfilAtual();
+  if (!perfil || perfil.papel !== "master") throw new Error("Apenas o master exclui clientes");
+
+  const supabase = createClient();
+  // Os atendimentos do cliente são apagados junto (on delete cascade).
+  const { error } = await supabase.from("clientes").delete().eq("id", clienteId);
+  if (error) throw new Error(error.message);
+
+  revalidatePath("/");
+  revalidatePath("/clientes");
+  revalidatePath("/atendimentos");
+  revalidatePath("/insights");
+  revalidatePath("/agenda");
+}
+
 export async function criarAtendimento(_prevState: ActionState, formData: FormData): Promise<ActionState> {
   const perfil = await getPerfilAtual();
   if (!perfil) return { error: "Não autenticado" };

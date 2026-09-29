@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useFormState } from "react-dom";
-import { X } from "lucide-react";
-import { editarCliente } from "@/lib/actions";
+import { Trash2, X } from "lucide-react";
+import { editarCliente, excluirCliente } from "@/lib/actions";
 import { ESTADO_INICIAL } from "@/lib/form-state";
 import SubmitButton from "@/components/SubmitButton";
 import FormMessage from "@/components/FormMessage";
@@ -11,14 +11,34 @@ import type { Cliente } from "@/types/database";
 
 export default function ClienteEditModal({
   cliente,
+  podeExcluir = false,
   onFechar,
 }: {
   cliente: Cliente;
+  podeExcluir?: boolean;
   onFechar: () => void;
 }) {
   const action = editarCliente.bind(null, cliente.id);
   const [state, formAction] = useFormState(action, ESTADO_INICIAL);
   const jaFechou = useRef(false);
+  const [excluindo, startExcluir] = useTransition();
+  const [erroExcluir, setErroExcluir] = useState<string | null>(null);
+
+  function handleExcluir() {
+    const ok = confirm(
+      `Excluir o cliente "${cliente.nome}"?\n\nTodos os atendimentos dele também serão apagados. Essa ação não pode ser desfeita.`
+    );
+    if (!ok) return;
+    setErroExcluir(null);
+    startExcluir(async () => {
+      try {
+        await excluirCliente(cliente.id);
+        onFechar();
+      } catch {
+        setErroExcluir("Não foi possível excluir o cliente.");
+      }
+    });
+  }
 
   useEffect(() => {
     if (state.success && !jaFechou.current) {
@@ -66,7 +86,19 @@ export default function ClienteEditModal({
           <div className="flex items-center gap-3">
             <SubmitButton>Salvar alterações</SubmitButton>
             <FormMessage state={state} />
+            {podeExcluir && (
+              <button
+                type="button"
+                onClick={handleExcluir}
+                disabled={excluindo}
+                className="ml-auto flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-perola-erro hover:bg-perola-erro/10 disabled:opacity-50"
+              >
+                <Trash2 className="h-4 w-4" />
+                {excluindo ? "Excluindo..." : "Excluir cliente"}
+              </button>
+            )}
           </div>
+          {erroExcluir && <p className="text-right text-sm text-perola-erro">{erroExcluir}</p>}
         </form>
       </div>
     </div>

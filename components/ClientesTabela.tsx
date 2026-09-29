@@ -86,7 +86,13 @@ function ThOrdenavel({
   );
 }
 
-export default function ClientesTabela({ clientes }: { clientes: ClienteComHistorico[] }) {
+export default function ClientesTabela({
+  clientes,
+  podeExcluir = false,
+}: {
+  clientes: ClienteComHistorico[];
+  podeExcluir?: boolean;
+}) {
   const [editando, setEditando] = useState<ClienteComHistorico | null>(null);
   const [coluna, setColuna] = useState<Coluna | null>(null);
   const [ordem, setOrdem] = useState<Ordem>("asc");
@@ -160,7 +166,9 @@ export default function ClientesTabela({ clientes }: { clientes: ClienteComHisto
         </table>
       </div>
 
-      {editando && <ClienteEditModal cliente={editando} onFechar={() => setEditando(null)} />}
+      {editando && (
+        <ClienteEditModal cliente={editando} podeExcluir={podeExcluir} onFechar={() => setEditando(null)} />
+      )}
     </>
   );
 }

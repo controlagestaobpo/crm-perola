@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getPerfilAtual } from "@/lib/auth";
 import { getClientesComHistorico } from "@/lib/clientes";
 import { formatBRL } from "@/lib/metrics";
 import StatCard from "@/components/StatCard";
@@ -12,7 +13,7 @@ const MEDALHAS = ["🥇", "🥈", "🥉", "4️⃣", "5️⃣"];
 
 export default async function ClientesPage() {
   const supabase = createClient();
-  const clientes = await getClientesComHistorico(supabase);
+  const [clientes, perfil] = await Promise.all([getClientesComHistorico(supabase), getPerfilAtual()]);
 
   const totalClientes = clientes.length;
   const clientesAtivos = clientes.filter((c) => (c.diasSemComprar ?? 999) <= 30).length;
@@ -64,7 +65,7 @@ export default async function ClientesPage() {
         </div>
       )}
 
-      <ClientesTabela clientes={clientes} />
+      <ClientesTabela clientes={clientes} podeExcluir={perfil?.papel === "master"} />
     </div>
   );
 }
