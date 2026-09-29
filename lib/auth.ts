@@ -28,6 +28,13 @@ export const getPerfilAtual = cache(async (): Promise<Perfil | null> => {
   if (!user) return null;
 
   const { data: perfil } = await supabase.from("perfis").select("*").eq("id", user.id).single();
+  if (perfil) return perfil as Perfil;
 
-  return (perfil as Perfil) ?? null;
+  // Usuário removido e convidado de novo: o login dele continua existindo no
+  // Supabase Auth, então o gatilho de cadastro não roda outra vez. Aqui o
+  // convite pendente vira perfil no primeiro login.
+  await supabase.rpc("aceitar_convite_pendente");
+  const { data: perfilNovo } = await supabase.from("perfis").select("*").eq("id", user.id).single();
+
+  return (perfilNovo as Perfil) ?? null;
 });

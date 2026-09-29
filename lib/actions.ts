@@ -253,6 +253,23 @@ export async function criarConvite(_prevState: ActionState, formData: FormData):
 
   if (!nome || !email) return { error: "Preencha nome e e-mail." };
 
+  const { data: usuarioExistente } = await supabase
+    .from("perfis")
+    .select("id")
+    .eq("email", email)
+    .maybeSingle();
+
+  if (usuarioExistente) return { error: `"${email}" já é um usuário da equipe.` };
+
+  // Um convite já usado fica no banco mesmo depois que o usuário é removido,
+  // e bloquearia um convite novo para o mesmo e-mail (unique organizacao_id + email).
+  await supabase
+    .from("convites")
+    .delete()
+    .eq("organizacao_id", perfil.organizacao_id)
+    .eq("email", email)
+    .eq("usado", true);
+
   const { error } = await supabase.from("convites").insert({
     organizacao_id: perfil.organizacao_id,
     nome,
