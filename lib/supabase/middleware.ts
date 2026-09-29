@@ -1,7 +1,10 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const ROTAS_PUBLICAS = ["/login", "/cadastro"];
+const ROTAS_PUBLICAS = ["/login", "/cadastro", "/esqueci-senha"];
+// Abre com ou sem login: o link do e-mail de "esqueci minha senha" entra
+// deslogado e a sessão só é criada quando a página carrega.
+const ROTAS_ABERTAS = ["/redefinir-senha"];
 
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
@@ -28,6 +31,10 @@ export async function updateSession(request: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  if (ROTAS_ABERTAS.some((rota) => request.nextUrl.pathname.startsWith(rota))) {
+    return response;
+  }
 
   const rotaPublica = ROTAS_PUBLICAS.some((rota) => request.nextUrl.pathname.startsWith(rota));
 
