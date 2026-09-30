@@ -11,15 +11,23 @@ const QTD_INICIAL = 5;
 interface AtendimentosRecentesTabelaProps {
   atendimentos: (Atendimento & { clientes: { nome: string } | null })[];
   mensagemVazio: string;
+  // Quando informado, mostra a coluna de vendedor(a) (id -> nome).
+  nomesVendedores?: Record<string, string>;
+  mostrarObservacoes?: boolean;
+  qtdInicial?: number;
 }
 
 export default function AtendimentosRecentesTabela({
   atendimentos,
   mensagemVazio,
+  nomesVendedores,
+  mostrarObservacoes = false,
+  qtdInicial = QTD_INICIAL,
 }: AtendimentosRecentesTabelaProps) {
   const [expandido, setExpandido] = useState(false);
-  const visiveis = expandido ? atendimentos : atendimentos.slice(0, QTD_INICIAL);
-  const restantes = atendimentos.length - QTD_INICIAL;
+  const visiveis = expandido ? atendimentos : atendimentos.slice(0, qtdInicial);
+  const restantes = atendimentos.length - qtdInicial;
+  const totalColunas = 6 + (nomesVendedores ? 1 : 0) + (mostrarObservacoes ? 1 : 0);
 
   return (
     <div className="overflow-x-auto rounded-[14px] border border-perola-borda bg-white">
@@ -28,16 +36,18 @@ export default function AtendimentosRecentesTabela({
           <tr>
             <th className="px-4 py-3 font-medium">Data</th>
             <th className="px-4 py-3 font-medium">Cliente</th>
+            {nomesVendedores && <th className="px-4 py-3 font-medium">Vendedor(a)</th>}
             <th className="px-4 py-3 font-medium">Resultado</th>
             <th className="px-4 py-3 text-right font-medium">Valor</th>
             <th className="px-4 py-3 font-medium">Próx. contato</th>
+            {mostrarObservacoes && <th className="px-4 py-3 font-medium">Observações</th>}
             <th className="px-4 py-3 font-medium">Ações</th>
           </tr>
         </thead>
         <tbody>
           {visiveis.length === 0 ? (
             <tr>
-              <td colSpan={6} className="px-4 py-6 text-center text-perola-texto-2">
+              <td colSpan={totalColunas} className="px-4 py-6 text-center text-perola-texto-2">
                 {mensagemVazio}
               </td>
             </tr>
@@ -48,6 +58,9 @@ export default function AtendimentosRecentesTabela({
                   {new Date(a.data + "T00:00:00").toLocaleDateString("pt-BR")}
                 </td>
                 <td className="px-4 py-3 font-medium text-perola-texto">{a.clientes?.nome ?? "—"}</td>
+                {nomesVendedores && (
+                  <td className="px-4 py-3 text-perola-texto-2">{nomesVendedores[a.vendedor_id] ?? "—"}</td>
+                )}
                 <td className="px-4 py-3 text-perola-texto-2">{labelResultado(a.resultado)}</td>
                 <td className="px-4 py-3 text-right text-perola-texto-2">{a.valor ? formatBRL(Number(a.valor)) : "—"}</td>
                 <td className="px-4 py-3 text-perola-texto-2">
@@ -55,6 +68,11 @@ export default function AtendimentosRecentesTabela({
                     ? new Date(a.proximo_contato + "T00:00:00").toLocaleDateString("pt-BR")
                     : "—"}
                 </td>
+                {mostrarObservacoes && (
+                  <td className="min-w-[220px] px-4 py-3 text-perola-texto-2">
+                    {[a.motivo, a.observacoes].filter(Boolean).join(" · ") || "—"}
+                  </td>
+                )}
                 <td className="px-4 py-3">
                   <AtendimentoRowActions atendimentoId={a.id} />
                 </td>

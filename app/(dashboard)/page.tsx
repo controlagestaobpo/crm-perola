@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { DollarSign, ShoppingCart, Receipt, Truck } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getPerfilAtual } from "@/lib/auth";
@@ -8,6 +7,9 @@ import StatCard from "@/components/StatCard";
 import LineChartCard from "@/components/charts/LineChartCard";
 import ProdutoChartComTabela from "@/components/charts/ProdutoChartComTabela";
 import ProximasAtividades from "@/components/ProximasAtividades";
+import FiltroDashboard from "@/components/FiltroDashboard";
+import AtendimentosRecentesTabela from "@/components/AtendimentosRecentesTabela";
+import { agruparPorDia, formatarDataCurta, inicioDoMes, metasPorDia, normalizarPeriodo } from "@/lib/periodo";
 import {
   agoraBrasil,
   agruparPorDiaAcumulado,
@@ -24,6 +26,10 @@ import {
   somaValor,
 } from "@/lib/metrics";
 import type { Atendimento } from "@/types/database";
+
+type AtendimentoComCliente = Atendimento & { clientes: { nome: string } | null };
+
+const REGEX_UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export const dynamic = "force-dynamic";
 
@@ -46,9 +52,10 @@ function inicioFimMes(ano: number, mes: number) {
 export default async function DashboardPage({
   searchParams,
 }: {
-  searchParams: { periodo?: string };
+  searchParams: { periodo?: string; de?: string; ate?: string; vendedor?: string };
 }) {
-  const periodo = searchParams.periodo === "mes" ? "mes" : "hoje";
+  const periodo =
+    searchParams.periodo === "mes" ? "mes" : searchParams.periodo === "personalizado" ? "personalizado" : "hoje";
   const supabase = createClient();
   const perfil = await getPerfilAtual();
   if (!perfil) return null;
@@ -59,30 +66,81 @@ export default async function DashboardPage({
   const mes = hoje.getUTCMonth() + 1;
   const { inicio, fim } = inicioFimMes(ano, mes);
 
+  // Período personalizado: um dia (de = até) ou um intervalo, escolhido no
+  // filtro do topo. As métricas "de agora" (ritmo, projeção) não se aplicam.
+  const personalizado = periodo === "personalizado";
+  const { de, ate } = normalizarPeriodo(searchParams.de, searchParams.ate, hojeISO);
+  const umDia = de === ate;
+  const sufixoPeriodo = !personalizado
+    ? periodo === "hoje"
+      ? "hoje"
+      : "no mês"
+    : umDia
+      ? `em ${formatarDataCurta(de)}`
+      : `de ${formatarDataCurta(de)} a ${formatarDataCurta(ate)}`;
+
+  // Master e sócio enxergam os atendimentos de todo mundo e podem filtrar
+  // por vendedor(a); vendedor já só enxerga os próprios (RLS).
+  const podeFiltrarVendedor = perfil.papel === "master" || perfil.papel === "gerente";
+  const vendedorId =
+    podeFiltrarVendedor && searchParams.vendedor && REGEX_UUID.test(searchParams.vendedor) ? searchParams.vendedor : "";
+
+  // A meta de um dia passado depende do que já tinha sido feito no mês, então
+  // a busca começa no dia 1 do mês de "de".
+  const buscaInicio = personalizado ? inicioDoMes(de) : inicio;
+  const buscaFim = personalizado ? ate : fim;
+
+  let consultaAtendimentos = supabase
+    .from("atendimentos")
+    .select("*, clientes(nome)")
+    .gte("data", buscaInicio)
+    .lte("data", buscaFim)
+    .order("criado_em", { ascending: true });
+  let consultaMetas = personalizado
+    ? supabase.from("metas").select("*").gte("ano", Number(de.slice(0, 4))).lte("ano", Number(ate.slice(0, 4)))
+    : supabase.from("metas").select("*").eq("ano", ano).eq("mes", mes);
+  if (vendedorId) {
+    consultaAtendimentos = consultaAtendimentos.eq("vendedor_id", vendedorId);
+    consultaMetas = consultaMetas.eq("vendedor_id", vendedorId);
+  }
+
   // Vendedor só vê a carteira dos clientes que ele mesmo já atendeu — a
   // tabela de clientes é compartilhada pela organização. Master e gerente
   // continuam vendo todo mundo.
   const meusClienteIds =
     perfil.papel === "vendedor" ? await getClienteIdsDoVendedor(supabase, perfil.id) : undefined;
 
-  const [{ data: atendimentosData }, { data: metasData }, clientesHistorico, agendaItens] = await Promise.all([
-    supabase
-      .from("atendimentos")
-      .select("*")
-      .gte("data", inicio)
-      .lte("data", fim)
-      .order("criado_em", { ascending: true }),
-    supabase.from("metas").select("*").eq("ano", ano).eq("mes", mes),
-    getClientesComHistorico(supabase, meusClienteIds),
-    getAgenda(supabase),
-  ]);
+  const [{ data: atendimentosData }, { data: metasData }, clientesHistorico, agendaItens, { data: perfisData }] =
+    await Promise.all([
+      consultaAtendimentos,
+      consultaMetas,
+      getClientesComHistorico(supabase, meusClienteIds),
+      getAgenda(supabase),
+      podeFiltrarVendedor
+        ? supabase.from("perfis").select("id, nome, papel").order("nome")
+        : Promise.resolve({ data: [{ id: perfil.id, nome: perfil.nome, papel: perfil.papel }] }),
+    ]);
 
-  const atendimentosMes = (atendimentosData ?? []) as Atendimento[];
+  const atendimentosMes = (atendimentosData ?? []) as AtendimentoComCliente[];
   const metas = metasData ?? [];
+  const perfis = (perfisData ?? []) as { id: string; nome: string; papel: string }[];
+  const nomesVendedores = Object.fromEntries(perfis.map((p) => [p.id, p.nome]));
+  const vendedoresFiltro = podeFiltrarVendedor
+    ? perfis.filter((p) => p.papel !== "master").map((p) => ({ id: p.id, nome: p.nome }))
+    : null;
 
   // "hoje" mostra só os atendimentos de hoje, mas o cálculo de ritmo/meta diária
   // sempre usa o mês inteiro até agora, senão a meta dinâmica fica errada.
-  const atendimentos = periodo === "hoje" ? atendimentosMes.filter((a) => a.data === hojeISO) : atendimentosMes;
+  const atendimentos = personalizado
+    ? atendimentosMes.filter((a) => a.data >= de)
+    : periodo === "hoje"
+      ? atendimentosMes.filter((a) => a.data === hojeISO)
+      : atendimentosMes;
+
+  // Metas do período personalizado: soma da meta que valia em cada dia.
+  const metasDoPeriodo = personalizado ? metasPorDia(de, ate, metas, atendimentosMes) : [];
+  const somaMetasPeriodo = (campo: "valor" | "sacos" | "atendimentos") =>
+    metasDoPeriodo.reduce((soma, m) => soma + m[campo], 0);
 
   const metaMensalTotal = metas.reduce((soma, m) => soma + Number(m.meta_valor), 0);
   const diasUteisTotais = diasUteisNoMes(ano, mes);
@@ -107,7 +165,11 @@ export default async function DashboardPage({
   // Meta diária de atendimentos = o que falta pra bater a meta do mês, dividido
   // pelos dias úteis que ainda restam — não um valor fixo o mês inteiro.
   const metaAtendimentosDiaria = Math.max(metaProspeccoesTotal - atendimentosMesContam.length, 0) / diasUteisFaltando;
-  const metaAtendimentosPeriodo = periodo === "hoje" ? metaAtendimentosDiaria : metaProspeccoesTotal;
+  const metaAtendimentosPeriodo = personalizado
+    ? somaMetasPeriodo("atendimentos")
+    : periodo === "hoje"
+      ? metaAtendimentosDiaria
+      : metaProspeccoesTotal;
 
   const pipelineAbertos = atendimentos.filter((a) => a.resultado === "negociacao");
   const pipelineValor = somaValor(pipelineAbertos, "valor_negociacao");
@@ -128,14 +190,25 @@ export default async function DashboardPage({
   const sacosVendidos = somaValor(atendimentos, "quantidade_sacos");
   const sacosVendidosMes = somaValor(atendimentosMes, "quantidade_sacos");
   const metaSacosDiaria = Math.max(metaSacosTotal - sacosVendidosMes, 0) / diasUteisFaltando;
-  const metaSacosPeriodo = periodo === "hoje" ? metaSacosDiaria : metaSacosTotal;
+  const metaSacosPeriodo = personalizado
+    ? somaMetasPeriodo("sacos")
+    : periodo === "hoje"
+      ? metaSacosDiaria
+      : metaSacosTotal;
 
   const clientesAtendidos = new Set(atendimentosContam.map((a) => a.cliente_id)).size;
 
   // Barra de progresso do card principal: mostra o quanto do alvo do período já
   // foi vendido. Alvo = o que já vendeu + o que falta pra bater a meta (hoje),
   // ou a meta do mês inteira (visão mensal) — os mesmos números já calculados acima.
-  const metaAlvoPeriodo = periodo === "hoje" ? vendido + metaDiaria : metaMensalTotal;
+  const metaAlvoPeriodo = personalizado
+    ? somaMetasPeriodo("valor")
+    : periodo === "hoje"
+      ? vendido + metaDiaria
+      : metaMensalTotal;
+  const labelMeta = personalizado
+    ? `Meta ${umDia ? "do dia" : "do período"}: ${formatBRL(metaAlvoPeriodo)}`
+    : `Meta ${periodo === "hoje" ? "diária" : "do mês"}: ${formatBRL(periodo === "hoje" ? metaDiaria : metaMensalTotal)}`;
   const percentualMeta =
     metaAlvoPeriodo > 0 ? Math.min(100, (vendido / metaAlvoPeriodo) * 100) : vendido > 0 ? 100 : 0;
   const ritmoPercentual = ritmoEsperadoPercentual(hoje);
@@ -146,29 +219,19 @@ export default async function DashboardPage({
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-perola-texto">Dashboard</h1>
           <p className="text-sm text-perola-texto-2">Visão geral do seu CRM Pérola</p>
         </div>
-        <div className="flex rounded-lg border border-perola-borda bg-white p-1">
-          <Link
-            href="/?periodo=hoje"
-            className={`rounded-md px-4 py-1.5 text-sm font-medium ${
-              periodo === "hoje" ? "bg-perola-verde text-white" : "text-perola-texto-2"
-            }`}
-          >
-            Hoje
-          </Link>
-          <Link
-            href="/?periodo=mes"
-            className={`rounded-md px-4 py-1.5 text-sm font-medium ${
-              periodo === "mes" ? "bg-perola-verde text-white" : "text-perola-texto-2"
-            }`}
-          >
-            Este mês
-          </Link>
-        </div>
+        <FiltroDashboard
+          periodo={periodo}
+          de={de}
+          ate={ate}
+          hojeISO={hojeISO}
+          vendedorId={vendedorId}
+          vendedores={vendedoresFiltro}
+        />
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_320px]">
@@ -177,7 +240,7 @@ export default async function DashboardPage({
           <div className="flex flex-col gap-6 rounded-[14px] border border-perola-borda bg-white p-6 sm:flex-row sm:items-stretch">
             <div className="flex-1">
               <p className="text-sm font-medium text-perola-texto-2">
-                {periodo === "hoje" ? "Vendido hoje" : "Vendido no mês"}
+                Vendido {sufixoPeriodo}
               </p>
               <p className="mt-1 text-3xl font-semibold text-perola-texto">{formatBRL(vendido)}</p>
 
@@ -196,9 +259,7 @@ export default async function DashboardPage({
               </div>
 
               <div className="mt-2 flex flex-wrap items-center justify-between gap-1 text-xs text-perola-texto-2">
-                <span>
-                  Meta {periodo === "hoje" ? "diária" : "do mês"}: {formatBRL(periodo === "hoje" ? metaDiaria : metaMensalTotal)}
-                </span>
+                <span>{labelMeta}</span>
                 {periodo === "hoje" && (
                   <span>
                     Ritmo esperado às {horaAtualBrasil}h: {ritmoPercentual}%
@@ -243,7 +304,7 @@ export default async function DashboardPage({
             />
             <StatCard label="Ticket médio" value={formatBRL(ticketMedio)} icon={DollarSign} />
             <StatCard
-              label={periodo === "hoje" ? "Total de frete hoje" : "Total de frete no mês"}
+              label={`Total de frete ${sufixoPeriodo}`}
               value={formatBRL(freteTotal)}
               icon={Truck}
             />
@@ -252,7 +313,29 @@ export default async function DashboardPage({
             )}
           </div>
 
-          {periodo === "hoje" ? (
+          {personalizado ? (
+            umDia ? (
+              <LineChartCard
+                title={`Atendimentos por hora (${formatarDataCurta(de)}) vs meta do dia`}
+                data={agruparPorHora(atendimentosContam, metaAtendimentosPeriodo)}
+                xKey="hora"
+                lines={[
+                  { key: "meta", nome: "Ritmo necessário", cor: "#B8751A", tracejada: true },
+                  { key: "valor", nome: "Atendimentos", cor: "#7FB52A" },
+                ]}
+              />
+            ) : (
+              <LineChartCard
+                title="Atendimentos por dia vs meta do dia"
+                data={agruparPorDia(atendimentos, metasDoPeriodo)}
+                xKey="dia"
+                lines={[
+                  { key: "meta", nome: "Meta do dia", cor: "#B8751A", tracejada: true },
+                  { key: "valor", nome: "Atendimentos", cor: "#7FB52A" },
+                ]}
+              />
+            )
+          ) : periodo === "hoje" ? (
             <LineChartCard
               title="Evolução de atendimentos (hoje) vs ritmo da meta"
               data={agruparPorHora(atendimentosContam, metaAtendimentosDiaria)}
@@ -300,6 +383,21 @@ export default async function DashboardPage({
               </div>
             </div>
           </div>
+
+          {periodo !== "mes" && (
+            <div>
+              <h2 className="mb-3 text-base font-semibold text-perola-texto">
+                Atendimentos {sufixoPeriodo} ({atendimentos.length})
+              </h2>
+              <AtendimentosRecentesTabela
+                atendimentos={atendimentos}
+                mensagemVazio="Nenhum atendimento neste período."
+                nomesVendedores={nomesVendedores}
+                mostrarObservacoes
+                qtdInicial={10}
+              />
+            </div>
+          )}
 
           {clientesSemComprar.length > 0 && (
             <div>
