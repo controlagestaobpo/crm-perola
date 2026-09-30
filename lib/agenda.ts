@@ -16,24 +16,35 @@ export interface ItemAgenda {
 export async function getAgenda(supabase: SupabaseClient): Promise<ItemAgenda[]> {
   const { data } = await supabase
     .from("atendimentos")
-    .select("id, cliente_id, proximo_contato, resultado, observacoes, criado_em, clientes(nome, telefone, cidade), perfis(nome)")
-    .not("proximo_contato", "is", null)
+    .select("id, cliente_id, data, proximo_contato, resultado, observacoes, criado_em, clientes(nome, telefone, cidade), perfis(nome)")
+    .order("data", { ascending: false })
     .order("criado_em", { ascending: false });
 
   const linhas = (data ?? []) as unknown as {
     id: string;
     cliente_id: string;
-    proximo_contato: string;
+    proximo_contato: string | null;
     resultado: string;
     observacoes: string | null;
     clientes: { nome: string; telefone: string | null; cidade: string | null } | null;
     perfis: { nome: string } | null;
   }[];
 
+  // Quem manda na agenda é o atendimento MAIS RECENTE de cada cliente. Se ele
+  // não marcou próximo contato (ex.: o orçamento virou compra), o cliente sai
+  // da agenda, mesmo que um atendimento anterior tivesse uma data marcada.
+  // Exceção: "Não atendeu" sem data nova não resolve nada, então o retorno
+  // que já estava marcado continua valendo.
   const maisRecentePorCliente = new Map<string, ItemAgenda>();
+  const clientesResolvidos = new Set<string>();
 
   for (const linha of linhas) {
-    if (maisRecentePorCliente.has(linha.cliente_id)) continue;
+    if (clientesResolvidos.has(linha.cliente_id)) continue;
+    if (!linha.proximo_contato) {
+      if (linha.resultado !== "nao_atendeu") clientesResolvidos.add(linha.cliente_id);
+      continue;
+    }
+    clientesResolvidos.add(linha.cliente_id);
     maisRecentePorCliente.set(linha.cliente_id, {
       atendimentoId: linha.id,
       clienteId: linha.cliente_id,
