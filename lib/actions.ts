@@ -6,7 +6,7 @@ import { getPerfilAtual } from "@/lib/auth";
 import type { ActionState } from "@/lib/form-state";
 import { estagioParaResultado } from "@/lib/estagio";
 import { hojeISOBrasil } from "@/lib/metrics";
-import type { Estagio, Papel, ResultadoAtendimento } from "@/types/database";
+import type { Estagio, ResultadoAtendimento } from "@/types/database";
 
 function ehViolacaoDeDuplicidade(error: { code?: string } | null) {
   return error?.code === "23505";
@@ -258,51 +258,6 @@ export async function moverClienteKanban(clienteId: string, estagio: Estagio) {
   revalidatePath("/atendimentos");
 }
 
-export async function criarConvite(_prevState: ActionState, formData: FormData): Promise<ActionState> {
-  const perfil = await getPerfilAtual();
-  if (!perfil || perfil.papel !== "master") return { error: "Apenas o master pode convidar." };
-
-  const supabase = createClient();
-  const nome = String(formData.get("nome") ?? "").trim();
-  const email = String(formData.get("email") ?? "").trim().toLowerCase();
-  const papel = String(formData.get("papel") ?? "vendedor") as Papel;
-
-  if (!nome || !email) return { error: "Preencha nome e e-mail." };
-
-  const { data: usuarioExistente } = await supabase
-    .from("perfis")
-    .select("id")
-    .eq("email", email)
-    .maybeSingle();
-
-  if (usuarioExistente) return { error: `"${email}" já é um usuário da equipe.` };
-
-  // Um convite já usado fica no banco mesmo depois que o usuário é removido,
-  // e bloquearia um convite novo para o mesmo e-mail (unique organizacao_id + email).
-  await supabase
-    .from("convites")
-    .delete()
-    .eq("organizacao_id", perfil.organizacao_id)
-    .eq("email", email)
-    .eq("usado", true);
-
-  const { error } = await supabase.from("convites").insert({
-    organizacao_id: perfil.organizacao_id,
-    nome,
-    email,
-    papel,
-    criado_por: perfil.id,
-  });
-
-  if (error) {
-    if (ehViolacaoDeDuplicidade(error)) return { error: `Já existe um convite para "${email}".` };
-    return { error: error.message };
-  }
-
-  revalidatePath("/usuarios");
-  return { success: `Convite enviado para ${email}.` };
-}
-
 export async function removerConvite(conviteId: string) {
   const perfil = await getPerfilAtual();
   if (!perfil || perfil.papel !== "master") throw new Error("Apenas o master pode remover convites");
@@ -434,4 +389,57 @@ export async function removerUsuario(usuarioId: string) {
   if (error) throw new Error(error.message);
 
   revalidatePath("/usuarios");
+}
+
+// Criar usuário com senha e trocar senha precisam da chave de administrador
+// do Supabase, então quem faz é a Edge Function "gerenciar-usuario" (ela
+// confere de novo se quem pediu é master).
+async function chamarGerenciarUsuario(corpo: Record<string, string>): Promise<string | null> {
+  const supabase = createClient();
+  const { error } = await supabase.functions.invoke("gerenciar-usuario", { body: corpo });
+  if (!error) return null;
+
+  try {
+    const detalhe = await (error as { context?: Response }).context?.json();
+    if (detalhe?.erro) return String(detalhe.erro);
+  } catch {
+    // resposta sem corpo JSON; cai na mensagem genérica abaixo
+  }
+  return "Não foi possível concluir. Tente de novo.";
+}
+
+export async function criarUsuarioComSenha(_prevState: ActionState, formData: FormData): Promise<ActionState> {
+  const perfil = await getPerfilAtual();
+  if (!perfil || perfil.papel !== "master") return { error: "Apenas o master cria usuários." };
+
+  const nome = String(formData.get("nome") ?? "").trim();
+  const email = String(formData.get("email") ?? "").trim().toLowerCase();
+  const papel = String(formData.get("papel") ?? "vendedor");
+  const senha = String(formData.get("senha") ?? "");
+
+  if (!nome || !email) return { error: "Preencha nome e e-mail." };
+  if (senha.length < 6) return { error: "A senha precisa ter pelo menos 6 caracteres." };
+
+  const erro = await chamarGerenciarUsuario({ acao: "criar", nome, email, papel, senha });
+  if (erro) return { error: erro };
+
+  revalidatePath("/usuarios");
+  return { success: `Usuário criado. Login: ${email} · Senha: ${senha}` };
+}
+
+export async function redefinirSenhaUsuario(
+  usuarioId: string,
+  _prevState: ActionState,
+  formData: FormData
+): Promise<ActionState> {
+  const perfil = await getPerfilAtual();
+  if (!perfil || perfil.papel !== "master") return { error: "Apenas o master troca senhas." };
+
+  const senha = String(formData.get("senha") ?? "");
+  if (senha.length < 6) return { error: "A senha precisa ter pelo menos 6 caracteres." };
+
+  const erro = await chamarGerenciarUsuario({ acao: "redefinir_senha", usuarioId, senha });
+  if (erro) return { error: erro };
+
+  return { success: `Senha nova: ${senha}` };
 }

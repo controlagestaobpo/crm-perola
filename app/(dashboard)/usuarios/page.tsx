@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { getPerfilAtual, labelPapel } from "@/lib/auth";
 import { removerConvite } from "@/lib/actions";
-import ConviteForm from "@/components/ConviteForm";
+import NovoUsuarioForm from "@/components/NovoUsuarioForm";
 import UsuarioRowActions from "@/components/UsuarioRowActions";
 import type { Convite, Perfil } from "@/types/database";
 
@@ -32,10 +32,10 @@ export default async function UsuariosPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-semibold text-perola-texto">Usuários</h1>
-        <p className="text-sm text-perola-texto-2">Convide vendedoras e gerencie a equipe</p>
+        <p className="text-sm text-perola-texto-2">Crie logins para a equipe e gerencie as senhas</p>
       </div>
 
-      <ConviteForm />
+      <NovoUsuarioForm />
 
       {convites.length > 0 && (
         <div>
@@ -88,7 +88,7 @@ export default async function UsuariosPage() {
                   <td className="px-4 py-3 text-perola-texto-2">{p.email}</td>
                   <td className="px-4 py-3 text-perola-texto-2">{labelPapel(p.papel)}</td>
                   <td className="px-4 py-3">
-                    <UsuarioRowActions usuarioId={p.id} nome={p.nome} podeRemover={p.id !== perfil.id} />
+                    <UsuarioRowActions usuarioId={p.id} nome={p.nome} email={p.email} podeRemover={p.id !== perfil.id} />
                   </td>
                 </tr>
               ))}
