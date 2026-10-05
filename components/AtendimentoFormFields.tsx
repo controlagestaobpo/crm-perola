@@ -115,6 +115,7 @@ interface AtendimentoFormFieldsProps {
     valor?: number | null;
     quantidadeSacos?: number | null;
     valorFrete?: number | null;
+    valorNegociacao?: number | null;
   };
 }
 
@@ -215,15 +216,20 @@ export default function AtendimentoFormFields({ produtos, valoresIniciais }: Ate
         {mostrarValorNegociacao && (
           <div>
             <label className="mb-1 block text-[13px] font-semibold text-perola-texto">
-              📊 Valor do orçamento (R$)
+              📊 Valor TOTAL do orçamento (R$)
             </label>
             <input
               type="number"
               name="valor_negociacao"
+              defaultValue={valoresIniciais?.valorNegociacao ?? ""}
               step="0.01"
               min="0"
+              placeholder="Ex.: 60 sacos × R$ 85 = 5100"
               className="w-full rounded-[10px] border border-[#DAD8CD] px-3.5 py-[11px] text-sm text-perola-texto focus:border-perola-verde focus:outline-none"
             />
+            <p className="mt-1 text-xs text-perola-texto-2">
+              Some a proposta inteira (quantidade × preço). Não coloque o preço de um saco só.
+            </p>
           </div>
         )}
 

@@ -10,19 +10,21 @@ export interface ItemAgenda {
   proximoContato: string;
   ultimoResultado: string;
   observacoes: string | null;
+  vendedorId: string;
   vendedorNome: string;
 }
 
 export async function getAgenda(supabase: SupabaseClient): Promise<ItemAgenda[]> {
   const { data } = await supabase
     .from("atendimentos")
-    .select("id, cliente_id, data, proximo_contato, resultado, observacoes, criado_em, clientes(nome, telefone, cidade), perfis(nome)")
+    .select("id, cliente_id, vendedor_id, data, proximo_contato, resultado, observacoes, criado_em, clientes(nome, telefone, cidade), perfis(nome)")
     .order("data", { ascending: false })
     .order("criado_em", { ascending: false });
 
   const linhas = (data ?? []) as unknown as {
     id: string;
     cliente_id: string;
+    vendedor_id: string;
     proximo_contato: string | null;
     resultado: string;
     observacoes: string | null;
@@ -54,6 +56,7 @@ export async function getAgenda(supabase: SupabaseClient): Promise<ItemAgenda[]>
       proximoContato: linha.proximo_contato,
       ultimoResultado: linha.resultado,
       observacoes: linha.observacoes,
+      vendedorId: linha.vendedor_id,
       vendedorNome: linha.perfis?.nome ?? "—",
     });
   }

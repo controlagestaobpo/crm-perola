@@ -125,6 +125,7 @@ export default function AtendimentoForm({
                 valor: atendimentoParaEditar.valor,
                 quantidadeSacos: atendimentoParaEditar.quantidade_sacos,
                 valorFrete: atendimentoParaEditar.valor_frete,
+                valorNegociacao: atendimentoParaEditar.valor_negociacao,
               }
             : undefined
         }

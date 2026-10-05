@@ -10,6 +10,7 @@ import ProximasAtividades from "@/components/ProximasAtividades";
 import FiltroDashboard from "@/components/FiltroDashboard";
 import AtendimentosRecentesTabela from "@/components/AtendimentosRecentesTabela";
 import { agruparPorDia, formatarDataCurta, inicioDoMes, metasPorDia, normalizarPeriodo } from "@/lib/periodo";
+import { situacaoDosOrcamentos } from "@/lib/relatorio";
 import {
   agoraBrasil,
   agruparPorDiaAcumulado,
@@ -99,7 +100,15 @@ export default async function DashboardPage({
   let consultaMetas = personalizado
     ? supabase.from("metas").select("*").gte("ano", Number(de.slice(0, 4))).lte("ano", Number(ate.slice(0, 4)))
     : supabase.from("metas").select("*").eq("ano", ano).eq("mes", mes);
+  // Para saber se um orçamento do período já virou compra (ou foi perdido),
+  // é preciso olhar também o que foi lançado depois dele, até hoje.
+  let consultaDesfechos = supabase
+    .from("atendimentos")
+    .select("id, cliente_id, data, criado_em, resultado")
+    .in("resultado", ["negociacao", "compra", "sem_interesse"])
+    .gte("data", buscaInicio);
   if (vendedorId) {
+    consultaDesfechos = consultaDesfechos.eq("vendedor_id", vendedorId);
     consultaAtendimentos = consultaAtendimentos.eq("vendedor_id", vendedorId);
     consultaMetas = consultaMetas.eq("vendedor_id", vendedorId);
   }
@@ -110,8 +119,14 @@ export default async function DashboardPage({
   const meusClienteIds =
     perfil.papel === "vendedor" ? await getClienteIdsDoVendedor(supabase, perfil.id) : undefined;
 
-  const [{ data: atendimentosData }, { data: metasData }, clientesHistorico, agendaItens, { data: perfisData }] =
-    await Promise.all([
+  const [
+    { data: atendimentosData },
+    { data: metasData },
+    clientesHistorico,
+    agendaItens,
+    { data: perfisData },
+    { data: desfechosData },
+  ] = await Promise.all([
       consultaAtendimentos,
       consultaMetas,
       getClientesComHistorico(supabase, meusClienteIds),
@@ -119,6 +134,7 @@ export default async function DashboardPage({
       podeFiltrarVendedor
         ? supabase.from("perfis").select("id, nome, papel").order("nome")
         : Promise.resolve({ data: [{ id: perfil.id, nome: perfil.nome, papel: perfil.papel }] }),
+      consultaDesfechos,
     ]);
 
   const atendimentosMes = (atendimentosData ?? []) as AtendimentoComCliente[];
@@ -171,7 +187,12 @@ export default async function DashboardPage({
       ? metaAtendimentosDiaria
       : metaProspeccoesTotal;
 
-  const pipelineAbertos = atendimentos.filter((a) => a.resultado === "negociacao");
+  const situacaoOrcamentos = situacaoDosOrcamentos(
+    (desfechosData ?? []) as Pick<Atendimento, "id" | "cliente_id" | "data" | "criado_em" | "resultado">[]
+  );
+  const pipelineAbertos = atendimentos.filter(
+    (a) => a.resultado === "negociacao" && situacaoOrcamentos.get(a.id)?.status === "aberto"
+  );
   const pipelineValor = somaValor(pipelineAbertos, "valor_negociacao");
 
   const clientesSemComprar = clientesHistorico
