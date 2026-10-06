@@ -25,6 +25,7 @@ export async function getAgenda(supabase: SupabaseClient): Promise<ItemAgenda[]>
     id: string;
     cliente_id: string;
     vendedor_id: string;
+    data: string;
     proximo_contato: string | null;
     resultado: string;
     observacoes: string | null;
@@ -42,7 +43,14 @@ export async function getAgenda(supabase: SupabaseClient): Promise<ItemAgenda[]>
 
   for (const linha of linhas) {
     if (clientesResolvidos.has(linha.cliente_id)) continue;
-    if (!linha.proximo_contato) {
+    // Próximo contato no mesmo dia (ou antes) do próprio atendimento não é um
+    // retorno de verdade (ex.: venda lançada com a data de hoje no campo).
+    // Só "Não atendeu" pode marcar o mesmo dia ("tentar de novo à tarde").
+    const temRetorno = Boolean(
+      linha.proximo_contato &&
+        (linha.proximo_contato > linha.data || (linha.resultado === "nao_atendeu" && linha.proximo_contato === linha.data))
+    );
+    if (!temRetorno) {
       if (linha.resultado !== "nao_atendeu") clientesResolvidos.add(linha.cliente_id);
       continue;
     }
@@ -53,7 +61,7 @@ export async function getAgenda(supabase: SupabaseClient): Promise<ItemAgenda[]>
       clienteNome: linha.clientes?.nome ?? "—",
       clienteTelefone: linha.clientes?.telefone ?? null,
       clienteCidade: linha.clientes?.cidade ?? null,
-      proximoContato: linha.proximo_contato,
+      proximoContato: linha.proximo_contato as string,
       ultimoResultado: linha.resultado,
       observacoes: linha.observacoes,
       vendedorId: linha.vendedor_id,

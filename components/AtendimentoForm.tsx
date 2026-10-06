@@ -9,6 +9,7 @@ import { ESTADO_INICIAL } from "@/lib/form-state";
 import { hojeISOBrasil } from "@/lib/metrics";
 import AtendimentoFormFields from "@/components/AtendimentoFormFields";
 import ClienteSelect from "@/components/ClienteSelect";
+import CampoVendedor from "@/components/CampoVendedor";
 import SubmitButton from "@/components/SubmitButton";
 import FormMessage from "@/components/FormMessage";
 import type { Atendimento, Cliente, Perfil, Produto } from "@/types/database";
@@ -28,7 +29,7 @@ export default function AtendimentoForm({
   clientes,
   produtos,
   vendedores,
-  souMaster,
+  meuId,
   atendimentoParaEditar,
   clienteIdInicial,
   onSalvo,
@@ -81,26 +82,10 @@ export default function AtendimentoForm({
           />
         </div>
 
-        {souMaster && !atendimentoParaEditar && (
-          <div>
-            <label className="mb-1 block text-[13px] font-semibold text-perola-texto">Consultor</label>
-            <select
-              name="vendedor_id"
-              required
-              defaultValue=""
-              className="w-full rounded-[10px] border border-[#DAD8CD] px-3.5 py-[11px] text-sm text-perola-texto focus:border-perola-verde focus:outline-none"
-            >
-              <option value="" disabled>
-                -- Selecione --
-              </option>
-              {vendedores.map((v) => (
-                <option key={v.id} value={v.id}>
-                  {v.nome}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
+        <CampoVendedor
+          vendedores={vendedores}
+          defaultValue={atendimentoParaEditar?.vendedor_id ?? meuId}
+        />
 
         <div>
           <label className="mb-1 block text-[13px] font-semibold text-perola-texto">Cliente</label>

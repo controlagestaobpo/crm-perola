@@ -9,6 +9,7 @@ import { ESTADO_INICIAL } from "@/lib/form-state";
 import { hojeISOBrasil } from "@/lib/metrics";
 import AtendimentoFormFields from "@/components/AtendimentoFormFields";
 import SubmitButton from "@/components/SubmitButton";
+import CampoVendedor from "@/components/CampoVendedor";
 import FormMessage from "@/components/FormMessage";
 import type { Perfil } from "@/types/database";
 
@@ -29,7 +30,7 @@ export default function KanbanAtendimentoModal({
   clienteNome,
   resultado,
   vendedores,
-  souMaster,
+  meuId,
   produtos,
   onFechar,
   onSalvo,
@@ -65,26 +66,9 @@ export default function KanbanAtendimentoModal({
           <input type="hidden" name="cliente_id" value={clienteId} />
           <input type="hidden" name="data" value={hojeISOBrasil()} />
 
-          {souMaster && (
-            <div className="mb-4">
-              <label className="mb-1 block text-[13px] font-semibold text-perola-texto">Consultor</label>
-              <select
-                name="vendedor_id"
-                required
-                defaultValue=""
-                className="w-full rounded-[10px] border border-[#DAD8CD] px-3.5 py-[11px] text-sm text-perola-texto focus:border-perola-verde focus:outline-none"
-              >
-                <option value="" disabled>
-                  -- Selecione --
-                </option>
-                {vendedores.map((v) => (
-                  <option key={v.id} value={v.id}>
-                    {v.nome}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
+          <div className="mb-4">
+            <CampoVendedor vendedores={vendedores} defaultValue={meuId} />
+          </div>
 
           <AtendimentoFormFields produtos={produtos} valoresIniciais={{ resultado }} />
 

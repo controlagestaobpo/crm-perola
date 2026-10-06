@@ -16,9 +16,7 @@ export default async function EditarAtendimentoPage({ params }: { params: { id: 
       supabase.from("atendimentos").select("*").eq("id", params.id).single(),
       supabase.from("clientes").select("*").order("nome"),
       supabase.from("produtos").select("*").eq("ativo", true).order("categoria"),
-      perfil.papel === "master"
-        ? supabase.from("perfis").select("*").order("nome")
-        : Promise.resolve({ data: [perfil] }),
+      supabase.from("perfis").select("*").order("nome"),
     ]);
 
   if (!atendimento) notFound();
@@ -33,7 +31,10 @@ export default async function EditarAtendimentoPage({ params }: { params: { id: 
       <AtendimentoForm
         clientes={(clientesData ?? []) as Cliente[]}
         produtos={(produtosData ?? []) as Produto[]}
-        vendedores={(vendedoresData ?? []) as Perfil[]}
+        // O master fica fora da lista, a não ser que já seja o dono deste atendimento.
+        vendedores={((vendedoresData ?? []) as Perfil[]).filter(
+          (v) => v.papel !== "master" || v.id === atendimento.vendedor_id
+        )}
         souMaster={perfil.papel === "master"}
         meuId={perfil.id}
         atendimentoParaEditar={atendimento as Atendimento}

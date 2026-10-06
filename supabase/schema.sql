@@ -456,11 +456,12 @@ create policy "Ver atendimentos da organizacao" on atendimentos
     and (public.meu_papel() in ('master', 'gerente') or vendedor_id = auth.uid())
   );
 
+-- Qualquer pessoa da equipe pode lançar/editar no nome de outra vendedora da organização.
 drop policy if exists "Criar atendimentos" on atendimentos;
 create policy "Criar atendimentos" on atendimentos
   for insert with check (
     organizacao_id = public.minha_organizacao()
-    and (public.meu_papel() = 'master' or vendedor_id = auth.uid())
+    and vendedor_id in (select id from perfis where organizacao_id = public.minha_organizacao())
   );
 
 drop policy if exists "Editar atendimentos" on atendimentos;
@@ -468,6 +469,10 @@ create policy "Editar atendimentos" on atendimentos
   for update using (
     organizacao_id = public.minha_organizacao()
     and (public.meu_papel() = 'master' or vendedor_id = auth.uid())
+  )
+  with check (
+    organizacao_id = public.minha_organizacao()
+    and vendedor_id in (select id from perfis where organizacao_id = public.minha_organizacao())
   );
 
 drop policy if exists "Excluir atendimentos" on atendimentos;

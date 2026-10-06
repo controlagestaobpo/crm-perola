@@ -261,6 +261,13 @@ export default function AtendimentoFormFields({ produtos, valoresIniciais }: Ate
             defaultValue={valoresIniciais?.proximoContato ?? ""}
             className="w-full rounded-[10px] border border-[#DAD8CD] px-3.5 py-[11px] text-sm text-perola-texto focus:border-perola-verde focus:outline-none"
           />
+          <p className="mt-1 text-xs text-perola-texto-2">
+            {resultado === "compra"
+              ? "Venda fechada: deixe em branco, ou marque quando ligar para oferecer de novo."
+              : resultado === "nao_atendeu"
+                ? "Quando tentar de novo (pode ser hoje mesmo)."
+                : "Dia em que o cliente volta para a agenda. Precisa ser depois do dia do atendimento; em branco, não entra na agenda."}
+          </p>
         </div>
       </div>
 

@@ -12,6 +12,28 @@ function ehViolacaoDeDuplicidade(error: { code?: string } | null) {
   return error?.code === "23505";
 }
 
+// A vendedora escolhida no formulário precisa ser alguém da equipe (a
+// consulta em "perfis" já é limitada à organização de quem está logado).
+async function vendedorDaEquipe(supabase: ReturnType<typeof createClient>, vendedorId: string) {
+  if (!vendedorId) return false;
+  const { data } = await supabase.from("perfis").select("id").eq("id", vendedorId).maybeSingle();
+  return Boolean(data);
+}
+
+function formatarDataBR(iso: string) {
+  const [ano, mes, dia] = iso.split("-");
+  return `${dia}/${mes}/${ano}`;
+}
+
+// Próximo contato no mesmo dia (ou antes) do atendimento faz o cliente
+// aparecer como atrasado na agenda logo em seguida.
+// Só "Não atendeu" pode marcar o mesmo dia ("tentar de novo à tarde").
+function erroProximoContato(proximoContato: string | null, data: string, resultado: ResultadoAtendimento) {
+  if (!proximoContato || !data || proximoContato > data) return null;
+  if (resultado === "nao_atendeu" && proximoContato === data) return null;
+  return `O próximo contato precisa ser depois do dia do atendimento (${formatarDataBR(data)}). Se não precisa retornar, deixe em branco.`;
+}
+
 export async function criarCliente(_prevState: ActionState, formData: FormData): Promise<ActionState> {
   const perfil = await getPerfilAtual();
   if (!perfil) return { error: "Não autenticado" };
@@ -111,9 +133,7 @@ export async function criarAtendimento(_prevState: ActionState, formData: FormDa
 
   const clienteId = String(formData.get("cliente_id") ?? "");
   const resultado = String(formData.get("resultado") ?? "") as ResultadoAtendimento;
-  const vendedorId = perfil.papel === "master"
-    ? String(formData.get("vendedor_id") ?? perfil.id)
-    : perfil.id;
+  const vendedorId = String(formData.get("vendedor_id") ?? "").trim() || perfil.id;
 
   if (!clienteId || !resultado) return { error: "Preencha cliente e resultado." };
 
@@ -127,6 +147,10 @@ export async function criarAtendimento(_prevState: ActionState, formData: FormDa
   const proximoContato = String(formData.get("proximo_contato") ?? "").trim() || null;
   const observacoes = String(formData.get("observacoes") ?? "").trim() || null;
   const data = String(formData.get("data") ?? "").trim() || hojeISOBrasil();
+
+  const erroData = erroProximoContato(proximoContato, data, resultado);
+  if (erroData) return { error: erroData };
+  if (!(await vendedorDaEquipe(supabase, vendedorId))) return { error: "Escolha a vendedora." };
 
   const produtosOferecidos = formData.getAll("produtos_oferecidos").map(String);
   const produtosVendidos = formData.getAll("produtos_vendidos").map(String);
@@ -193,6 +217,12 @@ export async function editarAtendimento(
   const proximoContato = String(formData.get("proximo_contato") ?? "").trim() || null;
   const observacoes = String(formData.get("observacoes") ?? "").trim() || null;
   const data = String(formData.get("data") ?? "").trim();
+  const vendedorId = String(formData.get("vendedor_id") ?? "").trim();
+
+  const erroData = erroProximoContato(proximoContato, data, resultado);
+  if (erroData) return { error: erroData };
+  if (vendedorId && !(await vendedorDaEquipe(supabase, vendedorId))) return { error: "Escolha a vendedora." };
+
   const produtosOferecidos = formData.getAll("produtos_oferecidos").map(String);
   const produtosVendidos = formData.getAll("produtos_vendidos").map(String);
 
@@ -203,6 +233,7 @@ export async function editarAtendimento(
   const { error } = await supabase
     .from("atendimentos")
     .update({
+      ...(vendedorId ? { vendedor_id: vendedorId } : {}),
       cliente_id: clienteId,
       data,
       resultado,
