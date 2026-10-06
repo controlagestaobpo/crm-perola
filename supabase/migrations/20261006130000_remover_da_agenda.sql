@@ -3,4 +3,6 @@
 -- com próximo contato coloca o cliente de volta na agenda normalmente.
 alter table atendimentos add column if not exists agenda_removida_em timestamptz;
 alter table atendimentos add column if not exists agenda_removida_motivo text;
-alter table atendimentos add column if not exists agenda_removida_por uuid references perfis(id) on delete set null;
+-- Sem chave estrangeira de propósito: uma segunda ligação atendimentos -> perfis
+-- deixa ambíguas as consultas que buscam perfis(nome) e a agenda volta vazia.
+alter table atendimentos add column if not exists agenda_removida_por uuid;

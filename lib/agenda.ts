@@ -15,11 +15,14 @@ export interface ItemAgenda {
 }
 
 export async function getAgenda(supabase: SupabaseClient): Promise<ItemAgenda[]> {
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("atendimentos")
-    .select("id, cliente_id, vendedor_id, data, proximo_contato, agenda_removida_em, resultado, observacoes, criado_em, clientes(nome, telefone, cidade), perfis(nome)")
+    .select("id, cliente_id, vendedor_id, data, proximo_contato, agenda_removida_em, resultado, observacoes, criado_em, clientes(nome, telefone, cidade), perfis!atendimentos_vendedor_id_fkey(nome)")
     .order("data", { ascending: false })
     .order("criado_em", { ascending: false });
+
+  // Sem isso, um erro na consulta deixa a agenda vazia sem nenhum aviso.
+  if (error) console.error("Erro ao carregar a agenda:", error.message);
 
   const linhas = (data ?? []) as unknown as {
     id: string;
