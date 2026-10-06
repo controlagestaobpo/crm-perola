@@ -72,6 +72,9 @@ export interface Atendimento {
   produtos_vendidos: string[];
   proximo_contato: string | null;
   observacoes: string | null;
+  agenda_removida_em?: string | null;
+  agenda_removida_motivo?: string | null;
+  agenda_removida_por?: string | null;
   criado_em: string;
 }
 

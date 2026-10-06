@@ -474,3 +474,35 @@ export async function redefinirSenhaUsuario(
 
   return { success: `Senha nova: ${senha}` };
 }
+
+// Tira o cliente da agenda sem registrar um atendimento novo. Fica marcado no
+// atendimento que gerou o retorno (com motivo, quem e quando); um atendimento
+// novo com próximo contato coloca o cliente de volta na agenda.
+export async function removerDaAgenda(atendimentoId: string, motivo: string): Promise<ActionState> {
+  const perfil = await getPerfilAtual();
+  if (!perfil) return { error: "Não autenticado" };
+
+  const motivoLimpo = motivo.trim();
+  if (!motivoLimpo) return { error: "Informe o motivo." };
+
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("atendimentos")
+    .update({
+      agenda_removida_em: new Date().toISOString(),
+      agenda_removida_motivo: motivoLimpo,
+      agenda_removida_por: perfil.id,
+    })
+    .eq("id", atendimentoId)
+    .select("id");
+
+  if (error) return { error: error.message };
+  if (!data || data.length === 0) {
+    return { error: "Só quem lançou o atendimento (ou o master) pode tirar o cliente da agenda." };
+  }
+
+  revalidatePath("/agenda");
+  revalidatePath("/");
+  revalidatePath("/relatorios");
+  return { success: "Removido da agenda." };
+}

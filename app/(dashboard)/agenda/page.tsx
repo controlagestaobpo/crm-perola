@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Phone, MapPin, User } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getAgenda, type ItemAgenda } from "@/lib/agenda";
+import RemoverDaAgendaBotao from "@/components/RemoverDaAgendaBotao";
 import { diasEntreHojeE, labelResultado } from "@/lib/metrics";
 import type { ResultadoAtendimento } from "@/types/database";
 
@@ -131,6 +132,7 @@ export default async function AgendaPage() {
                       >
                         Registrar atendimento
                       </Link>
+                      <RemoverDaAgendaBotao atendimentoId={item.atendimentoId} clienteNome={item.clienteNome} />
                     </div>
                   </div>
                 ))}

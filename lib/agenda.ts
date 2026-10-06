@@ -17,7 +17,7 @@ export interface ItemAgenda {
 export async function getAgenda(supabase: SupabaseClient): Promise<ItemAgenda[]> {
   const { data } = await supabase
     .from("atendimentos")
-    .select("id, cliente_id, vendedor_id, data, proximo_contato, resultado, observacoes, criado_em, clientes(nome, telefone, cidade), perfis(nome)")
+    .select("id, cliente_id, vendedor_id, data, proximo_contato, agenda_removida_em, resultado, observacoes, criado_em, clientes(nome, telefone, cidade), perfis(nome)")
     .order("data", { ascending: false })
     .order("criado_em", { ascending: false });
 
@@ -26,6 +26,7 @@ export async function getAgenda(supabase: SupabaseClient): Promise<ItemAgenda[]>
     cliente_id: string;
     vendedor_id: string;
     data: string;
+    agenda_removida_em: string | null;
     proximo_contato: string | null;
     resultado: string;
     observacoes: string | null;
@@ -55,6 +56,8 @@ export async function getAgenda(supabase: SupabaseClient): Promise<ItemAgenda[]>
       continue;
     }
     clientesResolvidos.add(linha.cliente_id);
+    // Tirado da agenda à mão (botão "Remover da agenda", com motivo).
+    if (linha.agenda_removida_em) continue;
     maisRecentePorCliente.set(linha.cliente_id, {
       atendimentoId: linha.id,
       clienteId: linha.cliente_id,
