@@ -318,6 +318,35 @@ export async function salvarMeta(_prevState: ActionState, formData: FormData): P
 
   if (!vendedorId || !ano || !mes) return { error: "Preencha vendedor, ano e mês." };
 
+  const numeroOuNulo = (campo: string) => {
+    const bruto = String(formData.get(campo) ?? "").trim();
+    return bruto === "" ? null : Number(bruto);
+  };
+
+  // Degraus do bônus de vendas: só entram as linhas com % e valor preenchidos.
+  const faixas: { percentual: number; valor: number }[] = [];
+  for (let i = 0; i < 3; i++) {
+    const percentual = numeroOuNulo(`faixa_percentual_${i}`);
+    const valorFaixa = numeroOuNulo(`faixa_valor_${i}`);
+    if (percentual === null && valorFaixa === null) continue;
+    if (!percentual || !valorFaixa || percentual <= 0 || valorFaixa <= 0) {
+      return { error: `Degrau ${i + 1} do bônus: preencha o % da meta e o valor, ou deixe os dois em branco.` };
+    }
+    faixas.push({ percentual, valor: valorFaixa });
+  }
+  faixas.sort((a, b) => a.percentual - b.percentual);
+
+  const bonusAtendimentosMeta = numeroOuNulo("bonus_atendimentos_meta") ?? 0;
+  const bonusAtendimentosValor = numeroOuNulo("bonus_atendimentos_valor") ?? 0;
+  const bonusClientesMeta = numeroOuNulo("bonus_clientes_meta") ?? 0;
+  const bonusClientesValor = numeroOuNulo("bonus_clientes_valor") ?? 0;
+  if ((bonusAtendimentosValor > 0) !== (bonusAtendimentosMeta > 0)) {
+    return { error: "Bônus de atendimentos: preencha a quantidade e o valor, ou deixe os dois em branco." };
+  }
+  if ((bonusClientesValor > 0) !== (bonusClientesMeta > 0)) {
+    return { error: "Bônus de clientes diferentes: preencha a quantidade e o valor, ou deixe os dois em branco." };
+  }
+
   const { error } = await supabase.from("metas").upsert(
     {
       organizacao_id: perfil.organizacao_id,
@@ -329,6 +358,12 @@ export async function salvarMeta(_prevState: ActionState, formData: FormData): P
       meta_conversao: metaConversao,
       meta_sacos: metaSacos,
       comissao_percentual: comissaoPercentual,
+      bonus_vendas_faixas: faixas,
+      bonus_atendimentos_meta: bonusAtendimentosMeta,
+      bonus_atendimentos_valor: bonusAtendimentosValor,
+      bonus_clientes_meta: bonusClientesMeta,
+      bonus_clientes_valor: bonusClientesValor,
+      vendas_faturadas: numeroOuNulo("vendas_faturadas"),
     },
     { onConflict: "vendedor_id,ano,mes" }
   );

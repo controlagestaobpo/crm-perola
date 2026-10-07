@@ -7,6 +7,8 @@ import StatCard from "@/components/StatCard";
 import LineChartCard from "@/components/charts/LineChartCard";
 import ProdutoChartComTabela from "@/components/charts/ProdutoChartComTabela";
 import ProximasAtividades from "@/components/ProximasAtividades";
+import BonusResumo from "@/components/BonusResumo";
+import { calcularBonus, configDoBonus } from "@/lib/bonus";
 import FiltroDashboard from "@/components/FiltroDashboard";
 import AtendimentosRecentesTabela from "@/components/AtendimentosRecentesTabela";
 import { agruparPorDia, formatarDataCurta, inicioDoMes, metasPorDia, normalizarPeriodo } from "@/lib/periodo";
@@ -26,7 +28,7 @@ import {
   ritmoEsperadoPercentual,
   somaValor,
 } from "@/lib/metrics";
-import type { Atendimento } from "@/types/database";
+import type { Atendimento, Meta } from "@/types/database";
 
 type AtendimentoComCliente = Atendimento & { clientes: { nome: string } | null };
 
@@ -237,6 +239,20 @@ export default async function DashboardPage({
 
   const resultados = agruparResultados(atendimentos);
   const totalResultados = resultados.reduce((soma, r) => soma + r.quantidade, 0);
+
+  // Bônus da vendedora logada (mês corrente; não aparece no período personalizado).
+  const configBonus =
+    perfil.papel === "vendedor" && !personalizado
+      ? configDoBonus((metas as Meta[]).find((m) => m.vendedor_id === perfil.id))
+      : null;
+  const hojeEhUtil = ![0, 6].includes(new Date(Date.UTC(ano, mes - 1, hoje.getUTCDate())).getUTCDay());
+  const bonus = configBonus
+    ? calcularBonus(
+        configBonus,
+        atendimentosMes.filter((a) => a.vendedor_id === perfil.id),
+        diasUteisFaltando + (hojeEhUtil ? 1 : 0)
+      )
+    : null;
 
   return (
     <div className="space-y-6">
@@ -460,6 +476,7 @@ export default async function DashboardPage({
         </div>
 
         <div className="space-y-6">
+          {bonus && <BonusResumo resultado={bonus} />}
           <ProximasAtividades itens={agendaItens} />
 
           <div className="rounded-[14px] border border-perola-borda bg-white p-5">

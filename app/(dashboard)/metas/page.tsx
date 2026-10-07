@@ -5,6 +5,8 @@ import StatCard from "@/components/StatCard";
 import BarChartCard from "@/components/charts/BarChartCard";
 import LineChartCard from "@/components/charts/LineChartCard";
 import MetaForm from "@/components/MetaForm";
+import BonusPainel from "@/components/BonusPainel";
+import { calcularBonus, configDoBonus } from "@/lib/bonus";
 import { Target, TrendingUp, AlertCircle, Percent, Wallet, Gauge, Package } from "lucide-react";
 import type { Atendimento, Meta, Perfil } from "@/types/database";
 
@@ -59,18 +61,29 @@ export default async function MetasPage({
 
   // Só busca as colunas que essa página realmente usa — os atendimentos têm
   // campos pesados (observações, listas de produtos) que não fazem falta aqui.
-  const [{ data: vendedoresData }, { data: metasData }, { data: atendimentosData }, { data: metasTendenciaData }, { data: atendimentosTendenciaData }] =
-    await Promise.all([
+  const [
+    { data: vendedoresData },
+    { data: metasData },
+    { data: atendimentosData },
+    { data: metasTendenciaData },
+    { data: atendimentosTendenciaData },
+    { data: metasAnterioresData },
+  ] = await Promise.all([
       supabase.from("perfis").select("*").neq("papel", "master").order("nome"),
       supabase.from("metas").select("*").eq("ano", ano).eq("mes", mes),
-      supabase.from("atendimentos").select("vendedor_id, resultado, valor, valor_frete, quantidade_sacos").gte("data", inicio).lte("data", fim),
+      supabase.from("atendimentos").select("vendedor_id, cliente_id, resultado, valor, valor_frete, quantidade_sacos").gte("data", inicio).lte("data", fim),
       supabase.from("metas").select("ano, mes, meta_valor").gte("ano", periodoTendencia[0].ano),
       supabase.from("atendimentos").select("data, resultado, valor").gte("data", inicioTendencia).lte("data", fim),
+      // Metas de meses anteriores: se o mês ainda não tem regra de bônus, vale a última definida.
+      supabase.from("metas").select("*").lt("ano", ano + 1).order("ano", { ascending: false }).order("mes", { ascending: false }),
     ]);
 
   const vendedores = (vendedoresData ?? []) as Perfil[];
   const metas = (metasData ?? []) as Meta[];
-  const atendimentos = (atendimentosData ?? []) as Pick<Atendimento, "vendedor_id" | "resultado" | "valor" | "valor_frete" | "quantidade_sacos">[];
+  const atendimentos = (atendimentosData ?? []) as Pick<
+    Atendimento,
+    "vendedor_id" | "cliente_id" | "resultado" | "valor" | "valor_frete" | "quantidade_sacos"
+  >[];
   const metasTendencia = (metasTendenciaData ?? []) as Pick<Meta, "ano" | "mes" | "meta_valor">[];
   const atendimentosTendencia = (atendimentosTendenciaData ?? []) as Pick<Atendimento, "data" | "resultado" | "valor">[];
 
@@ -151,6 +164,44 @@ export default async function MetasPage({
     return { mes: MESES_ABREV[m - 1], meta: metaMes, realizado: realizadoMes };
   });
 
+  // ---------- Bônus do mês ----------
+  const hojeEhUtil = ![0, 6].includes(new Date(Date.UTC(hoje.getUTCFullYear(), hoje.getUTCMonth(), hoje.getUTCDate())).getUTCDay());
+  const mesFuturo = Date.UTC(ano, mes - 1, 1) > hoje.getTime();
+  const mesAberto = ehMesAtual || mesFuturo;
+  // Dias úteis que ainda dá para trabalhar, contando hoje.
+  const diasUteisParaTrabalhar = ehMesAtual
+    ? diasUteisTotais - diasUteisDecorridos + (hojeEhUtil ? 1 : 0)
+    : mesFuturo
+      ? diasUteisTotais
+      : 0;
+  const metasAnteriores = ((metasAnterioresData ?? []) as Meta[]).filter(
+    (m) => m.ano < ano || (m.ano === ano && m.mes < mes)
+  );
+  const paineisBonus = vendedores
+    .filter((v) => perfil.papel !== "vendedor" || v.id === perfil.id)
+    .map((v) => {
+      const metaDoMes = metas.find((m) => m.vendedor_id === v.id);
+      let config = configDoBonus(metaDoMes);
+      let herdadoDe: Meta | undefined;
+      if (!config && !metaDoMes?.bonus_vendas_faixas?.length) {
+        herdadoDe = metasAnteriores.find((m) => m.vendedor_id === v.id && configDoBonus(m));
+        config = configDoBonus(herdadoDe);
+        // Faturado é do mês da regra antiga, não vale para este mês.
+        if (config) config = { ...config, vendasFaturadas: null };
+      }
+      if (!config) return null;
+      return {
+        vendedor: v,
+        herdadoDe,
+        resultado: calcularBonus(
+          config,
+          atendimentos.filter((a) => a.vendedor_id === v.id),
+          diasUteisParaTrabalhar
+        ),
+      };
+    })
+    .filter((p): p is NonNullable<typeof p> => p !== null);
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -176,6 +227,23 @@ export default async function MetasPage({
           </button>
         </form>
       </div>
+
+      {paineisBonus.map((p) => (
+        <div key={p.vendedor.id}>
+          <BonusPainel
+            nome={p.vendedor.nome}
+            rotuloMes={`${MESES[mes - 1].toLowerCase()}/${ano}`}
+            resultado={p.resultado}
+            diasUteisRestantes={diasUteisParaTrabalhar}
+            mesAberto={mesAberto}
+          />
+          {p.herdadoDe && (
+            <p className="mt-1 text-xs text-perola-texto-2">
+              Regras de {MESES[p.herdadoDe.mes - 1].toLowerCase()}/{p.herdadoDe.ano}: ainda não foram definidas para este mês.
+            </p>
+          )}
+        </div>
+      ))}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <StatCard label="Meta do período" value={formatBRL(metaTotal)} icon={Target} />
@@ -286,7 +354,7 @@ export default async function MetasPage({
       {(perfil.papel === "master" || perfil.papel === "gerente") && (
         <div className="rounded-[14px] border border-perola-borda bg-white p-6">
           <h2 className="mb-4 text-base font-semibold text-perola-texto">Configurar meta</h2>
-          <MetaForm vendedores={vendedores} ano={ano} mes={mes} />
+          <MetaForm vendedores={vendedores} ano={ano} mes={mes} metas={metas} />
         </div>
       )}
     </div>

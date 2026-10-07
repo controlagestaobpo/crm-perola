@@ -89,5 +89,11 @@ export interface Meta {
   meta_conversao: number;
   meta_sacos: number;
   comissao_percentual: number;
+  bonus_vendas_faixas?: { percentual: number; valor: number }[] | null;
+  bonus_atendimentos_meta?: number | null;
+  bonus_atendimentos_valor?: number | null;
+  bonus_clientes_meta?: number | null;
+  bonus_clientes_valor?: number | null;
+  vendas_faturadas?: number | null;
   criado_em: string;
 }
