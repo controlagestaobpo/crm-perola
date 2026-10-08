@@ -45,7 +45,7 @@ export default function RemoverDaAgendaBotao({
       </button>
 
       {aberto && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+        <div className="janela-fundo fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
           <form onSubmit={confirmar} className="w-full max-w-md rounded-[14px] bg-white p-6">
             <div className="mb-4 flex items-start justify-between gap-3">
               <div>

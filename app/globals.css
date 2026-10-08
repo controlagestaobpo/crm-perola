@@ -25,3 +25,43 @@ textarea {
     text-wrap: balance;
   }
 }
+
+/* ---------- Movimento (leve, só onde ajuda) ---------- */
+:root {
+  --ease-out-forte: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Botões "afundam" um pouco ao clicar: o sistema mostra que ouviu o clique. */
+  button:not(:disabled),
+  .pressionavel {
+    transition-property: transform, color, background-color, border-color, opacity, filter;
+    transition-duration: 150ms;
+    transition-timing-function: var(--ease-out-forte);
+  }
+  button:not(:disabled):active,
+  .pressionavel:active {
+    transform: scale(0.97);
+  }
+
+  /* Janelas: fundo escurece e a caixa entra suave. Sem animação ao fechar. */
+  .janela-fundo {
+    animation: janela-fundo-entra 150ms ease-out;
+  }
+  .janela-fundo > * {
+    animation: janela-entra 200ms var(--ease-out-forte);
+  }
+}
+
+@keyframes janela-fundo-entra {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes janela-entra {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}

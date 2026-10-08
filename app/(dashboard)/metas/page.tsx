@@ -71,7 +71,7 @@ export default async function MetasPage({
   ] = await Promise.all([
       supabase.from("perfis").select("*").neq("papel", "master").order("nome"),
       supabase.from("metas").select("*").eq("ano", ano).eq("mes", mes),
-      supabase.from("atendimentos").select("vendedor_id, cliente_id, resultado, valor, valor_frete, quantidade_sacos").gte("data", inicio).lte("data", fim),
+      supabase.from("atendimentos").select("vendedor_id, cliente_id, resultado, valor, valor_frete, quantidade_sacos, clientes(documento)").gte("data", inicio).lte("data", fim),
       supabase.from("metas").select("ano, mes, meta_valor").gte("ano", periodoTendencia[0].ano),
       supabase.from("atendimentos").select("data, resultado, valor").gte("data", inicioTendencia).lte("data", fim),
       // Metas de meses anteriores: se o mês ainda não tem regra de bônus, vale a última definida.
@@ -80,10 +80,10 @@ export default async function MetasPage({
 
   const vendedores = (vendedoresData ?? []) as Perfil[];
   const metas = (metasData ?? []) as Meta[];
-  const atendimentos = (atendimentosData ?? []) as Pick<
+  const atendimentos = (atendimentosData ?? []) as unknown as (Pick<
     Atendimento,
     "vendedor_id" | "cliente_id" | "resultado" | "valor" | "valor_frete" | "quantidade_sacos"
-  >[];
+  > & { clientes: { documento: string | null } | null })[];
   const metasTendencia = (metasTendenciaData ?? []) as Pick<Meta, "ano" | "mes" | "meta_valor">[];
   const atendimentosTendencia = (atendimentosTendenciaData ?? []) as Pick<Atendimento, "data" | "resultado" | "valor">[];
 

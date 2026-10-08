@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { diferencaDias, somarDias } from "@/lib/periodo";
+import { useNavegacaoComCarregamento } from "@/components/CarregandoPagina";
 
 type Periodo = "hoje" | "mes" | "personalizado";
 
@@ -21,6 +22,7 @@ const CLASSE_CAMPO =
 
 export default function FiltroDashboard({ periodo, de, ate, hojeISO, vendedorId, vendedores }: FiltroDashboardProps) {
   const router = useRouter();
+  const comCarregamento = useNavegacaoComCarregamento();
 
   function navegar(novo: { periodo?: Periodo; de?: string; ate?: string; vendedor?: string }) {
     const p = novo.periodo ?? periodo;
@@ -31,7 +33,7 @@ export default function FiltroDashboard({ periodo, de, ate, hojeISO, vendedorId,
     }
     const vendedor = novo.vendedor ?? vendedorId;
     if (vendedor) params.set("vendedor", vendedor);
-    router.push(`/?${params.toString()}`);
+    comCarregamento(() => router.push(`/?${params.toString()}`));
   }
 
   function mudarDe(valor: string) {

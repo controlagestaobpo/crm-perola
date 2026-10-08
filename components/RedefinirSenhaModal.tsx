@@ -26,7 +26,7 @@ export default function RedefinirSenhaModal({
   const formRef = useRef<HTMLFormElement>(null);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+    <div className="janela-fundo fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
       <div className="w-full max-w-md rounded-[14px] bg-white p-6">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-perola-texto">Nova senha para {nome}</h2>

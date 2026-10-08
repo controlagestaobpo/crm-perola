@@ -128,7 +128,7 @@ export default async function AgendaPage() {
                       </span>
                       <Link
                         href={`/atendimentos?cliente=${item.clienteId}`}
-                        className="whitespace-nowrap rounded-lg bg-perola-lima px-3 py-1.5 text-xs font-semibold text-perola-texto hover:brightness-95"
+                        className="pressionavel whitespace-nowrap rounded-lg bg-perola-lima px-3 py-1.5 text-xs font-semibold text-perola-texto hover:brightness-95"
                       >
                         Registrar atendimento
                       </Link>

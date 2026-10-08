@@ -8,6 +8,7 @@ import { ESTADO_INICIAL } from "@/lib/form-state";
 import SubmitButton from "@/components/SubmitButton";
 import FormMessage from "@/components/FormMessage";
 import type { Cliente } from "@/types/database";
+import { formatarDocumento } from "@/lib/documento";
 
 export default function ClienteEditModal({
   cliente,
@@ -48,7 +49,7 @@ export default function ClienteEditModal({
   }, [state.success, onFechar]);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+    <div className="janela-fundo fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
       <div className="w-full max-w-md rounded-[14px] bg-white p-6">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-perola-texto">Editar cliente</h2>
@@ -80,6 +81,18 @@ export default function ClienteEditModal({
             <input
               name="cidade"
               defaultValue={cliente.cidade ?? ""}
+              className="w-full rounded-[10px] border border-[#DAD8CD] px-3.5 py-[11px] text-sm text-perola-texto focus:border-perola-verde focus:outline-none"
+            />
+          </div>
+          <div>
+            <label className="mb-1 block text-[13px] font-semibold text-perola-texto">
+              CPF/CNPJ <span className="font-normal text-perola-texto-2">(opcional)</span>
+            </label>
+            <input
+              name="documento"
+              inputMode="numeric"
+              placeholder="Só números"
+              defaultValue={formatarDocumento(cliente.documento)}
               className="w-full rounded-[10px] border border-[#DAD8CD] px-3.5 py-[11px] text-sm text-perola-texto focus:border-perola-verde focus:outline-none"
             />
           </div>

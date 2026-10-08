@@ -6,6 +6,7 @@ import { getPerfilAtual } from "@/lib/auth";
 import type { ActionState } from "@/lib/form-state";
 import { estagioParaResultado } from "@/lib/estagio";
 import { hojeISOBrasil } from "@/lib/metrics";
+import { documentoValido, formatarDocumento, limparDocumento } from "@/lib/documento";
 import type { Estagio, ResultadoAtendimento } from "@/types/database";
 
 function ehViolacaoDeDuplicidade(error: { code?: string } | null) {
@@ -34,6 +35,21 @@ function erroProximoContato(proximoContato: string | null, data: string, resulta
   return `O próximo contato precisa ser depois do dia do atendimento (${formatarDataBR(data)}). Se não precisa retornar, deixe em branco.`;
 }
 
+// CPF/CNPJ é opcional; quando vem, precisa ter 11 ou 14 dígitos e não pode
+// estar em outro cliente (evita cadastrar o mesmo cliente duas vezes).
+async function erroDocumento(
+  supabase: ReturnType<typeof createClient>,
+  documento: string | null,
+  clienteIdAtual?: string
+) {
+  if (!documentoValido(documento)) return "CPF precisa ter 11 dígitos e CNPJ 14. Confira ou deixe em branco.";
+  if (!documento) return null;
+  let consulta = supabase.from("clientes").select("id, nome").eq("documento", documento);
+  if (clienteIdAtual) consulta = consulta.neq("id", clienteIdAtual);
+  const { data } = await consulta.maybeSingle();
+  return data ? `O CPF/CNPJ ${formatarDocumento(documento)} já está no cliente "${data.nome}".` : null;
+}
+
 export async function criarCliente(_prevState: ActionState, formData: FormData): Promise<ActionState> {
   const perfil = await getPerfilAtual();
   if (!perfil) return { error: "Não autenticado" };
@@ -42,6 +58,7 @@ export async function criarCliente(_prevState: ActionState, formData: FormData):
   const nome = String(formData.get("nome") ?? "").trim();
   const telefone = String(formData.get("telefone") ?? "").trim() || null;
   const cidade = String(formData.get("cidade") ?? "").trim() || null;
+  const documento = limparDocumento(String(formData.get("documento") ?? ""));
 
   if (!nome) return { error: "Informe o nome do cliente." };
 
@@ -53,11 +70,15 @@ export async function criarCliente(_prevState: ActionState, formData: FormData):
 
   if (existente) return { error: `Já existe um cliente cadastrado como "${nome}".` };
 
+  const erroDoc = await erroDocumento(supabase, documento);
+  if (erroDoc) return { error: erroDoc };
+
   const { error } = await supabase.from("clientes").insert({
     organizacao_id: perfil.organizacao_id,
     nome,
     telefone,
     cidade,
+    documento,
   });
 
   if (error) {
@@ -82,6 +103,7 @@ export async function editarCliente(
   const nome = String(formData.get("nome") ?? "").trim();
   const telefone = String(formData.get("telefone") ?? "").trim() || null;
   const cidade = String(formData.get("cidade") ?? "").trim() || null;
+  const documento = limparDocumento(String(formData.get("documento") ?? ""));
 
   if (!nome) return { error: "Informe o nome do cliente." };
 
@@ -94,9 +116,12 @@ export async function editarCliente(
 
   if (existente) return { error: `Já existe outro cliente cadastrado como "${nome}".` };
 
+  const erroDoc = await erroDocumento(supabase, documento, clienteId);
+  if (erroDoc) return { error: erroDoc };
+
   const { error } = await supabase
     .from("clientes")
-    .update({ nome, telefone, cidade })
+    .update({ nome, telefone, cidade, documento })
     .eq("id", clienteId);
 
   if (error) {

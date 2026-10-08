@@ -10,6 +10,7 @@ import ProximasAtividades from "@/components/ProximasAtividades";
 import BonusResumo from "@/components/BonusResumo";
 import { calcularBonus, configDoBonus } from "@/lib/bonus";
 import FiltroDashboard from "@/components/FiltroDashboard";
+import CarregandoPagina from "@/components/CarregandoPagina";
 import AtendimentosRecentesTabela from "@/components/AtendimentosRecentesTabela";
 import { agruparPorDia, formatarDataCurta, inicioDoMes, metasPorDia, normalizarPeriodo } from "@/lib/periodo";
 import { situacaoDosOrcamentos } from "@/lib/relatorio";
@@ -30,7 +31,7 @@ import {
 } from "@/lib/metrics";
 import type { Atendimento, Meta } from "@/types/database";
 
-type AtendimentoComCliente = Atendimento & { clientes: { nome: string } | null };
+type AtendimentoComCliente = Atendimento & { clientes: { nome: string; documento?: string | null } | null };
 
 const REGEX_UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -95,7 +96,7 @@ export default async function DashboardPage({
 
   let consultaAtendimentos = supabase
     .from("atendimentos")
-    .select("*, clientes(nome)")
+    .select("*, clientes(nome, documento)")
     .gte("data", buscaInicio)
     .lte("data", buscaFim)
     .order("criado_em", { ascending: true });
@@ -255,6 +256,7 @@ export default async function DashboardPage({
     : null;
 
   return (
+    <CarregandoPagina>
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
@@ -516,5 +518,6 @@ export default async function DashboardPage({
         </div>
       </div>
     </div>
+    </CarregandoPagina>
   );
 }

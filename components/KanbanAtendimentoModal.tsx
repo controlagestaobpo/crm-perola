@@ -50,7 +50,7 @@ export default function KanbanAtendimentoModal({
   const titulo = resultado === "compra" ? "Registrar venda" : "Registrar orçamento";
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+    <div className="janela-fundo fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
       <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-[14px] bg-white p-6">
         <div className="mb-4 flex items-center justify-between">
           <div>

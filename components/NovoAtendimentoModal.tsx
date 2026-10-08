@@ -27,7 +27,7 @@ export default function NovoAtendimentoModal({
   const router = useRouter();
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/40 p-4 py-8">
+    <div className="janela-fundo fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/40 p-4 py-8">
       <div className="w-full max-w-2xl rounded-[14px] bg-white p-6">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-perola-texto">Novo atendimento</h2>

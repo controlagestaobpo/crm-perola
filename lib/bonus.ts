@@ -61,11 +61,14 @@ export interface ResultadoBonus {
 // - Vendas: recebe só o degrau mais alto atingido (não soma degraus). Se o
 //   master informou o faturado do mês, ele vale no lugar das vendas do CRM.
 // - Atendimentos e clientes diferentes: "Não atendeu" não conta, como no
-//   resto do CRM. Cliente diferente = cliente cadastrado diferente.
+//   resto do CRM. Cliente diferente = CPF/CNPJ diferente (sem documento,
+//   cada cadastro conta como um cliente).
 // - As três metas são independentes.
 export function calcularBonus(
   config: ConfigBonus,
-  atendimentosDoMes: Pick<Atendimento, "cliente_id" | "resultado" | "valor" | "quantidade_sacos" | "valor_frete">[],
+  atendimentosDoMes: (Pick<Atendimento, "cliente_id" | "resultado" | "valor" | "quantidade_sacos" | "valor_frete"> & {
+    clientes?: { documento?: string | null } | null;
+  })[],
   diasUteisRestantes: number
 ): ResultadoBonus {
   const dias = Math.max(diasUteisRestantes, 1);
@@ -89,7 +92,8 @@ export function calcularBonus(
   const atendAtingido = config.atendimentosValor > 0 && atendRealizado >= config.atendimentosMeta;
   const atendFalta = Math.max(config.atendimentosMeta - atendRealizado, 0);
 
-  const clientesRealizado = new Set(validos.map((a) => a.cliente_id)).size;
+  // Cliente diferente = CPF/CNPJ diferente; sem documento, vale o cadastro.
+  const clientesRealizado = new Set(validos.map((a) => a.clientes?.documento || a.cliente_id)).size;
   const clientesAtingido = config.clientesValor > 0 && clientesRealizado >= config.clientesMeta;
   const clientesFalta = Math.max(config.clientesMeta - clientesRealizado, 0);
 

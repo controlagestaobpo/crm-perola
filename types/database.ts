@@ -51,6 +51,7 @@ export interface Cliente {
   nome: string;
   telefone: string | null;
   cidade: string | null;
+  documento?: string | null;
   proximo_contato: string | null;
   estagio: Estagio;
   criado_em: string;

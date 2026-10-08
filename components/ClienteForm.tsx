@@ -20,7 +20,7 @@ export default function ClienteForm({ onSalvo }: { onSalvo?: () => void } = {}) 
 
   return (
     <form ref={formRef} action={formAction} className="mt-4 space-y-4">
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <div>
           <label className="mb-1 block text-[13px] font-semibold text-perola-texto">Nome</label>
           <input
@@ -42,6 +42,17 @@ export default function ClienteForm({ onSalvo }: { onSalvo?: () => void } = {}) 
           <input
             name="cidade"
             placeholder="Ex: Ji-Paraná"
+            className="w-full rounded-[10px] border border-[#DAD8CD] px-3.5 py-[11px] text-sm text-perola-texto focus:border-perola-verde focus:outline-none"
+          />
+        </div>
+        <div>
+          <label className="mb-1 block text-[13px] font-semibold text-perola-texto">
+            CPF/CNPJ <span className="font-normal text-perola-texto-2">(opcional)</span>
+          </label>
+          <input
+            name="documento"
+            inputMode="numeric"
+            placeholder="Só números"
             className="w-full rounded-[10px] border border-[#DAD8CD] px-3.5 py-[11px] text-sm text-perola-texto focus:border-perola-verde focus:outline-none"
           />
         </div>
