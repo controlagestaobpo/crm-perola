@@ -144,3 +144,51 @@ export function agruparPorDia(atendimentos: Atendimento[], metas: MetaDoDia[]) {
     meta: Math.round(m.atendimentos),
   }));
 }
+
+export const PRESETS_PERIODO = [
+  { valor: "hoje", label: "Hoje" },
+  { valor: "semana", label: "Esta semana" },
+  { valor: "mes", label: "Este mês" },
+  { valor: "mes_passado", label: "Mês passado" },
+  { valor: "30d", label: "Últimos 30 dias" },
+  { valor: "90d", label: "Últimos 90 dias" },
+  { valor: "personalizado", label: "Personalizado" },
+] as const;
+
+export type PresetPeriodo = (typeof PRESETS_PERIODO)[number]["valor"];
+
+// Período de um atalho ("Este mês", "Mês passado"...). "personalizado" usa
+// de/até da URL, limitado a um ano e nunca depois de hoje.
+export function periodoDoPreset(
+  preset: string | undefined,
+  deParam: string | undefined,
+  ateParam: string | undefined,
+  hojeISO: string
+): { preset: PresetPeriodo; de: string; ate: string } {
+  const p = (PRESETS_PERIODO.some((x) => x.valor === preset) ? preset : "mes") as PresetPeriodo;
+  const diaSemana = new Date(paraUTC(hojeISO)).getUTCDay();
+  switch (p) {
+    case "hoje":
+      return { preset: p, de: hojeISO, ate: hojeISO };
+    case "semana":
+      return { preset: p, de: somarDias(hojeISO, -((diaSemana + 6) % 7)), ate: hojeISO };
+    case "mes_passado": {
+      const fimMesPassado = somarDias(inicioDoMes(hojeISO), -1);
+      return { preset: p, de: inicioDoMes(fimMesPassado), ate: fimMesPassado };
+    }
+    case "30d":
+      return { preset: p, de: somarDias(hojeISO, -29), ate: hojeISO };
+    case "90d":
+      return { preset: p, de: somarDias(hojeISO, -89), ate: hojeISO };
+    case "personalizado": {
+      let de = dataValida(deParam) ? deParam : inicioDoMes(hojeISO);
+      let ate = dataValida(ateParam) ? ateParam : hojeISO;
+      if (ate > hojeISO) ate = hojeISO;
+      if (de > ate) de = ate;
+      if (diferencaDias(de, ate) > 365) de = somarDias(ate, -365);
+      return { preset: p, de, ate };
+    }
+    default:
+      return { preset: "mes", de: inicioDoMes(hojeISO), ate: hojeISO };
+  }
+}

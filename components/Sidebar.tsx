@@ -64,11 +64,11 @@ export default function Sidebar({ papel }: { papel: Papel }) {
         <span className="text-lg font-semibold text-white">CRM Pérola</span>
       </div>
       <nav className="flex-1 space-y-1 px-3 py-4">
-        {operacionais.map((link) => ItemNav(link, pathname === link.href))}
+        {operacionais.map((link) => ItemNav(link, pathname === link.href || pathname.startsWith(link.href + "/")))}
         {operacionais.length > 0 && gestao.length > 0 && (
           <div className="my-2 h-px bg-white/10" />
         )}
-        {gestao.map((link) => ItemNav(link, pathname === link.href))}
+        {gestao.map((link) => ItemNav(link, pathname === link.href || pathname.startsWith(link.href + "/")))}
       </nav>
     </aside>
   );
