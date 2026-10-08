@@ -24,7 +24,8 @@ export default async function ExplorarPage({
 }) {
   const perfil = await getPerfilAtual();
   if (!perfil) return null;
-  if (perfil.papel !== "master") redirect("/");
+  // Explorar: master e sócio. O Relatório do mês (com comissões) segue só do master.
+  if (perfil.papel !== "master" && perfil.papel !== "gerente") redirect("/");
 
   const hojeISO = hojeISOBrasil();
   const { preset, de, ate } = periodoDoPreset(searchParams.periodo, searchParams.de, searchParams.ate, hojeISO);
@@ -87,7 +88,7 @@ export default async function ExplorarPage({
 
   return (
     <div className="space-y-6">
-      <RelatoriosAbas ativa="explorar" />
+      <RelatoriosAbas ativa="explorar" mostrarMes={perfil.papel === "master"} />
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-perola-texto">Explorar atendimentos</h1>

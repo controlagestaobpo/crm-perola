@@ -29,7 +29,7 @@ const links: LinkNav[] = [
   { href: "/produtos", label: "Produtos", icon: Package, papeis: ["master"], grupo: "operacional" },
   { href: "/metas", label: "Metas", icon: Target, papeis: ["master", "gerente", "vendedor"], grupo: "gestao" },
   { href: "/insights", label: "Insights", icon: Lightbulb, papeis: ["master", "gerente"], grupo: "gestao" },
-  { href: "/relatorios", label: "Relatórios", icon: FileBarChart, papeis: ["master"], grupo: "gestao" },
+  { href: "/relatorios", label: "Relatórios", icon: FileBarChart, papeis: ["master", "gerente"], grupo: "gestao" },
   { href: "/usuarios", label: "Usuários", icon: UserCog, papeis: ["master"], grupo: "gestao" },
 ];
 

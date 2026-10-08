@@ -5,7 +5,8 @@ const ABAS = [
   { href: "/relatorios/mes", label: "Relatório do mês", chave: "mes" },
 ] as const;
 
-export default function RelatoriosAbas({ ativa }: { ativa: "explorar" | "mes" }) {
+export default function RelatoriosAbas({ ativa, mostrarMes = true }: { ativa: "explorar" | "mes"; mostrarMes?: boolean }) {
+  if (!mostrarMes) return null;
   return (
     <div className="flex w-fit rounded-lg border border-perola-borda bg-white p-1 print:hidden">
       {ABAS.map((aba) => (
