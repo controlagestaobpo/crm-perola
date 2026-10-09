@@ -3,6 +3,7 @@ export type Papel = "master" | "gerente" | "vendedor";
 export type Estagio = "prospectar" | "contatado" | "negociacao" | "vendido" | "recusado";
 
 export type ResultadoAtendimento =
+  | "prospeccao"
   | "compra"
   | "negociacao"
   | "interessado"

@@ -48,6 +48,7 @@ export function situacaoDosOrcamentos(atendimentos: AtendimentoMinimo[]): Map<st
 export interface Resumo {
   contatos: number;
   atendimentos: number;
+  prospeccoes: number;
   clientesAtendidos: number;
   vendas: number;
   conversao: number;
@@ -64,6 +65,7 @@ export function resumir(atendimentos: Atendimento[]): Resumo {
   return {
     contatos: atendimentos.length,
     atendimentos: validos.length,
+    prospeccoes: atendimentos.filter((a) => a.resultado === "prospeccao").length,
     clientesAtendidos: new Set(validos.map((a) => a.cliente_id)).size,
     vendas: compras.length,
     conversao: validos.length > 0 ? (compras.length / validos.length) * 100 : 0,

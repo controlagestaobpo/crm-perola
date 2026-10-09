@@ -38,6 +38,7 @@ const REGEX_UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12
 export const dynamic = "force-dynamic";
 
 const CORES_RESULTADO: Record<string, string> = {
+  Prospecção: "#5B8DB8",
   Compra: "#1E2A18",
   Orçamento: "#7FB52A",
   Interessado: "#A6E23A",
@@ -177,6 +178,7 @@ export default async function DashboardPage({
   const freteTotal = somaValor(atendimentos, "valor_frete");
   const totalAtendimentos = atendimentosContam.length;
   const totalVendas = contarResultado(atendimentos, "compra");
+  const totalProspeccoes = contarResultado(atendimentos, "prospeccao");
   const ticketMedio = totalVendas > 0 ? vendido / totalVendas : 0;
   const conversao = totalAtendimentos > 0 ? (totalVendas / totalAtendimentos) * 100 : 0;
 
@@ -312,7 +314,7 @@ export default async function DashboardPage({
               )}
             </div>
 
-            <div className="flex shrink-0 flex-row gap-4 border-perola-divisor sm:w-44 sm:flex-col sm:border-l sm:pl-6">
+            <div className="grid shrink-0 grid-cols-2 gap-4 border-perola-divisor sm:flex sm:w-44 sm:flex-col sm:border-l sm:pl-6">
               <div className="flex-1">
                 <p className="text-xs font-medium uppercase tracking-wide text-perola-texto-2">Sacos</p>
                 <p className="text-lg font-semibold text-perola-texto">
@@ -330,6 +332,10 @@ export default async function DashboardPage({
               <div className="flex-1">
                 <p className="text-xs font-medium uppercase tracking-wide text-perola-texto-2">Clientes diferentes</p>
                 <p className="text-lg font-semibold text-perola-texto">{clientesAtendidos}</p>
+              </div>
+              <div className="flex-1">
+                <p className="text-xs font-medium uppercase tracking-wide text-perola-texto-2">Prospecções</p>
+                <p className="text-lg font-semibold text-perola-texto">{totalProspeccoes}</p>
               </div>
             </div>
           </div>

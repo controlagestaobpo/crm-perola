@@ -86,7 +86,7 @@ create table if not exists atendimentos (
   cliente_id uuid not null references clientes(id) on delete cascade,
   data date not null default current_date,
   resultado text not null check (
-    resultado in ('compra', 'negociacao', 'interessado', 'sem_interesse', 'nao_atendeu', 'indisponivel')
+    resultado in ('prospeccao', 'compra', 'negociacao', 'interessado', 'sem_interesse', 'nao_atendeu', 'indisponivel')
   ),
   motivo text,
   valor numeric,
@@ -522,3 +522,9 @@ drop policy if exists "Master e gerente gerenciam metas" on metas;
 create policy "Master e gerente gerenciam metas" on metas
   for all using (organizacao_id = public.minha_organizacao() and public.meu_papel() in ('master', 'gerente'))
   with check (organizacao_id = public.minha_organizacao() and public.meu_papel() in ('master', 'gerente'));
+
+-- Novo resultado "Prospecção" (primeiro contato com um cliente em potencial).
+alter table atendimentos drop constraint if exists atendimentos_resultado_check;
+alter table atendimentos add constraint atendimentos_resultado_check check (
+  resultado in ('prospeccao', 'compra', 'negociacao', 'interessado', 'sem_interesse', 'nao_atendeu', 'indisponivel')
+);

@@ -25,6 +25,7 @@ type Visao = "clientes" | "atendimentos";
 
 const FILTROS_RESULTADO: { valor: "" | ResultadoAtendimento; label: string }[] = [
   { valor: "", label: "Todos" },
+  { valor: "prospeccao", label: "Prospecção" },
   { valor: "compra", label: "Compraram" },
   { valor: "negociacao", label: "Orçamento" },
   { valor: "interessado", label: "Interessado" },
@@ -34,6 +35,7 @@ const FILTROS_RESULTADO: { valor: "" | ResultadoAtendimento; label: string }[] =
 ];
 
 const COR_RESULTADO: Record<ResultadoAtendimento, string> = {
+  prospeccao: "bg-[#E8F0F7] text-[#3F6E96]",
   compra: "bg-perola-verde text-white",
   negociacao: "bg-perola-tag-pos-bg text-perola-tag-pos-texto",
   interessado: "bg-[#FBF1E4] text-perola-alerta",

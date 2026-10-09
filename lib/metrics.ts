@@ -1,6 +1,7 @@
 import type { Atendimento, ResultadoAtendimento } from "@/types/database";
 
 const LABEL_RESULTADO: Record<ResultadoAtendimento, string> = {
+  prospeccao: "Prospecção",
   compra: "Compra",
   negociacao: "Orçamento",
   interessado: "Interessado",
@@ -86,6 +87,7 @@ export function contarResultado(atendimentos: Atendimento[], resultado: Resultad
 
 export function agruparResultados(atendimentos: Atendimento[]) {
   const resultados: ResultadoAtendimento[] = [
+    "prospeccao",
     "compra",
     "negociacao",
     "interessado",

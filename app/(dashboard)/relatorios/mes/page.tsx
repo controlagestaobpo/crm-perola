@@ -34,6 +34,7 @@ type AtendimentoRel = Atendimento & {
 };
 
 const CORES_RESULTADO: Record<string, string> = {
+  Prospecção: "text-[#3F6E96]",
   Compra: "text-perola-verde",
   Orçamento: "text-perola-verde-medio",
   Interessado: "text-perola-alerta",
@@ -330,6 +331,7 @@ export default async function RelatoriosPage({
 
   const cardsResumo: { label: string; valor: string; atual: number; anterior: number; pontos?: boolean }[] = [
     { label: "Atendimentos", valor: String(atual.atendimentos), atual: atual.atendimentos, anterior: anterior.atendimentos },
+    { label: "Prospecções", valor: String(atual.prospeccoes), atual: atual.prospeccoes, anterior: anterior.prospeccoes },
     { label: "Clientes atendidos", valor: String(atual.clientesAtendidos), atual: atual.clientesAtendidos, anterior: anterior.clientesAtendidos },
     { label: "Vendas", valor: String(atual.vendas), atual: atual.vendas, anterior: anterior.vendas },
     { label: "Conversão", valor: `${atual.conversao.toFixed(1)}%`, atual: atual.conversao, anterior: anterior.conversao, pontos: true },
@@ -435,6 +437,7 @@ export default async function RelatoriosPage({
               <tr>
                 <th className={TH}>Vendedora</th>
                 <th className={TH}>Contatos</th>
+                <th className={TH}>Prospecções</th>
                 <th className={TH}>Não atendeu</th>
                 <th className={TH}>Vendas</th>
                 <th className={TH}>Conversão</th>
@@ -448,12 +451,13 @@ export default async function RelatoriosPage({
             </thead>
             <tbody>
               {porVendedor.length === 0 ? (
-                <tr><td colSpan={11} className="px-3 py-4 text-center text-perola-texto-2">Sem atendimentos no mês.</td></tr>
+                <tr><td colSpan={12} className="px-3 py-4 text-center text-perola-texto-2">Sem atendimentos no mês.</td></tr>
               ) : (
                 porVendedor.map((v) => (
                   <tr key={v.id} className={LINHA}>
                     <td className={TD_NOME}>{v.nome}</td>
                     <td className={TD}>{v.contatos}</td>
+                    <td className={TD}>{v.prospeccoes}</td>
                     <td className={TD}>{v.naoAtendeuPct.toFixed(0)}%</td>
                     <td className={TD}>{v.vendas}</td>
                     <td className={TD}>{v.conversao.toFixed(1)}%</td>

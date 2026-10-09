@@ -14,6 +14,8 @@ export function labelEstagio(estagio: Estagio) {
 
 export function estagioParaResultado(resultado: ResultadoAtendimento): Estagio {
   switch (resultado) {
+    case "prospeccao":
+      return "contatado";
     case "compra":
       return "vendido";
     case "negociacao":

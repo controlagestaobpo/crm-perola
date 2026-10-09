@@ -155,6 +155,7 @@ export default function AtendimentoFormFields({ produtos, valoresIniciais }: Ate
             className="w-full rounded-[10px] border border-[#DAD8CD] px-3.5 py-[11px] text-sm text-perola-texto focus:border-perola-verde focus:outline-none"
           >
             <option value="">-- Selecione --</option>
+            <option value="prospeccao">🎯 Prospecção</option>
             <option value="compra">✓ Compra realizada</option>
             <option value="negociacao">⭐ Orçamento em andamento</option>
             <option value="interessado">⊕ Interessado - retornar</option>
