@@ -7,6 +7,7 @@ const PALETA: Record<string, string> = {
   "Peixes": "peer-checked:border-cyan-600 peer-checked:bg-cyan-600",
   "Equinos": "peer-checked:border-emerald-600 peer-checked:bg-emerald-600",
   "Ovinos": "peer-checked:border-indigo-600 peer-checked:bg-indigo-600",
+  "Cães": "peer-checked:border-yellow-600 peer-checked:bg-yellow-600",
 };
 
 const PADRAO = "peer-checked:border-violet-600 peer-checked:bg-violet-600";
@@ -20,6 +21,7 @@ const PALETA_BADGE: Record<string, string> = {
   "Peixes": "bg-cyan-100 text-cyan-700",
   "Equinos": "bg-emerald-100 text-emerald-700",
   "Ovinos": "bg-indigo-100 text-indigo-700",
+  "Cães": "bg-yellow-100 text-yellow-800",
 };
 
 const PADRAO_BADGE = "bg-violet-100 text-violet-700";
